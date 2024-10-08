@@ -22,5 +22,14 @@ class Command:
     def is_finished(self):
         return True
     
+    # Adds a requireded subsystem to the command
+    def add_requirement(self, subsystemID):
+        self.requirements.append(subsystemID)
+    
+    # Schedules the command in the command runner
     def schedule(self):
-        CommandRunner().add_command(self)
+        CommandRunner().schedule_command(self)
+    
+    # Cancels the command in the command runner
+    def cancel(self):
+        CommandRunner().cancel_command(self)
