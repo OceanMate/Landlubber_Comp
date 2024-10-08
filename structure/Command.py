@@ -1,7 +1,9 @@
+from structure.CommandRunner import CommandRunner
+
 class Command:
     # Called when the command is first run
     # should be overridden by the child class
-    def init(self):
+    def initalize(self):
         pass
     
     # Called every time while the command isn't finished
@@ -19,3 +21,6 @@ class Command:
     # should be overridden by the child class
     def is_finished(self):
         return True
+    
+    def schedule(self):
+        CommandRunner().add_command(self)
