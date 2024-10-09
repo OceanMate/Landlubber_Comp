@@ -12,6 +12,9 @@ class CommandRunner:
     def __init__(self):
         self.commands = []
         self.default_commands = []
+        self.commands_to_schedule = []
+        self.commands_to_cancel = []
+        self.in_run_loop = False
         self.enabled = False
     
     def run_commands(self):
@@ -55,9 +58,9 @@ class CommandRunner:
                 for command in self.commands:
                     if subsystem_reg in command.requirements:
                         not_conflicting = False
-                        break
             
             if not_conflicting:
+                default_command.initalize()
                 self.commands.append(default_command)
 
             
@@ -75,6 +78,7 @@ class CommandRunner:
                     c.end(True)
                     self.commands.remove(c)
         
+        command.initalize()
         self.commands.append(command)
     
     def add_default_command(self, command):

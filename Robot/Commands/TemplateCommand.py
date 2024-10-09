@@ -1,6 +1,9 @@
 from structure.Command import Command
 
-def TemplateCommand(Command):
+class TemplateCommand(Command):
+    def __init__(self):
+        super().__init__()
+        
     def initalize(self):
         pass
     

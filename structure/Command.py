@@ -1,6 +1,9 @@
 from structure.CommandRunner import CommandRunner
 
 class Command:
+    def __init__(self):
+        self.requirements = []
+    
     # Called when the command is first run
     # should be overridden by the child class
     def initalize(self):
@@ -25,6 +28,9 @@ class Command:
     # Adds a requireded subsystem to the command
     def add_requirement(self, subsystemID):
         self.requirements.append(subsystemID)
+    
+    def get_requirements(self):
+        return self.requirements
     
     # Schedules the command in the command runner
     def schedule(self):
