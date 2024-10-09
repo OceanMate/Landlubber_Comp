@@ -1,29 +1,27 @@
 from Robot.Robot import Robot
+from structure.RobotState import RobotState
 
 def main():
     runRobot = Robot()
     runRobot.robot_init()
+    robotState = RobotState()
     
     # temp, should come from GUI button
-    enabled = True
-    teleop_initialized = False
-    disabled_initialized = False
+    robotState.set_enabled(True)
     
     while True:
         runRobot.robot_perodic()
         
-        if enabled and not teleop_initialized:
+        if robotState.is_enabled() and robotState.is_teleop_to_be_initialized():
             runRobot.teleop_init()
-            teleop_initialized = True
-            disabled_initialized = False
+            robotState.set_teleop_to_be_initialized(False)
         
-        if enabled:
+        if robotState.is_enabled():
             runRobot.teleop_periodic()
             
-        if not enabled and not disabled_initialized:
+        if not robotState.is_enabled() and robotState.is_disabled_to_be_initialized():
             runRobot.disabled_init()
-            disabled_initialized = True
-            teleop_initialized = False
+            robotState.set_disabled_to_be_initialized(False)
         
         
 if __name__ == "__main__":
