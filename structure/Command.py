@@ -7,22 +7,23 @@ class Command:
     # Called when the command is first run
     # should be overridden by the child class
     def initalize(self):
-        pass
+        raise NotImplementedError("Subclasses should implement this!")
     
     # Called every time while the command isn't finished
     # should be overridden by the child class
     def execute(self):
-        pass
+        raise NotImplementedError("Subclasses should implement this!")
     
     # Called when the command is finished or interrupted
     # interrupted is a boolean that is true if the command was interrupted
     # should be overridden by the child class
     def end(self, interrupted):
-        pass
+        raise NotImplementedError("Subclasses should implement this!")
     
     # Called to check if the command is finished
     # should be overridden by the child class
     def is_finished(self):
+        raise NotImplementedError("Subclasses should implement this!")
         return True
     
     # Adds a requireded subsystem to the command

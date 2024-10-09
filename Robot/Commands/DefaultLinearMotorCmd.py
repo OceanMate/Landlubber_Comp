@@ -7,12 +7,11 @@ class DefaultLinearMotorCmd(Command):
     
     def initalize(self):
         # xSpeed, ySpeed, and zRotation are all from -1 to 1
-        print("Running linear motors")
-
         self.linear_motors.runMotors(1, 1, 1)
 
     
     def execute(self):
+        print("Running linear motors")
 
         return
     

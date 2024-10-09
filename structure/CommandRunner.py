@@ -75,8 +75,7 @@ class CommandRunner:
         for req in command.requirements:
             for c in self.commands:
                 if req in c.requirements:
-                    c.end(True)
-                    self.commands.remove(c)
+                    self.cancel_command(c)
         
         command.initalize()
         self.commands.append(command)
