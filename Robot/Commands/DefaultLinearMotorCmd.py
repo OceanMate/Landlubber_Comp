@@ -1,4 +1,4 @@
-from structure.Command import Command
+from structure.commands.Command import Command
 
 class DefaultLinearMotorCmd(Command):
     def __init__(self, linear_motors):

@@ -24,7 +24,6 @@ class Command:
     # should be overridden by the child class
     def is_finished(self):
         raise NotImplementedError("Subclasses should implement this!")
-        return True
     
     # Adds a requireded subsystem to the command
     def add_requirement(self, subsystemID):

@@ -1,5 +1,5 @@
 from structure.CommandRunner import CommandRunner
-from structure.Command import Command
+from structure.commands.Command import Command
 
 class Subsystem:
     def __init__(self, name):

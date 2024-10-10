@@ -1,4 +1,4 @@
-from structure.Command import Command
+from structure.commands.Command import Command
 
 class TemplateCommand(Command):
     def __init__(self):
