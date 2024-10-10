@@ -10,7 +10,7 @@ class Subsystem:
     def defaultCommand(self, command):
 
         # Adds the subsystem to the command's requirements if not already there
-        if self.name not in command.get_requirements():
+        if self.name not in command.requirements:
             command.add_requirement(self.name)
         
         CommandRunner().add_default_command(command) 

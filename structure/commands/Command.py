@@ -29,9 +29,6 @@ class Command:
     def add_requirement(self, subsystemID):
         self.requirements.append(subsystemID)
     
-    def get_requirements(self):
-        return self.requirements
-    
     # Schedules the command in the command runner
     def schedule(self):
         CommandRunner().schedule_command(self)
