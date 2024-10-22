@@ -1,16 +1,16 @@
 from structure.commands.Command import Command
 from Robot.Subsystems.LinearMotors import LinearMotors
 
-class DefaultLinearMotorCmd(Command):
+class FunkyMotorCmd(Command):
     def __init__(self, linear_motors):
         super().__init__()
         self.linear_motors = linear_motors
         super().add_requirement(self.linear_motors)
+
     
     def initalize(self):
-        print("Running linear motors")
+        print("Funky fresh linear motors are running")
 
-        # xSpeed, ySpeed, and zRotation are all from -1 to 1
         self.linear_motors.runMotors(1, 1, 1)
     
     def execute(self):
@@ -18,7 +18,7 @@ class DefaultLinearMotorCmd(Command):
     
     def end(self, interrupted):
         if (interrupted):
-            print("Default command interrupted")
+            print("Funky command interrupted")
         self.linear_motors.runMotors(0, 0, 0)
     
     def is_finished(self):

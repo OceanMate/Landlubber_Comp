@@ -12,6 +12,7 @@ class Robot:
     
     def robot_perodic(self):
         self.command_runner.run_commands()
+        
     
     def teleop_init(self):
         self.command_runner.turn_on()

@@ -1,5 +1,7 @@
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
+from structure.Input.KeyboardListener import KeyboardListener
+import time
 
 def main():
     runRobot = Robot()
@@ -12,6 +14,7 @@ def main():
     
     while True:
         runRobot.robot_perodic()
+        KeyboardListener().update()
         
         if robotState.enabled and robotState.teleop_to_be_initialized:
             runRobot.teleop_init()
@@ -23,6 +26,9 @@ def main():
         if not robotState.enabled and robotState.disabled_to_be_initialized:
             runRobot.disabled_init()
             robotState.disabled_to_be_initialized = False
+        
+        time.sleep(0.02)
+        
         
         
 if __name__ == "__main__":

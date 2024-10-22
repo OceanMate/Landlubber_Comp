@@ -1,3 +1,5 @@
+from structure.Input.EventLoop import EventLoop
+
 class CommandRunner:
     _instance = None
 
@@ -7,17 +9,22 @@ class CommandRunner:
         # Otherwise, return already created instance
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+            cls._instance._start()
         return cls._instance
     
-    def __init__(self):
+    def _start(self):
         self.commands = []
         self.default_commands = []
         self.commands_to_schedule = []
         self.commands_to_cancel = []
+        
         self.in_run_loop = False
         self.enabled = False
-    
+        
+        self.default_input_loop = EventLoop()
+            
     def run_commands(self):
+        self.default_input_loop.poll()
         
         self.in_run_loop = True
         # Loops through each command to execute and end it if it's finished
@@ -60,6 +67,7 @@ class CommandRunner:
                         not_conflicting = False
             
             if not_conflicting:
+                print("Adding default command")
                 default_command.initalize()
                 self.commands.append(default_command)
 
@@ -99,6 +107,10 @@ class CommandRunner:
         if command in self.commands:
             command.end(True)
             self.commands.remove(command)
+
+    def add_input_scheduler(self, scheduleBool, cmd):
+        self.input_schedulers_bool.append(scheduleBool)
+        self.input_schedulers_cmd.append(cmd)
         
     def turn_off(self):
         self.enabled = False
