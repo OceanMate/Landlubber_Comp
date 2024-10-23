@@ -4,26 +4,28 @@ from structure.Input.KeyboardListener import KeyboardListener
 import time
 
 def main():
-    runRobot = Robot()
-    runRobot.robot_init()
-    robotState = RobotState()
+    run_robot = Robot()
+    robot_state = RobotState()
+
+    run_robot.robot_init()
     
     # temp, should come from GUI button
-    robotState.enable_teleop()
+    robot_state.enable_teleop()
     
     while True:
-        runRobot.robot_perodic()
+        run_robot.robot_perodic()
         KeyboardListener().update()
         
-        if robotState.is_init_teleop():
-            runRobot.teleop_init()
+        if robot_state.is_init_teleop():
+            run_robot.teleop_init()
         
-        if robotState.is_teleop_enabled():
-            runRobot.teleop_periodic()
+        if robot_state.is_teleop_enabled():
+            run_robot.teleop_periodic()
             
-        if robotState.is_init_disable():
-            runRobot.disabled_init()
+        if robot_state.is_init_disable():
+            run_robot.disabled_init()
         
+        # Add a small delay to prevent high CPU usage
         time.sleep(0.02)
         
 if __name__ == "__main__":
