@@ -12,6 +12,7 @@ class CommandRunner:
             cls._instance._start()
         return cls._instance
     
+    # Private method that acts as an initializer
     def _start(self):
         self.commands = []
         self.default_commands = []
@@ -25,7 +26,8 @@ class CommandRunner:
             
     def run_commands(self):
         # Polls the input loop for any new commands to schedule
-        self.default_input_loop.poll()
+        if self.enabled:
+            self.default_input_loop.poll()
         
         self.in_run_loop = True
         # Loops through each command to execute and end it if it's finished
@@ -45,6 +47,7 @@ class CommandRunner:
                 
         self.in_run_loop = False
         
+        # Prevents the scheduling of commands if the robot is disabled (needs to be here so it can end the commands)
         if not self.enabled:
             return
         
@@ -66,6 +69,7 @@ class CommandRunner:
                 for command in self.commands:
                     if subsystem_reg in command.requirements:
                         not_conflicting = False
+                        break
             
             if not_conflicting:
                 default_command.initalize()
@@ -88,6 +92,7 @@ class CommandRunner:
         command.initalize()
         self.commands.append(command)
     
+    # adds a default command to the list of default commands
     def add_default_command(self, command):
         for req in command.requirements:
             for c in self.default_commands:

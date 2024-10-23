@@ -15,7 +15,7 @@ class KeyboardListener:
             cls._instance._start()
         return cls._instance        
         
-    
+    # Private method that acts as an initializer
     def _start (self):
         self.is_keys_down = {}
         self.pressQueue = Queue()
@@ -46,7 +46,7 @@ class KeyboardListener:
             released_key = self.releaseQueue.get()
             self.is_keys_down[released_key] = False
                     
-    
+    # Private methods to handle key press and release events
     def _on_press(self, key):
         try:
             self.pressQueue.put(key.char)
@@ -68,6 +68,7 @@ class KeyboardListener:
         for key, value in self.is_keys_down.items():
             print(f"{key}: {value}")
     
+    # Check if a key is currently pressed down
     def is_key_down(self, key: str):
         return self.is_keys_down.get(key, False)
 
