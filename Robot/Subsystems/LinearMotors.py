@@ -1,5 +1,3 @@
-from numpy import double
-from Robot import Robot
 from structure.Subsystem import Subsystem
 
 class LinearMotors(Subsystem):
@@ -7,7 +5,7 @@ class LinearMotors(Subsystem):
         super().__init__(self.__class__.__name__)
     
     # Runs the motors given the x, y, and z speeds (each from -1 to 1)
-    def runMotors(self, xSpeed : double, ySpeed : double, zRotation : double):
+    def runMotors(self, xSpeed, ySpeed, zRotation):
         # calculate the absolute values
         abs_x = abs(xSpeed)
         abs_y = abs(ySpeed)

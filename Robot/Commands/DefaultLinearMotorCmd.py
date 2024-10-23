@@ -7,6 +7,7 @@ class DefaultLinearMotorCmd(Command):
         self.linear_motors = linear_motors
         super().add_requirement(self.linear_motors)
     
+    
     def initalize(self):
         print("Running linear motors")
 

@@ -1,6 +1,7 @@
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
+
 import time
 
 def main():
@@ -11,6 +12,7 @@ def main():
     
     # temp, should come from GUI button
     robot_state.enable_teleop()
+    
     
     while True:
         run_robot.robot_perodic()
