@@ -1,6 +1,6 @@
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
-from structure.Input.KeyboardListener import Key, KeyboardListener
+from structure.Input.KeyboardListener import KeyboardListener
 import time
 
 def main():
