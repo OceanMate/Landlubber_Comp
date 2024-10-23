@@ -8,10 +8,10 @@ class InputScheduler:
     
     def on_true(self, cmd):
         class m_runnable():            
-            def __init__(m_self):
+            def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
 
-            def run(m_self):
+            def run(m_self): # type: ignore
                 pressed = self.scheduleBool()
                 if not m_self.pressed_last and pressed:
                     cmd.schedule()
@@ -21,10 +21,10 @@ class InputScheduler:
     
     def on_false(self, cmd):
         class m_runnable():            
-            def __init__(m_self):
+            def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
 
-            def run(m_self):
+            def run(m_self): # type: ignore
                 pressed = self.scheduleBool()
                 if m_self.pressed_last and not pressed:
                     cmd.schedule()
@@ -34,10 +34,10 @@ class InputScheduler:
     
     def while_true(self, cmd):
         class m_runnable():            
-            def __init__(m_self):
+            def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
 
-            def run(m_self):
+            def run(m_self): # type: ignore
                 pressed  = self.scheduleBool()
                 
                 if not m_self.pressed_last and pressed:
@@ -51,10 +51,10 @@ class InputScheduler:
     
     def while_false(self, cmd):
         class m_runnable():            
-            def __init__(m_self):
+            def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
 
-            def run(m_self):
+            def run(m_self): # type: ignore
                 pressed = self.scheduleBool()
                 
                 if m_self.pressed_last and not pressed:

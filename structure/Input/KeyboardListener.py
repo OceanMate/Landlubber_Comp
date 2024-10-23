@@ -2,10 +2,6 @@
 from pynput import keyboard
 from queue import Queue
 
-# a data class to hold key information
-class Key:
-    key_name: str
-    down: bool
 
 class KeyboardListener:
     _instance = None
@@ -21,42 +17,34 @@ class KeyboardListener:
         
     
     def _start (self):
-        self.keys = []
+        self.is_keys_down = {}
         self.pressQueue = Queue()
         self.releaseQueue = Queue()
         
         # Start the listener (a thread) to start listening for key presses
         # steals your password nerd
-        listener = keyboard.Listener(on_press=self._on_press, on_release=self._on_release)
-        listener.start()
+        self.listener = keyboard.Listener(on_press=self._on_press, on_release=self._on_release)
+        self.listener.start()
     
     def stop_listener(self):
-        keyboard.Listener.stop()
+        self.listener.stop()
     
     # add a key to check on 
     def add_key(self, key: str):
-        key_obj = Key()
-        key_obj.key_name = key
-        key_obj.down = False
         
-        self.keys.append(key_obj)
+        self.is_keys_down[key] = False
 
     def update (self):
         
         # Check for new pressed keys from the thread
         while not self.pressQueue.empty():
             pressed_key = self.pressQueue.get()
-            for stored_key in self.keys:
-                if stored_key.key_name == pressed_key:
-                    
-                    stored_key.down = True
-        
+            self.is_keys_down[pressed_key] = True
+                            
         # Check for new released keys from the thread
         while not self.releaseQueue.empty():
             released_key = self.releaseQueue.get()
-            for stored_key in self.keys:
-                if stored_key.key_name == released_key:
-                    stored_key.down = False
+            self.is_keys_down[released_key] = False
                     
     
     def _on_press(self, key):
@@ -77,15 +65,11 @@ class KeyboardListener:
 
     # Print the current state of the keys, used for debugging   
     def printKeys (self):
-        #print(len(self.keys))
-        for stored_key in self.keys:
-            print(f"Key: {stored_key.key_name}, Down: {stored_key.down}")
+        for key, value in self.is_keys_down.items():
+            print(f"{key}: {value}")
     
     def is_key_down(self, key: str):
-        for stored_key in self.keys:
-            if stored_key.key_name == key:
-                return stored_key.down
-        return None
+        return self.is_keys_down.get(key, False)
 
 
 

@@ -1,6 +1,6 @@
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
-from structure.Input.KeyboardListener import KeyboardListener
+from structure.Input.KeyboardListener import Key, KeyboardListener
 import time
 
 def main():
@@ -28,8 +28,6 @@ def main():
             robotState.disabled_to_be_initialized = False
         
         time.sleep(0.02)
-        
-        
         
 if __name__ == "__main__":
     main()

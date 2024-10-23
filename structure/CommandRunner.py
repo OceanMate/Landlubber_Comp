@@ -24,6 +24,7 @@ class CommandRunner:
         self.default_input_loop = EventLoop()
             
     def run_commands(self):
+        # Polls the input loop for any new commands to schedule
         self.default_input_loop.poll()
         
         self.in_run_loop = True
@@ -67,7 +68,6 @@ class CommandRunner:
                         not_conflicting = False
             
             if not_conflicting:
-                print("Adding default command")
                 default_command.initalize()
                 self.commands.append(default_command)
 
@@ -108,9 +108,6 @@ class CommandRunner:
             command.end(True)
             self.commands.remove(command)
 
-    def add_input_scheduler(self, scheduleBool, cmd):
-        self.input_schedulers_bool.append(scheduleBool)
-        self.input_schedulers_cmd.append(cmd)
         
     def turn_off(self):
         self.enabled = False
