@@ -9,23 +9,20 @@ def main():
     robotState = RobotState()
     
     # temp, should come from GUI button
-    robotState.enabled = True
-    robotState.teleop_to_be_initialized = True
+    robotState.enable_teleop()
     
     while True:
         runRobot.robot_perodic()
         KeyboardListener().update()
         
-        if robotState.enabled and robotState.teleop_to_be_initialized:
+        if robotState.is_init_teleop():
             runRobot.teleop_init()
-            robotState.teleop_to_be_initialized = False
         
-        if robotState.enabled:
+        if robotState.is_teleop_enabled():
             runRobot.teleop_periodic()
             
-        if not robotState.enabled and robotState.disabled_to_be_initialized:
+        if robotState.is_init_disable():
             runRobot.disabled_init()
-            robotState.disabled_to_be_initialized = False
         
         time.sleep(0.02)
         
