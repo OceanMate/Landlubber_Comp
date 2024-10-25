@@ -14,15 +14,20 @@ class CommandRunner:
     
     # Private method that acts as an initializer
     def _start(self):
+        # arrays to hold commands
         self.commands = []
         self.default_commands = []
         self.commands_to_schedule = []
         self.commands_to_cancel = []
         
+        # booleans to change the state of the command runner
         self.in_run_loop = False
         self.enabled = False
         
+        # The default input loop for inputs to schedule commands
         self.default_input_loop = EventLoop()
+        
+        self.possible_requirements = []
             
     def run_commands(self):
         # Polls the input loop for any new commands to schedule
@@ -65,11 +70,10 @@ class CommandRunner:
         # schedules that subsystem's default command
         for default_command in self.default_commands:
             not_conflicting = True
-            for subsystem_reg in default_command.requirements:
-                for command in self.commands:
-                    if subsystem_reg in command.requirements:
-                        not_conflicting = False
-                        break
+            for command in self.commands:
+                if default_command.is_confliting(command):
+                    not_conflicting = False
+                    break
             
             if not_conflicting:
                 default_command.initalize()
@@ -84,21 +88,19 @@ class CommandRunner:
             return
         
         # Interrupts any already scheduled commands that require the same subsystem
-        for req in command.requirements:
-            for c in self.commands:
-                if req in c.requirements:
-                    self.cancel_command(c)
+        for cmd in self.commands:
+            if command.is_confliting(cmd):
+                self.cancel_command(cmd)
         
         command.initalize()
         self.commands.append(command)
     
     # adds a default command to the list of default commands
     def add_default_command(self, command):
-        for req in command.requirements:
-            for c in self.default_commands:
-                if req in c.requirements:
-                    print("Error: Default command conflicts with another default command")
-                    return
+        for cmd in self.default_commands:
+            if command.is_confliting(cmd):
+                print("Error: Default command conflicts with another default command")
+                return
                     
         self.default_commands.append(command)
     

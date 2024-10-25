@@ -1,8 +1,13 @@
+from re import sub
+from token import EQUAL
 from structure.CommandRunner import CommandRunner
 
 class Command:
     def __init__(self):
-        self.requirements = []
+        self.requirements = {}
+        value = False
+        self.requirements.fromkeys(CommandRunner().possible_requirements, value)
+        
     
     # Called when the command is first run
     # should be overridden by the child class
@@ -27,7 +32,14 @@ class Command:
     
     # Adds a requireded subsystem to the command
     def add_requirement(self, subsystem):
-        self.requirements.append(subsystem.get_subsystem_name())
+        self.requirements[subsystem.get_subsystem_name()] = True
+
+    def is_confliting(self, command):
+        # Check if the command has conflicting requirements
+        for key in self.requirements.keys():
+            if self.requirements[key] == command.requirements[key]:
+                return True
+        return False
     
     # Schedules the command in the command runner
     def schedule(self):

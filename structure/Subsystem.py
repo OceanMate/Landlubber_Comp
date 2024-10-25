@@ -1,11 +1,13 @@
 from structure.CommandRunner import CommandRunner
 
 class Subsystem:
+    def __init__(self):
+        CommandRunner().possible_requirements.append(self.get_subsystem_name())
 
     # Creates a default command for the subsystem 
     # scheduled if no other command that requires the subsystem is running
     def defaultCommand(self, command):
-        class_name = self.__class__.__name__
+        class_name = self.get_subsystem_name()
 
         # Adds the subsystem to the command's requirements if not already there
         if class_name not in command.requirements:
