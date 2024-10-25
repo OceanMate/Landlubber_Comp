@@ -26,8 +26,8 @@ class Command:
         raise NotImplementedError("Subclasses should implement this!")
     
     # Adds a requireded subsystem to the command
-    def add_requirement(self, subsystemID):
-        self.requirements.append(subsystemID)
+    def add_requirement(self, subsystem):
+        self.requirements.append(subsystem.get_subsystem_name())
     
     # Schedules the command in the command runner
     def schedule(self):

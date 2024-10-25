@@ -2,7 +2,7 @@ from structure.Subsystem import Subsystem
 
 class LinearMotors(Subsystem):
     def __init__(self):
-        super().__init__(self.__class__.__name__)
+        return
     
     # Runs the motors given the x, y, and z speeds (each from -1 to 1)
     def runMotors(self, xSpeed, ySpeed, zRotation):
