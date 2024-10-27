@@ -8,12 +8,8 @@ class SequentialCommandGroup(Command):
     
     def add_commands(self, *commands):
         for command in commands:
-            for requirement in command.requirements:
-                # add each commands requirements if not already in the list
-                if requirement not in self.requirements:
-                    self.requirements.append(requirement)
-            # add the command to the list of commands to be excuted in order
             self.commands.append(command)
+            super().add_cmd_requirements(command)
     
     def initalize(self):
         self.current_command = 0

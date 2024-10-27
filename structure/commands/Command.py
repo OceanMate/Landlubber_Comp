@@ -33,6 +33,11 @@ class Command:
     # Adds a requireded subsystem to the command
     def add_requirement(self, subsystem):
         self.requirements[subsystem.get_subsystem_name()] = True
+    
+    def add_cmd_requirements(self, cmd):
+        for key in cmd.requirements.keys():
+            if cmd.requirements[key]:
+                self.requirements[key] = cmd.requirements[key]
 
     def is_confliting(self, command):
         # Check if the command has conflicting requirements

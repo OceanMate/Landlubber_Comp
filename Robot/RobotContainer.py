@@ -16,4 +16,4 @@ class RobotContainer:
     # Configure button that will trigger commands
     def configure_button_bindings(self):
         KeyboardInput("f").on_false(FunkyMotorCmd(self.linear_motors))
-        KeyboardInput("o").on_true(OverrideCmd(self.linear_motors))
+        KeyboardInput("o").while_true(OverrideCmd(self.linear_motors))

@@ -11,6 +11,8 @@ def main():
 
     run_robot.robot_init()
     
+    robot_state.enable_teleop()
+    
     while True:
         # Run periodic functions
         run_robot.robot_perodic()
