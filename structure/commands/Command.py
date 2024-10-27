@@ -3,10 +3,10 @@ from token import EQUAL
 from structure.CommandRunner import CommandRunner
 
 class Command:
+    # Child Classes should call this in their constructors
     def __init__(self):
         self.requirements = {}
-        value = False
-        self.requirements.fromkeys(CommandRunner().possible_requirements, value)
+        self.requirements.fromkeys(CommandRunner().possible_requirements, False)
         
     
     # Called when the command is first run

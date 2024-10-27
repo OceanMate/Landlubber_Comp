@@ -1,3 +1,4 @@
+from dashboard.Dashboard import Dashboard
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
@@ -10,13 +11,11 @@ def main():
 
     run_robot.robot_init()
     
-    # temp, should come from GUI button
-    robot_state.enable_teleop()
-    
-    
     while True:
+        # Run periodic functions
         run_robot.robot_perodic()
         KeyboardListener().update()
+        
         
         if robot_state.is_init_teleop():
             run_robot.teleop_init()
