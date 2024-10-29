@@ -1,4 +1,3 @@
-from tkinter import E
 from structure.CommandRunner import CommandRunner
 
 class Subsystem():
