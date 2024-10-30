@@ -2,7 +2,6 @@
 from pynput import keyboard
 from queue import Queue
 
-
 class KeyboardListener:
     _instance = None
 
@@ -67,7 +66,7 @@ class KeyboardListener:
     def printKeys (self):
         for key, value in self.is_keys_down.items():
             print(f"{key}: {value}")
-    
+                
     # Check if a key is currently pressed down
     def is_key_down(self, key: str):
         return self.is_keys_down.get(key, False)

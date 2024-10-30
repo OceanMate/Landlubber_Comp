@@ -1,7 +1,8 @@
-from dashboard.Dashboard import Dashboard
+#from dashboard.Dashboard import Dashboard
 from Robot.Robot import Robot
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
+from structure.Input.ControllerListener import ControllerListener
 
 import time
 
@@ -17,7 +18,7 @@ def main():
         # Run periodic functions
         run_robot.robot_perodic()
         KeyboardListener().update()
-        
+        ControllerListener().update()
         
         if robot_state.is_init_teleop():
             run_robot.teleop_init()

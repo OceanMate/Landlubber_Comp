@@ -9,8 +9,5 @@ class KeyboardInput(InputScheduler):
         # Sets up the InputScheduler with a lambda function that checks if the key is pressed
         # Using the lambda function allows for dynamic checking of the key state (will update as the key state changes)
         super().__init__(lambda: KeyboardListener().is_key_down(key))
-
-    
-    
    
         
