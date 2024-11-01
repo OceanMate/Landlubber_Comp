@@ -5,8 +5,6 @@ from typing import Callable
 
 from dashboard.GraphicConstants import GraphicConstants
 from dashboard.StringWidget import StringWidget
-from structure.Input.EventLoop import EventLoop
-from structure.Input.KeyboardListener import KeyboardListener
 from structure.RobotState import RobotState
 
 class UserInput:
