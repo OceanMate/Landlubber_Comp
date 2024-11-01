@@ -5,6 +5,7 @@ class Subsystem():
     # Child classes should call this in their constructors
     def __init__(self):
         CommandRunner().possible_requirements.append(self.get_subsystem_name())
+        CommandRunner().subsystem_periodics.append(self.periodic)
 
     # Creates a default command for the subsystem 
     # scheduled if no other command that requires the subsystem is running
@@ -16,6 +17,9 @@ class Subsystem():
             command.add_requirement(self)
         
         CommandRunner().add_default_command(command) 
+    
+    def periodic(self):
+        pass
     
     # Returns the name of the child subsystem
     def get_subsystem_name(self):

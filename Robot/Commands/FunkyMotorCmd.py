@@ -11,7 +11,7 @@ class FunkyMotorCmd(Command):
     def initalize(self):
         print("Funky fresh linear motors are running")
 
-        self.linear_motors.runMotors(1, 1, 1)
+        self.linear_motors.runMotors(.5, .1, 1)
     
     def execute(self):
         return

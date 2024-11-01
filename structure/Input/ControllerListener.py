@@ -55,7 +55,7 @@ class ControllerListener:
         if pygame.joystick.get_count() == 0:
             print("No controller detected.")
         else:
-            self.connect_new_controller(0)
+            self._connect_new_controller(0)
         
         self.is_button_down = {}
         self.axis_state = {}
@@ -79,14 +79,14 @@ class ControllerListener:
             if event.type == pygame.JOYDEVICEADDED:
                 # This event will be generated when the program starts for every
                 # joystick, filling up the list without needing to create them manually.
-                self.connect_new_controller(event.instance_id)
+                self._connect_new_controller(event.instance_id)
                 print(f"Joystick {self.joystick.get_instance_id()} connencted")
 
             if event.type == pygame.JOYDEVICEREMOVED:
                 del self.joystick
                 print(f"Joystick {event.instance_id} disconnected")
             
-    def connect_new_controller(self, id):
+    def _connect_new_controller(self, id):
         # Initialize the first controller found
         self.joystick = pygame.joystick.Joystick(id)
         print(f"Controller connected: {self.joystick.get_name()}")

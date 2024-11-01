@@ -5,6 +5,7 @@ from structure.CommandRunner import CommandRunner
 class Command:
     # Child Classes should call this in their constructors
     def __init__(self):
+        # Initializes the requirements dictionary. A dictionary of boolean values
         self.requirements = {}
         self.requirements.fromkeys(CommandRunner().possible_requirements, False)
         
@@ -34,6 +35,7 @@ class Command:
     def add_requirement(self, subsystem):
         self.requirements[subsystem.get_subsystem_name()] = True
     
+    # adds another commands requirmets to this command
     def add_cmd_requirements(self, cmd):
         for key in cmd.requirements.keys():
             if cmd.requirements[key]:

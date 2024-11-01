@@ -1,3 +1,4 @@
+from dashboard.Dashboard import Dashboard
 from structure.Input.EventLoop import EventLoop
 
 class CommandRunner:
@@ -20,9 +21,13 @@ class CommandRunner:
         self.commands_to_schedule = []
         self.commands_to_cancel = []
         
+        # subsystem periodics that get run every loop
+        self.subsystem_periodics = []
+        
         # booleans to change the state of the command runner
         self.in_run_loop = False
         self.enabled = False
+        self.canceled_commands = False
         
         # The default input loop for inputs to schedule commands
         self.default_input_loop = EventLoop()
@@ -30,9 +35,15 @@ class CommandRunner:
         self.possible_requirements = []
             
     def run_commands(self):
+        if self.canceled_commands and not self.enabled:
+            return
+        
         # Polls the input loop for any new commands to schedule
-        if self.enabled:
-            self.default_input_loop.poll()
+        self.default_input_loop.poll()
+        
+        # Runs the periodic functions of each subsystem
+        for periodic in self.subsystem_periodics:
+            periodic()
         
         self.in_run_loop = True
         # Loops through each command to execute and end it if it's finished
@@ -43,6 +54,7 @@ class CommandRunner:
                 self.commands.remove(command)
                 continue
             
+            Dashboard().put_string("Command", command.__class__.__name__, 0, 0)
             command.execute()
 
             # If the command is finished, end and remove it
@@ -54,6 +66,7 @@ class CommandRunner:
         
         # Prevents the scheduling of commands if the robot is disabled (needs to be here so it can end the commands)
         if not self.enabled:
+            self.canceled_commands = True
             return
         
         # Schedules and cancels commands that were added during the run loop
@@ -120,4 +133,5 @@ class CommandRunner:
         self.enabled = False
     
     def turn_on(self):
+        self.canceled_commands = False
         self.enabled = True

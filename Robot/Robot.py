@@ -10,7 +10,7 @@ class Robot:
         
         return
     
-    def robot_perodic(self):
+    def robot_periodic(self):
         self.command_runner.run_commands()
         
     

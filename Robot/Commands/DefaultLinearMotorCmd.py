@@ -12,7 +12,7 @@ class DefaultLinearMotorCmd(Command):
         print("Running linear motors")
 
         # xSpeed, ySpeed, and zRotation are all from -1 to 1
-        #self.linear_motors.runMotors(1, 1, 1)
+        self.linear_motors.runMotors(1, 0, 0)
     
     def execute(self):
         return
@@ -20,7 +20,7 @@ class DefaultLinearMotorCmd(Command):
     def end(self, interrupted):
         if (interrupted):
             print("Default command interrupted")
-        #self.linear_motors.runMotors(0, 0, 0)
+        self.linear_motors.runMotors(0, 0, 0)
     
     def is_finished(self):
         return False
