@@ -1,5 +1,5 @@
 from structure.Input.KeyboardListener import KeyboardListener
-from structure.commands.InputScheduler import InputScheduler
+from structure.Input.InputScheduler import InputScheduler
 
 class KeyboardInput(InputScheduler):
     def __init__(self, key: str):
@@ -9,5 +9,3 @@ class KeyboardInput(InputScheduler):
         # Sets up the InputScheduler with a lambda function that checks if the key is pressed
         # Using the lambda function allows for dynamic checking of the key state (will update as the key state changes)
         super().__init__(lambda: KeyboardListener().is_key_down(key))
-   
-        

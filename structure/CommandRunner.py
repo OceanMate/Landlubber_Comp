@@ -27,7 +27,7 @@ class CommandRunner:
         # booleans to change the state of the command runner
         self.in_run_loop = False
         self.enabled = False
-        self.canceled_commands = False
+        self.canceled_commands = True
         
         # The default input loop for inputs to schedule commands
         self.default_input_loop = EventLoop()
@@ -53,7 +53,7 @@ class CommandRunner:
                 command.end(True)
                 self.commands.remove(command)
                 continue
-            
+                    
             Dashboard().put_string("Command", command.__class__.__name__, 0, 0)
             command.execute()
 

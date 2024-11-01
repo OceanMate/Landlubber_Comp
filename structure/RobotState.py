@@ -1,6 +1,16 @@
 class RobotState:
+    _instance = None
+
+    # When a new instance is created, sets it to the same global instance
+    def __new__(cls):
+        # If the instance is None, create a new instance
+        # Otherwise, return already created instance
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._start()
+        return cls._instance
     
-    def __init__(self):
+    def _start(self):
         self._teleop_enabled = False
         self._teleop_to_be_initialized = False
         self._disabled_to_be_initialized = False

@@ -21,8 +21,11 @@ class GraphicConstants:
         # Colors
         self.white = "#FFFFFF"
         self.light_grey = "#f0f0f0"
+        self.dark_grey = "#d0d0d0"
         self.black = "#000000"
         self.blue = "#2caad3"
         self.middle_blue = "#d0f0f8"
         self.light_blue = "#e0f7fa"
+        self.dark_green = "#006400"
+        self.red = "#FF0000"
         

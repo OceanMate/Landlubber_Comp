@@ -1,5 +1,5 @@
 from structure.Input.ControllerListener import ControllerListener
-from structure.commands.InputScheduler import InputScheduler
+from structure.Input.InputScheduler import InputScheduler
 
 class ControllerButton(InputScheduler):
     def __init__(self, button: int):
