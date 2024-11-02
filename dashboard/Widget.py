@@ -12,7 +12,7 @@ class Widget():
         # Important widget variables
         self.widget_label_height = 20
         self.widget_offset = 3
-        self.font = tkfont.Font(family="Arial", size=12)
+        self.font = tkfont.Font(family=GraphicConstants().font, size=12)
         
         self.label = label
         
@@ -72,7 +72,7 @@ class Widget():
             text=display_label,
             fill=GraphicConstants().white,
             anchor="center",
-            font=("Arial", 12),
+            font=self.font,
             tags=self.tag
         )
         

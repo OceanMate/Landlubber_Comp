@@ -1,4 +1,3 @@
-
 class GraphicConstants:
     _instance = None
 
@@ -30,3 +29,6 @@ class GraphicConstants:
         self.dark_green = "#006400"
         self.red = "#FF0000"
         
+        # Font
+        self.font = "Cascadia Code"
+        self.bottom_bar_font = "Ocr A Extended"

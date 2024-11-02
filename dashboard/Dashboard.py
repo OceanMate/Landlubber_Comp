@@ -228,7 +228,6 @@ class Dashboard:
         # Some constants for the enable button
         button_y_offset = 5
         button_x_offset = 5
-        button_width = 100
         
         # Create the canvas for the bottom bar
         self.bottom_bar_canvas = Canvas(
@@ -270,19 +269,21 @@ class Dashboard:
             text="Enable",
             bg=GraphicConstants().dark_grey,
             fg=GraphicConstants().dark_green,
-            font=("Arial", 16),
+            font=(GraphicConstants().bottom_bar_font, 16),
             command=enable_button_press,
         )
         
+        bottom_bar_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)
+        enable_button_width = bottom_bar_font.measure("Disable") + 10
+        
         self.enable_button.place(
-            x=GraphicConstants().window_width - button_width - button_x_offset,
+            x=GraphicConstants().window_width - enable_button_width - button_x_offset,
             y= button_y_offset,
             height=GraphicConstants().bottom_bar_height - 2 * button_y_offset,
-            width=button_width
+            width=enable_button_width
         )
         
-        controller_font = tkfont.Font(family="Arial", size=16)
-        text_width = controller_font.measure("Controller: ")
+        text_width = bottom_bar_font.measure("Controller: ")
         
         x_offset = 5
         y_offset = 10
@@ -291,7 +292,7 @@ class Dashboard:
         self.bottom_bar_canvas.create_rectangle(
             x_offset,
             y_offset,
-            controller_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
+            bottom_bar_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
             GraphicConstants().bottom_bar_height - y_offset,
             fill=GraphicConstants().dark_grey,
             outline=GraphicConstants().dark_grey
@@ -303,7 +304,7 @@ class Dashboard:
             text="Controller: ",
             fill=GraphicConstants().black,
             anchor="w",
-            font=("Arial", 16)
+            font=bottom_bar_font
         )
         
         self.controller_text = self.bottom_bar_canvas.create_text(
@@ -312,7 +313,7 @@ class Dashboard:
             text="None",
             fill=GraphicConstants().red,
             anchor="w",
-            font=("Arial", 16)
+            font=bottom_bar_font
         )
     
     def _resize_bottom_bar(self):
@@ -330,7 +331,7 @@ class Dashboard:
             width=button_width
         )
         
-        controller_font = tkfont.Font(family="Arial", size=16)
+        controller_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)
         text_width = controller_font.measure("Controller: ")
         
         x_offset = 5
