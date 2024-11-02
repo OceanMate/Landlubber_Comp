@@ -44,11 +44,12 @@ class LinearMotors(Subsystem):
         self._setMotor("FR", self.FR)
         self._setMotor("BR", self.BR)
         self._setMotor("BL", self.BL)
-          
+        
     
     def _setMotor(self, motor, speed):
         # TODO define better
         pass
     
     def periodic(self):
-        Dashboard().put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL), 10, 0)
+        Dashboard().put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
+

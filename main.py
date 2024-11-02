@@ -9,15 +9,14 @@ import time
 def main():
     run_robot = Robot()
     robot_state = RobotState()
-    dashboard = Dashboard()
 
     run_robot.robot_init()
     
-    robot_state.enable_teleop()
-    
+
     while True:
         # Run periodic functions
-        dashboard.update()
+
+        Dashboard().update()                
         run_robot.robot_periodic()
         KeyboardListener().update()
         ControllerListener().update()

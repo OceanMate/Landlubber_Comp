@@ -54,7 +54,7 @@ class CommandRunner:
                 self.commands.remove(command)
                 continue
                     
-            Dashboard().put_string("Command", command.__class__.__name__, 0, 0)
+            Dashboard().put_string("Command", command.__class__.__name__)
             command.execute()
 
             # If the command is finished, end and remove it

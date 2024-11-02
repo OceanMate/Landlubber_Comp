@@ -2,15 +2,18 @@
 from dashboard.Widget import Widget
 from dashboard.GraphicConstants import GraphicConstants
 
-
+# creates a widget that displays a given string
 class StringWidget(Widget):
     def __init__(self, canvas, label):
         super().__init__(canvas, label)
     
+    # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
+        # Default dimensions of the widget in pixels
         px_height = 100
         px_width = 250
-                
+        
+        # Convert the default dimensions to grid dimensions
         grid_width = px_width // GraphicConstants().grid_dim
         if px_width % GraphicConstants().grid_dim != 0:
             grid_width += 1
@@ -21,47 +24,44 @@ class StringWidget(Widget):
         
         return grid_width, grid_height
     
+    # Create the string widget on the canvas
     def create_string_widget(self, grid_x, grid_y, display_text):        
         grid_width, grid_height = self.get_default_dimensions()
         
+        # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
         self._set_dimensions(grid_width, grid_height)
+        
+        # Create the frame of the widget
         self._create_widget_frame()
         
+        # find the center of the widget for the text
         text_x = self.x + (self.width) / 2
         text_y = self.y + self.widget_label_height + (self.height - self.widget_label_height) / 2
         
+        # Create the display text of the widget, stores the graphic object for use in updating the text
         self.g_display_text = self.canvas.create_text(
             text_x, 
             text_y,
             text=display_text,
             fill=GraphicConstants().black,
             anchor="center",
-            font=("Arial", 12)
+            font=("Arial", 12),
+            tags=self.tag
         )
         
+        # Create the line under the text for added pazazz
         self.g_text_line = self.canvas.create_line(
             self.x + self.width * (1 / 16) + self.widget_offset, 
             text_y + 10,
             self.x + self.width * (15 / 16) - self.widget_offset, 
             text_y + 10,
             fill=GraphicConstants().light_grey,
-            width=1
+            width=1,
+            tags=self.tag
         )
     
+    # Update the text of the widget
     def update_text(self, display_text):
         self.canvas.itemconfig(self.g_display_text, text=display_text)
     
-    def move_widget(self, grid_x, grid_y):
-        self._set_location(grid_x, grid_y)
-        
-        text_x = self.x + (self.width) / 2
-        text_y = self.y + self.widget_label_height + (self.height - self.widget_label_height) / 2
-        
-        self.canvas.move(self.g_display_text, text_x - self.canvas.coords(self.g_display_text)[0], 
-                         text_y - self.canvas.coords(self.g_display_text)[1])
-        
-        self.canvas.move(self.g_text_line, self.x + self.widget_offset - self.canvas.coords(self.g_background)[0], 
-                         self.y + self.widget_offset - self.canvas.coords(self.g_background)[1])
-        
-        super().move_widget(grid_x, grid_y)    

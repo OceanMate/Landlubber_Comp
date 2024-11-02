@@ -1,3 +1,4 @@
+from dashboard.Dashboard import Dashboard
 from structure.commands.Command import Command
 from Robot.Subsystems.LinearMotors import LinearMotors
 
