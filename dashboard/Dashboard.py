@@ -206,7 +206,6 @@ class Dashboard:
             self._resize_bottom_bar()
             
             for key in self.widgets.keys():
-                print("recreating widget: " + key)
                 self.widgets[key].recreate_widget()
 
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
