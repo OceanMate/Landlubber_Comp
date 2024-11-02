@@ -129,6 +129,10 @@ class Widget():
         
         return on_left_edge or on_right_edge or on_top_edge or on_bottom_edge
     
+    def recreate_widget(self):
+        self.canvas.delete(self.tag)
+        self._create_widget_frame()
+    
     def resize_widget(self, grid_width, grid_height):
         if self.gridmanager.can_place_rectangle(self.grid_x, self.grid_y, grid_width, grid_height):
             self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height)
