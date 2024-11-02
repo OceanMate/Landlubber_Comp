@@ -6,15 +6,6 @@ class GridManager:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
-    def __new__(cls, grid_width, grid_height):
-        # If the instance is None, create a new instance
-        # Otherwise, return already created instance
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._start(grid_height, grid_width)
-        return cls._instance
-    
-    # When a new instance is created, sets it to the same global instance
     def __new__(cls):
         # If the instance is None, create a new instance
         # Otherwise, return already created instance
