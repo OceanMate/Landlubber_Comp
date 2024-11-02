@@ -5,6 +5,7 @@ from dashboard.GraphicConstants import GraphicConstants
 # creates a widget that displays a given string
 class StringWidget(Widget):
     def __init__(self, canvas, label):
+
         super().__init__(canvas, label)
     
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
@@ -39,6 +40,9 @@ class StringWidget(Widget):
         text_x = self.x + (self.width) / 2
         text_y = self.y + self.widget_label_height + (self.height - self.widget_label_height) / 2
         
+        # Resize the text to fit in the widget
+        display_text = self.resize_text(display_text)
+        
         # Create the display text of the widget, stores the graphic object for use in updating the text
         self.g_display_text = self.canvas.create_text(
             text_x, 
@@ -46,7 +50,7 @@ class StringWidget(Widget):
             text=display_text,
             fill=GraphicConstants().black,
             anchor="center",
-            font=("Arial", 12),
+            font=self.font,
             tags=self.tag
         )
         
@@ -61,7 +65,9 @@ class StringWidget(Widget):
             tags=self.tag
         )
     
+            
     # Update the text of the widget
     def update_text(self, display_text):
+        display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
     

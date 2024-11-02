@@ -1,10 +1,14 @@
+from cProfile import label
 from dashboard.GraphicConstants import GraphicConstants
+import tkinter.font as tkfont
+
 
 class Widget():
     def __init__(self, canvas, label):
-        # Important widget dimensions
+        # Important widget variables
         self.widget_label_height = 20
         self.widget_offset = 3
+        self.font = tkfont.Font(family="Arial", size=12)
         
         self.label = label
         
@@ -50,15 +54,31 @@ class Widget():
         text_x = self.x + (self.width) / 2
         text_y = self.y + self.widget_label_height / 2 + self.widget_offset
         
+        display_label = self.resize_text(self.label)
+        
         # Create the widget label text
         self.g_label_display = self.canvas.create_text(
             text_x, text_y,
-            text=self.label,
+            text=display_label,
             fill=GraphicConstants().white,
             anchor="center",
             font=("Arial", 12),
             tags=self.tag
         )
+        
+    # Resize the text to fit in the widget
+    def resize_text(self, text):
+        # Calculate the width of the text
+        text_width = self.font.measure(text)
+        
+        if (text_width > self.width - 2 * self.widget_offset - 5):
+            # If the text is too long, cut off the text with "..."
+            max_width = self.width - 2 * self.widget_offset - 5
+            while (self.font.measure(text + "...") > max_width and len(text) > 0):
+                text = text[:-1]
+            text += "..."
+        
+        return text
     
     # Move the widget to a new grid location
     def move_widget(self, grid_x, grid_y): 
