@@ -93,3 +93,17 @@ class Widget():
         
         # Moves all items in the tag by the delta x and delta y
         self.canvas.move(self.tag, delta_x, delta_y)
+        
+    def am_i_pressed(self, x, y):
+        # Check if the x and y coordinates are within the widget
+        print("x " + str(self.x) + " y " + str(self.y) + " width " + str(self.width) + " height " + str(self.height))
+        return self.x < x < self.x + self.width and self.y < y < self.y + self.height,
+    
+    def am_i_pressed_on_edge(self, x, y):
+        edge_threshold = 5  # Define how close to the edge the press should be to count as on the edge
+        on_left_edge = self.x <= x <= self.x + edge_threshold
+        on_right_edge = self.x + self.width - edge_threshold <= x <= self.x + self.width
+        on_top_edge = self.y <= y <= self.y + edge_threshold
+        on_bottom_edge = self.y + self.height - edge_threshold <= y <= self.y + self.height
+        
+        return on_left_edge or on_right_edge or on_top_edge or on_bottom_edge

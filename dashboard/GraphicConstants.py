@@ -16,7 +16,7 @@ class GraphicConstants:
         self.window_height = 720
         self.window_width = 1280
         self.tab_bar_height = 30
-        self.grid_dim = 5
+        self.grid_dim = 30
         self.bottom_bar_height = 70
         
         # Colors
