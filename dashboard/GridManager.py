@@ -21,11 +21,17 @@ class GridManager:
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
                 self.grid[i][j] = 1
+    
+    # Remove a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 0)
+    def remove_rectangle(self, x, y, rect_width, rect_height):
+        for i in range(y, y + rect_height):
+            for j in range(x, x + rect_width):
+                self.grid[i][j] = 0
 
     # Find the next available space to place a rectangle of rect_width x rect_height
     def find_next_available_space(self, rect_width, rect_height):
         for y in range(self.grid_height):
             for x in range(self.grid_width):
                 if self.can_place_rectangle(x, y, rect_width, rect_height):
-                    return (x, y)
+                    return (x, y) # Tuple of the x and y coordinates
         return (-1, -1)

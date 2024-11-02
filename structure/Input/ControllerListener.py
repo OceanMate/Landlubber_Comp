@@ -1,6 +1,8 @@
 # Docutmentation: https://www.pygame.org/docs/ref/joystick.html
 import pygame
 
+from dashboard.Dashboard import Dashboard
+
 ''' Xbox 360 Controller Mapping
 Left Stick:
 Left -> Right   - Axis 0
@@ -51,20 +53,25 @@ class ControllerListener:
         pygame.init()
         pygame.joystick.init()
         
-        #Checks if controller is connected
-        if pygame.joystick.get_count() == 0:
-            print("No controller detected.")
-        else:
+        if (pygame.joystick.get_count() != 0):
             self._connect_new_controller(0)
-        
-        self.is_button_down = {}
-        self.axis_state = {}
-        self.dpad_state = {}
-        
-        
+
         
     def update (self):
         for event in pygame.event.get():
+            # Handle hotplugging
+            if event.type == pygame.JOYDEVICEADDED:
+                self._connect_new_controller(event.device_index)
+
+            if event.type == pygame.JOYDEVICEREMOVED:
+                del self.joystick
+                self.axis_state = {}
+                self.is_button_down = {}
+                self.dpad_state = {}
+                print("Joystick disconnected")
+                
+                Dashboard().update_controller_text("None")
+            
             if event.type == pygame.JOYBUTTONDOWN:
                 self.is_button_down[event.button] = True
             elif event.type == pygame.JOYBUTTONUP:
@@ -75,16 +82,6 @@ class ControllerListener:
             elif event.type == pygame.JOYHATMOTION:
                 self.dpad_state[event.hat] = event.value
             
-            # Handle hotplugging
-            if event.type == pygame.JOYDEVICEADDED:
-                # This event will be generated when the program starts for every
-                # joystick, filling up the list without needing to create them manually.
-                self._connect_new_controller(event.instance_id)
-                print(f"Joystick {self.joystick.get_instance_id()} connencted")
-
-            if event.type == pygame.JOYDEVICEREMOVED:
-                del self.joystick
-                print(f"Joystick {event.instance_id} disconnected")
             
     def _connect_new_controller(self, id):
         # Initialize the first controller found
@@ -92,6 +89,16 @@ class ControllerListener:
         print(f"Controller connected: {self.joystick.get_name()}")
         self.is_button_down = {i: False for i in range(self.joystick.get_numbuttons())}
         self.axis_state = {i: 0.0 for i in range(self.joystick.get_numaxes())}
+        self.dpad_state = {i: (0, 0) for i in range(self.joystick.get_numhats())}
+        
+        text = self.joystick.get_name()
+        if (text == "Controller (Xbox One For Windows)"):
+            text = "Xbox One Controller"
+        elif (text == "Controller (Gamepad F310)"):
+            text = "Gamepad F310"
+        
+        Dashboard().update_controller_text(controller_name=text)
+
     
 
     def get_button(self, button):
@@ -105,8 +112,10 @@ class ControllerListener:
         return self.axis_state[axis]
 
     def print_button(self, key):
-        print( f"Button {key}: {'Down' if self.is_button_down[key] else 'Up'}")
+        if key in self.is_button_down:
+            print(f"Button {key}: {'Down' if self.is_button_down[key] else 'Up'}")
+        else:
+            print(f"Button {key} does not exist")
         
     def print_axis(self, key):
         print(f"Axis {key}: {self.axis_state[key]}")
-    

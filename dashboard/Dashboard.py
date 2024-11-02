@@ -1,16 +1,20 @@
 import sys
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 from typing import Callable
+import ctypes
+from pathlib import Path
 
 from dashboard.GraphicConstants import GraphicConstants
 from dashboard.GridManager import GridManager
 from dashboard.StringWidget import StringWidget
+import tkinter.font as tkfont
 from structure.RobotState import RobotState
+
 
 # UserInput class to store user input then run the function in the update loop
 # prevents the user input events from crashing the program
 class UserInput:
-    run : bool = True
+    run : bool = False
     # this is any function that takes no arguments
     function : Callable
 
@@ -39,6 +43,10 @@ class Dashboard:
         #self.window.resizable(False, False)
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
+        # Set the icon for the window
+        appID = "Rabbit Dashboard"
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
+        self.window.iconbitmap(self.get_asset_path("rabbit_logo.ico"))
         
         # Generate the various components of the dashboard
         self._generate_tab_bar()
@@ -47,6 +55,9 @@ class Dashboard:
         
         # Enable the dashboard
         self.enable = True
+  
+    def get_asset_path(self, path: str) -> Path:
+        return Path(__file__).parent / "assets" / path
     
     # Generate the grid on the canvas which the widgets will be placed on
     def _generate_grid(self):
@@ -111,7 +122,7 @@ class Dashboard:
         else:
             # Update the text of the widget if it already exists
             self.widgets[label].update_text(text)
-    
+
     # Function that should be called periodicly to update the dashboard
     def update(self):        
 
@@ -185,6 +196,31 @@ class Dashboard:
             width=button_width
         )
         
+        controller_font = tkfont.Font(family="Arial", size=16)
+        text_width = controller_font.measure("Controller: ")
+
+        # Create a text to display the current controller connected
+        self.bottom_bar_canvas.create_text(
+            10,
+            GraphicConstants().bottom_bar_height // 2,
+            text="Controller: ",
+            fill=GraphicConstants().black,
+            anchor="w",
+            font=("Arial", 16)
+        )
+        
+        self.controller_text = self.bottom_bar_canvas.create_text(
+            10 + text_width,
+            GraphicConstants().bottom_bar_height // 2,
+            text="None",
+            fill=GraphicConstants().black,
+            anchor="w",
+            font=("Arial", 16)
+        )
+    
+    def update_controller_text(self, controller_name):
+        self.bottom_bar_canvas.itemconfig(self.controller_text, text= controller_name)
+    
     
     # Close the window and exit the program
     def _close(self):
