@@ -2,6 +2,7 @@ import sys
 import time
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 from tracemalloc import start
+from turtle import width
 from typing import Callable
 import ctypes
 from pathlib import Path
@@ -66,7 +67,8 @@ class Dashboard:
         # Calculate the height of the grid
         grid_height = GraphicConstants().window_height - GraphicConstants().tab_bar_height - GraphicConstants().bottom_bar_height
         # Create the grid manager which will keep track of the available space on the grid
-        self.grid_manager = GridManager(GraphicConstants().window_width // GraphicConstants().grid_dim, grid_height // GraphicConstants().grid_dim)
+        self.grid_manager = GridManager()
+        self.grid_manager.init(GraphicConstants().window_width // GraphicConstants().grid_dim, grid_height // GraphicConstants().grid_dim)
         
         # Create the canvas for the grid
         self.grid_canvas = Canvas(
@@ -237,18 +239,37 @@ class Dashboard:
         self.enable = False
         
     def on_mouse_click(self,event):
-        print("clicked at: " + str(event.x) + ", " + str(event.y))
+        #print("clicked at: " + str(event.x) + ", " + str(event.y))
         self.clk_start_time = time.time()
+        
+        self.widget_pressed = ""
+        self.on_edge = False
         
         for key in self.widgets.keys():
             if(self.widgets[key].am_i_pressed(event.x, event.y)):
-                print("pressed on: " + key)
+                #print("pressed on: " + key)
+                self.widget_pressed = key
+                
+                self.x_offset = event.x - self.widgets[key].x
+                self.y_offset = event.y - self.widgets[key].y
+                
                 if(self.widgets[key].am_i_pressed_on_edge(event.x, event.y)):
                     print("on edge")
+                    self.on_edge = True
     
     def on_mouse_release(self, event):
-        print("released at: " + str(event.x) + ", " + str(event.y))
-        print("Time between clicks: " + str(time.time() - self.clk_start_time))
+        #print("released at: " + str(event.x) + ", " + str(event.y))
+        #print("Time between clicks: " + str(time.time() - self.clk_start_time))
+        
+        if(time.time() - self.clk_start_time > 0.2):
+            if(self.widget_pressed != ""):
+                gridx,gridy = self.grid_manager.convert_pixel_to_grid(event.x-self.x_offset, event.y-self.y_offset)
+                grid_width,grid_height = self.grid_manager.convert_pixel_to_grid(event.x-self.widgets[self.widget_pressed].width, event.y-self.widgets[self.widget_pressed].height)
+                
+                if(self.on_edge):
+                    self.widgets[self.widget_pressed].resize_widget(grid_width, grid_height)
+                else:        
+                    self.widgets[self.widget_pressed].move_widget(gridx, gridy)
         
 
         
