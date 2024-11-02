@@ -10,6 +10,8 @@ from dashboard.GraphicConstants import GraphicConstants
 from dashboard.GridManager import GridManager
 from dashboard.StringWidget import StringWidget
 import tkinter.font as tkfont
+from structure.Input.EventLoop import EventLoop
+from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
 
 
@@ -32,7 +34,7 @@ class Dashboard:
             cls._instance._start()
         return cls._instance
     
-    def _start(self):        
+    def _start(self):  
         # Widget Dictionary
         self.widgets = {}
         self.user_inputs = {}
@@ -42,7 +44,7 @@ class Dashboard:
         self.window.geometry(str(GraphicConstants().window_width) + "x" + str(GraphicConstants().window_height))
         self.window.configure(bg = "#FFFFFF")
         self.window.title("Dashboard")
-        self.window.resizable(False, False)
+        #self.window.resizable(False, False)
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
         # Set the icon for the window
@@ -55,9 +57,27 @@ class Dashboard:
         self._generate_grid()
         self._bottom_bar()
         
+        self.setup_hotkeys()
+        
         # Enable the dashboard
         self.enable = True
   
+    def setup_hotkeys(self):
+        # Event loop for the dashboard for hotkeys
+        self.dashboard_hotkeys_loop = EventLoop()
+        
+        def on_enter():
+            if RobotState().is_teleop_enabled():
+                RobotState().disable_robot()
+                self.enable_button.config(fg=GraphicConstants().dark_green)
+                self.enable_button.config(text="Enable")
+        
+        enter_hotkey = KeyboardInput("enter")
+        enter_hotkey.non_cmd_on_true(func=on_enter)
+        enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)
+        
+  
+    # Get the path of an asset in the assets folder
     def get_asset_path(self, path: str) -> Path:
         return Path(__file__).parent / "assets" / path
     
@@ -78,6 +98,16 @@ class Dashboard:
         )
         
         self.grid_canvas.place(x=0, y=GraphicConstants().tab_bar_height, anchor="nw")
+        
+        # Load the image
+        self.rabbit_logo = PhotoImage(file=self.get_asset_path("white_logo.png"))
+        
+        # Calculate the position to place the image in the center of the grid
+        logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
+        logo_y = (grid_height - self.rabbit_logo.height()) // 2
+        
+        # Create the image on the canvas with slight transparency
+        self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
         
         # Draw the vertical grid lines, with thicker lines every 5 grid spaces
         for i in range(GraphicConstants().grid_dim, GraphicConstants().window_width, GraphicConstants().grid_dim):
@@ -129,7 +159,7 @@ class Dashboard:
             self.widgets[label].update_text(text)
 
     # Function that should be called periodicly to update the dashboard
-    def update(self):        
+    def update(self):      
 
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
@@ -139,6 +169,9 @@ class Dashboard:
             if self.user_inputs[user_input].run:
                 self.user_inputs[user_input].function()
                 self.user_inputs[user_input].run = False
+                
+        # Check hotkeys
+        self.dashboard_hotkeys_loop.poll()
         
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:
@@ -168,13 +201,13 @@ class Dashboard:
             robot_state = RobotState()
             if not robot_state.is_teleop_enabled():
                 robot_state.enable_teleop()
-                enable_button.config(fg=GraphicConstants().red)
-                enable_button.config(text="Disable")
+                self.enable_button.config(fg=GraphicConstants().red)
+                self.enable_button.config(text="Disable")
             
             elif robot_state.is_teleop_enabled():
                 robot_state.disable_robot()
-                enable_button.config(fg=GraphicConstants().dark_green)
-                enable_button.config(text="Enable")
+                self.enable_button.config(fg=GraphicConstants().dark_green)
+                self.enable_button.config(text="Enable")
 
         # Create the enable button and add it to the user inputs
         self.user_inputs["enable_button"] = UserInput()
@@ -185,7 +218,7 @@ class Dashboard:
             self.user_inputs["enable_button"].run = True
         
         # Create the enable button
-        enable_button = Button(
+        self.enable_button = Button(
             self.bottom_bar_canvas,
             text="Enable",
             bg=GraphicConstants().dark_grey,
@@ -194,7 +227,7 @@ class Dashboard:
             command=enable_button_press,
         )
         
-        enable_button.place(
+        self.enable_button.place(
             x=GraphicConstants().window_width - button_width - button_x_offset,
             y= button_y_offset,
             height=GraphicConstants().bottom_bar_height - 2 * button_y_offset,
@@ -265,9 +298,4 @@ class Dashboard:
     def on_mouse_release(self, event):
         print("released at: " + str(event.x) + ", " + str(event.y))
         print("Time between clicks: " + str(time.time() - self.clk_start_time))
-        
-
-        
-        
-        
         

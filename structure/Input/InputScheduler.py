@@ -1,12 +1,16 @@
-from structure.CommandRunner import CommandRunner
 
 # This class is responsible for scheduling commands based on input states
 class InputScheduler:
     # Initializes the InputScheduler with a function that returns a boolean value
     # default links to the CommandRunner's default input loop, but could theoretically be changed
     def __init__(self, scheduleBool):
+        from structure.CommandRunner import CommandRunner
+
         self.scheduleBool = scheduleBool
         self.loop = CommandRunner().default_input_loop
+    
+    def set_loop(self, loop):
+        self.loop = loop
     
     # Binds a command to be scheduled when the function boolean is true
     def on_true(self, cmd):
@@ -79,3 +83,20 @@ class InputScheduler:
 
         # adds the runnable to the event loop
         self.loop.bind(m_runnable())
+    
+    def non_cmd_on_true(self, func):
+        # Inner class to handle the scheduling of the command, needs to have a run method
+        class m_runnable():
+            def __init__(m_self): # type: ignore
+                m_self.pressed_last = self.scheduleBool()
+            
+            def run(m_self): # type: ignore
+                pressed = self.scheduleBool()
+                if not m_self.pressed_last and pressed:
+                    func()
+                m_self.pressed_last = pressed
+        
+        self.loop.bind(m_runnable())
+            
+            
+            
