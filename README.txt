@@ -2,5 +2,5 @@ I stole Command base from FIRST robotics. Also the gui was based on shuffleboard
 
 Required Python Libraries:
     pynput
-    pygame
+    pygame-ce
     tkinter (should come with python)

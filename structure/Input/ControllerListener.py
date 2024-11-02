@@ -64,7 +64,6 @@ class ControllerListener:
                 self._connect_new_controller(event.device_index)
 
             if event.type == pygame.JOYDEVICEREMOVED:
-                del self.joystick
                 self.axis_state = {}
                 self.is_button_down = {}
                 self.dpad_state = {}
@@ -81,7 +80,7 @@ class ControllerListener:
 
             elif event.type == pygame.JOYHATMOTION:
                 self.dpad_state[event.hat] = event.value
-            
+
             
     def _connect_new_controller(self, id):
         # Initialize the first controller found
@@ -92,8 +91,8 @@ class ControllerListener:
         self.dpad_state = {i: (0, 0) for i in range(self.joystick.get_numhats())}
         
         text = self.joystick.get_name()
-        if (text == "Controller (Xbox One For Windows)"):
-            text = "Xbox One Controller"
+        if (text == "Xbox One Controller"):
+            text = "Xbox One"
         elif (text == "Controller (Gamepad F310)"):
             text = "Gamepad F310"
         
