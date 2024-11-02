@@ -1,8 +1,6 @@
 import sys
 import time
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-from tracemalloc import start
-from turtle import width
 from typing import Callable
 import ctypes
 from pathlib import Path
