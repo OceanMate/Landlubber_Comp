@@ -19,4 +19,4 @@ class RobotContainer:
         # schedule FunkyMotorCmd when "f" is pressed
         KeyboardInput("f").on_false(FunkyMotorCmd(self.linear_motors))
         KeyboardInput("o").while_false(OverrideCmd(self.linear_motors))
-        ControllerButton(1).on_true(FunkyMotorCmd(self.linear_motors)) 
+        ControllerButton(0).on_true(FunkyMotorCmd(self.linear_motors)) 

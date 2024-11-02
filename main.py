@@ -16,10 +16,11 @@ def main():
     while True:
         # Run periodic functions
 
-        Dashboard().update()                
-        run_robot.robot_periodic()
-        KeyboardListener().update()
         ControllerListener().update()
+        KeyboardListener().update()
+        Dashboard().update()   
+                     
+        run_robot.robot_periodic()
         
         if robot_state.is_init_teleop():
             run_robot.teleop_init()
