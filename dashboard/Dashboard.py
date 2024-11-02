@@ -1,8 +1,6 @@
 import sys
 import time
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-from tracemalloc import start
-from turtle import width
 from typing import Callable
 import ctypes
 from pathlib import Path
@@ -109,7 +107,7 @@ class Dashboard:
         logo_y = (grid_height - self.rabbit_logo.height()) // 2
         
         # Create the image on the canvas with slight transparency
-        self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
+        self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
         
         # Draw the vertical grid lines, with thicker lines every 5 grid spaces
         for i in range(GraphicConstants().grid_dim, GraphicConstants().window_width, GraphicConstants().grid_dim):
@@ -127,6 +125,39 @@ class Dashboard:
 
         self.grid_canvas.bind("<Button-1>", self.on_mouse_click)
         self.grid_canvas.bind("<ButtonRelease-1>", self.on_mouse_release)
+    
+    def _resize_grid(self):
+        self.grid_canvas.config(width=GraphicConstants().window_width)
+    
+        grid_height = GraphicConstants().window_height - GraphicConstants().tab_bar_height - GraphicConstants().bottom_bar_height
+        self.grid_canvas.config(height=grid_height)
+        
+        self.grid_manager.init(GraphicConstants().window_width // GraphicConstants().grid_dim, grid_height // GraphicConstants().grid_dim)
+        
+        # Calculate the position to place the image in the center of the grid
+        logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
+        logo_y = (grid_height - self.rabbit_logo.height()) // 2
+        
+        # Delete the previous image if it exists
+        if self.background_image is not None:
+            self.grid_canvas.delete(self.background_image)
+        
+        # Create the image on the canvas with slight transparency
+        self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
+        
+        # Draw the vertical grid lines, with thicker lines every 5 grid spaces
+        for i in range(GraphicConstants().grid_dim, GraphicConstants().window_width, GraphicConstants().grid_dim):
+            color = GraphicConstants().middle_blue if (i // GraphicConstants().grid_dim) % 5 == 0 else GraphicConstants().light_blue
+            width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
+            
+            self.grid_canvas.create_line(i, 0, i, grid_height, fill=color, width=width)
+    
+        # Draw the horizontal grid lines, with thicker lines every 5 grid spaces
+        for i in range(GraphicConstants().grid_dim, grid_height, GraphicConstants().grid_dim):
+            color = GraphicConstants().middle_blue if (i // GraphicConstants().grid_dim) % 5 == 0 else GraphicConstants().light_blue
+            width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
+            
+            self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
         
     # Generate the tab bar at the top of the window (currently unused)
     def _generate_tab_bar(self):
@@ -139,6 +170,9 @@ class Dashboard:
         )
         
         self.tab_bar_canvas.place(x=0, y=0, anchor="nw")
+    
+    def _resize_tab_bar(self):
+        self.tab_bar_canvas.config(width=GraphicConstants().window_width)
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
     def put_string(self, label, text):
@@ -161,7 +195,18 @@ class Dashboard:
             self.widgets[label].update_text(text)
 
     # Function that should be called periodicly to update the dashboard
-    def update(self):      
+    def update(self):
+        
+        if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
+            GraphicConstants().window_width = self.window.winfo_width()
+            GraphicConstants().window_height = self.window.winfo_height()
+            
+            self._resize_tab_bar()
+            self._resize_grid()
+            self._resize_bottom_bar()
+            
+            for key in self.widgets.keys():
+                self.widgets[key].recreate_widget()
 
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
@@ -268,6 +313,47 @@ class Dashboard:
             fill=GraphicConstants().red,
             anchor="w",
             font=("Arial", 16)
+        )
+    
+    def _resize_bottom_bar(self):
+        self.bottom_bar_canvas.config(width=GraphicConstants().window_width)
+        self.bottom_bar_canvas.place(x=0, y=GraphicConstants().window_height - GraphicConstants().bottom_bar_height, anchor="nw")
+        
+        button_y_offset = 5
+        button_x_offset = 5
+        button_width = 100
+        
+        self.enable_button.place(
+            x=GraphicConstants().window_width - button_width - button_x_offset,
+            y= button_y_offset,
+            height=GraphicConstants().bottom_bar_height - 2 * button_y_offset,
+            width=button_width
+        )
+        
+        controller_font = tkfont.Font(family="Arial", size=16)
+        text_width = controller_font.measure("Controller: ")
+        
+        x_offset = 5
+        y_offset = 10
+
+        self.bottom_bar_canvas.coords(
+            1,
+            x_offset,
+            y_offset,
+            controller_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
+            GraphicConstants().bottom_bar_height - y_offset
+        )
+        
+        self.bottom_bar_canvas.coords(
+            2,
+            x_offset + 5,
+            GraphicConstants().bottom_bar_height // 2
+        )
+        
+        self.bottom_bar_canvas.coords(
+            3,
+            10 + text_width,
+            GraphicConstants().bottom_bar_height // 2
         )
     
     def update_controller_text(self, controller_name):

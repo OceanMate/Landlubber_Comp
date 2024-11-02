@@ -65,6 +65,10 @@ class StringWidget(Widget):
             tags=self.tag
         )
     
+    def recreate_widget(self):
+        p_text = self.canvas.itemcget(self.g_display_text, "text")
+        super().recreate_widget()
+        self.create_string_widget(self.grid_x, self.grid_y, p_text)
             
     # Update the text of the widget
     def update_text(self, display_text):

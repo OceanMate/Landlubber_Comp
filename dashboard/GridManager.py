@@ -4,7 +4,7 @@ from dashboard.GraphicConstants import GraphicConstants
 
 class GridManager:
     _instance = None
-
+    
     # When a new instance is created, sets it to the same global instance
     def __new__(cls):
         # If the instance is None, create a new instance
