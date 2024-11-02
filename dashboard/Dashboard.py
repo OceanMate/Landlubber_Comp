@@ -1,5 +1,5 @@
 import sys
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Button
 from typing import Callable
 import ctypes
 from pathlib import Path
@@ -40,7 +40,7 @@ class Dashboard:
         self.window.geometry(str(GraphicConstants().window_width) + "x" + str(GraphicConstants().window_height))
         self.window.configure(bg = "#FFFFFF")
         self.window.title("Dashboard")
-        #self.window.resizable(False, False)
+        self.window.resizable(False, False)
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
         # Set the icon for the window
@@ -198,10 +198,22 @@ class Dashboard:
         
         controller_font = tkfont.Font(family="Arial", size=16)
         text_width = controller_font.measure("Controller: ")
+        
+        x_offset = 5
+        y_offset = 10
 
         # Create a text to display the current controller connected
+        self.bottom_bar_canvas.create_rectangle(
+            x_offset,
+            y_offset,
+            controller_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
+            GraphicConstants().bottom_bar_height - y_offset,
+            fill=GraphicConstants().dark_grey,
+            outline=GraphicConstants().dark_grey
+        )
+        
         self.bottom_bar_canvas.create_text(
-            10,
+            x_offset + 5,
             GraphicConstants().bottom_bar_height // 2,
             text="Controller: ",
             fill=GraphicConstants().black,
@@ -213,12 +225,16 @@ class Dashboard:
             10 + text_width,
             GraphicConstants().bottom_bar_height // 2,
             text="None",
-            fill=GraphicConstants().black,
+            fill=GraphicConstants().red,
             anchor="w",
             font=("Arial", 16)
         )
     
     def update_controller_text(self, controller_name):
+        if controller_name == "None":
+            self.bottom_bar_canvas.itemconfig(self.controller_text, fill=GraphicConstants().red)
+        else:
+            self.bottom_bar_canvas.itemconfig(self.controller_text, fill=GraphicConstants().dark_green)
         self.bottom_bar_canvas.itemconfig(self.controller_text, text= controller_name)
     
     
