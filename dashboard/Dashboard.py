@@ -1,5 +1,7 @@
 import sys
-from tkinter import Tk, Canvas, Button
+import time
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tracemalloc import start
 from typing import Callable
 import ctypes
 from pathlib import Path
@@ -90,7 +92,10 @@ class Dashboard:
             width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
-    
+
+        self.grid_canvas.bind("<Button-1>", self.on_mouse_click)
+        self.grid_canvas.bind("<ButtonRelease-1>", self.on_mouse_release)
+        
     # Generate the tab bar at the top of the window (currently unused)
     def _generate_tab_bar(self):
         self.tab_bar_canvas = Canvas(
@@ -246,3 +251,23 @@ class Dashboard:
     # Disable the dashboard
     def _disable(self):
         self.enable = False
+        
+    def on_mouse_click(self,event):
+        print("clicked at: " + str(event.x) + ", " + str(event.y))
+        self.clk_start_time = time.time()
+        
+        for key in self.widgets.keys():
+            if(self.widgets[key].am_i_pressed(event.x, event.y)):
+                print("pressed on: " + key)
+                if(self.widgets[key].am_i_pressed_on_edge(event.x, event.y)):
+                    print("on edge")
+    
+    def on_mouse_release(self, event):
+        print("released at: " + str(event.x) + ", " + str(event.y))
+        print("Time between clicks: " + str(time.time() - self.clk_start_time))
+        
+
+        
+        
+        
+        
