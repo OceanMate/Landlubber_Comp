@@ -1,5 +1,5 @@
 
-from dashboard.Widget import Widget
+from dashboard.widgets.Widget import Widget
 from dashboard.GraphicConstants import GraphicConstants
 
 # creates a widget that displays a given string

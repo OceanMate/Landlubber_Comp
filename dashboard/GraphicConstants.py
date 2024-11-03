@@ -1,3 +1,5 @@
+from pathlib import Path
+
 class GraphicConstants:
     _instance = None
 
@@ -32,3 +34,7 @@ class GraphicConstants:
         # Font
         self.font = "Cascadia Code"
         self.bottom_bar_font = "Ocr A Extended"
+    
+    # Get the path of an asset in the assets folder
+    def get_asset_path(self, path: str) -> Path:
+        return Path(__file__).parent / "assets" / path

@@ -4,7 +4,7 @@ from os import remove
 from dashboard.GraphicConstants import GraphicConstants
 import tkinter.font as tkfont
 
-from dashboard.GridManager import GridManager
+from dashboard.GridGraphics import GridGraphics
 
 
 class Widget():
@@ -23,7 +23,7 @@ class Widget():
         # Extremely important for the widget, used to identify the all the components of a widget on the canvas
         self.tag = "widget_label" + str(tag_label)
         
-        self.gridmanager = GridManager()
+        self.gridmanager = GridGraphics()
 
     # Set the location of the widget on the canvas given the grid coordinates
     def _set_location(self, grid_x, grid_y):
