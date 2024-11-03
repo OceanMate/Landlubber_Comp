@@ -1,4 +1,3 @@
-from cmath import rect
 import time
 from tkinter import Canvas, PhotoImage
 from dashboard.GraphicConstants import GraphicConstants
@@ -64,6 +63,7 @@ class GridGraphics:
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
 
+        # Bind the left mouse click and release events to the canvas
         self.grid_canvas.bind("<Button-1>", self._on_mouse_click)
         self.grid_canvas.bind("<ButtonRelease-1>", self._on_mouse_release)
     

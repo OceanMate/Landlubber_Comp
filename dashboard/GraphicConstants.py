@@ -32,7 +32,7 @@ class GraphicConstants:
         self.red = "#FF0000"
         
         # Font
-        self.font = "Cascadia Code"
+        self.font = "Comfortaa"
         self.bottom_bar_font = "Ocr A Extended"
     
     # Get the path of an asset in the assets folder
