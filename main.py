@@ -33,7 +33,7 @@ def main():
         
         
         # Add a small delay to prevent high CPU usage
-        time.sleep(0.02)
+        time.sleep(0.01)
         
 if __name__ == "__main__":
     main()
