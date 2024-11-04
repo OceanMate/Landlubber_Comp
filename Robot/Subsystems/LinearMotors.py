@@ -1,9 +1,12 @@
+from dashboard.DashboardTab import DashboardTab
 from dashboard.Dashboard import Dashboard
 from structure.Subsystem import Subsystem
 
 class LinearMotors(Subsystem):
     def __init__(self):
         super().__init__()
+        
+        self.programmer_tab = DashboardTab("Programmer Party")
         
         self.FL = 0
         self.FR = 0
@@ -51,5 +54,6 @@ class LinearMotors(Subsystem):
         pass
     
     def periodic(self):
-        Dashboard().put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
+        self.programmer_tab.put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
+        Dashboard().put_string("Motor Speedz", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
 

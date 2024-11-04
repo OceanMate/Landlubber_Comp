@@ -2,7 +2,7 @@
 from tkinter import Button, Canvas
 
 from dashboard.GraphicConstants import GraphicConstants
-from dashboard.UserInput import UserInput
+from dashboard.graphics.UserInput import UserInput
 from structure.RobotState import RobotState
 
 import tkinter.font as tkfont

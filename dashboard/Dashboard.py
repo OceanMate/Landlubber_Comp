@@ -2,17 +2,18 @@ import sys
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 import ctypes
 
-from dashboard.BottomBar import BottomBar
+from dashboard.graphics.BottomBar import BottomBar
 from dashboard.GraphicConstants import GraphicConstants
-from dashboard.GridGraphics import GridGraphics
+from dashboard.graphics.GridGraphics import GridGraphics
 from dashboard.widgets.StringWidget import StringWidget
-from dashboard.TabBar import TabBar
+from dashboard.graphics.TabBar import TabBar
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
 
 
-
+# TODO - Add display for connection to rasberry pi
+# ERROR - widgets with same name on different tabs
 class Dashboard:
     _instance = None
 
@@ -28,8 +29,7 @@ class Dashboard:
     def _start(self):  
         # Widget Dictionary
         self.user_inputs = {}
-        self.widgets = {}
-
+        self.tabs = {}
              
         # Create window
         self.window = Tk()
@@ -45,22 +45,25 @@ class Dashboard:
         self.window.iconbitmap(GraphicConstants().get_asset_path("rabbit_logo.ico"))
         
         # Generate the various components of the dashboard
-        self.tab_bar = TabBar(self.window)
+        self.tab_bar = TabBar(self.window, self.tabs)
         self.tab_bar.generate_tab_bar()
         
         self.grid_graphics = GridGraphics()
-        self.grid_graphics.init(self.window, self.widgets)
+        self.grid_graphics.init(self.window, self.tabs)
         self.grid_graphics.generate_grid()
         
         self.bottom_bar = BottomBar(self.window, self.user_inputs)
         self.bottom_bar.create_bottom_bar()
         
-        self.setup_hotkeys()
+        self._setup_hotkeys()
+        
+        # Bind tab click event
+        self.tab_bar.tab_bar_canvas.bind("<Button-1>", self._on_tab_click)
         
         # Enable the dashboard
         self.enable = True
   
-    def setup_hotkeys(self):
+    def _setup_hotkeys(self):
         # Event loop for the dashboard for hotkeys
         self.dashboard_hotkeys_loop = EventLoop()
         
@@ -76,24 +79,27 @@ class Dashboard:
         
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
-    def put_string(self, label, text):
+    def put_string(self, label, text, tab = GraphicConstants().default_tab):
         if self.grid_graphics is None:
             return
         
-        if label not in self.grid_graphics.widgets.keys():
+        if label not in self.grid_graphics.tabs[tab].keys():
             # Create a new widget if it doesn't already exist
-            self.grid_graphics.widgets[label] = StringWidget(self.grid_graphics.grid_canvas, label)
-            wigit_grid_width, wigit_grid_height = self.widgets[label].get_default_dimensions()
+            self.grid_graphics.tabs[tab][label] = StringWidget(self.grid_graphics.grid_canvas, label)
+            wigit_grid_width, wigit_grid_height = self.tabs[tab][label].get_default_dimensions()
             
             # Find the next available space for the widget, and tell the grid manager to place the widget there
-            loc = self.grid_graphics.find_next_available_space(wigit_grid_width, wigit_grid_height)
-            self.grid_graphics.place_rectangle(loc[0], loc[1], wigit_grid_width, wigit_grid_height)
+            loc = self.grid_graphics.find_next_available_space(wigit_grid_width, wigit_grid_height, tab)
+            self.grid_graphics.place_rectangle(loc[0], loc[1], wigit_grid_width, wigit_grid_height, tab)
             
             # Create the widget on the canvas
-            self.widgets[label].create_string_widget(loc[0], loc[1], text)
+            self.tabs[tab][label].create_string_widget(loc[0], loc[1], text)
+            
+            if tab != GraphicConstants().current_tab:
+                self.tabs[tab][label].hide()
         else:
             # Update the text of the widget if it already exists
-            self.widgets[label].update_text(text)
+            self.tabs[tab][label].update_text(text)
 
     # Function that should be called periodicly to update the dashboard
     def update(self):
@@ -106,8 +112,9 @@ class Dashboard:
             self.grid_graphics.resize_grid()
             self.bottom_bar.resize_bottom_bar()
             
-            for key in self.widgets.keys():
-                self.widgets[key].recreate_widget()
+            current_tab = GraphicConstants().current_tab
+            for key in self.tabs[current_tab].keys():
+                self.tabs[current_tab][key].recreate_widget()
 
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
@@ -125,8 +132,6 @@ class Dashboard:
         if not self.enable:
             self._close()
     
-    
-    
     # Close the window and exit the program
     def _close(self):
         self.window.destroy()
@@ -134,4 +139,14 @@ class Dashboard:
     
     # Disable the dashboard
     def _disable(self):
-        self.enable = False   
+        self.enable = False
+
+    def _on_tab_click(self, event):
+        clicked_tab = self.tab_bar.get_tab_at_position(event.x, event.y)
+        if clicked_tab:
+            self.tab_bar.set_current_tab(clicked_tab)
+    
+    def add_tab(self, tab_name):
+        if tab_name not in self.tabs.keys():
+            self.tab_bar.add_tab(tab_name)
+            self.grid_graphics.create_new_tab_grid(tab_name)

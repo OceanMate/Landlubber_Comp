@@ -14,10 +14,11 @@ class GridGraphics:
             cls._instance = super().__new__(cls)
         return cls._instance        
     
-    def init(self, window, widgets):
+    def init(self, window, tabs):
         self.window = window
-        self.widgets = widgets
+        self.tabs = tabs
         
+        self.grids = {}
     
     # Generate the grid on the canvas which the widgets will be placed on
     def generate_grid(self):
@@ -26,7 +27,7 @@ class GridGraphics:
         
         self.grid_width, self.grid_height = self.convert_pixel_to_grid(GraphicConstants().window_width, px_grid_height)
         
-        self.grid = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+        self.grids[GraphicConstants().default_tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
         
         # Create the canvas for the grid
         self.grid_canvas = Canvas(
@@ -75,7 +76,8 @@ class GridGraphics:
         
         self.grid_width, self.grid_height = self.convert_pixel_to_grid(GraphicConstants().window_width, px_grid_height)
         
-        self.grid = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+        for grid_keys in self.grids.keys():
+            self.grids[grid_keys] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
         
         # Calculate the position to place the image in the center of the grid
         logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
@@ -102,6 +104,10 @@ class GridGraphics:
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
     
+    def create_new_tab_grid(self, tab):
+        self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+
+    
     def _on_mouse_click(self,event):
         #print("clicked at: " + str(event.x) + ", " + str(event.y))
         self.clk_start_time = time.time()
@@ -109,15 +115,16 @@ class GridGraphics:
         self.widget_pressed = ""
         self.on_edge = False
         
-        for key in self.widgets.keys():
-            if(self.widgets[key].am_i_pressed(event.x, event.y)):
+        current_tab = GraphicConstants().current_tab
+        for widget in self.tabs[current_tab].values():
+            if(widget.am_i_pressed(event.x, event.y)):
                 #print("pressed on: " + key)
-                self.widget_pressed = key
+                self.widget_pressed = widget.label
                 
-                self.x_offset = event.x - self.widgets[key].x
-                self.y_offset = event.y - self.widgets[key].y
+                self.x_offset = event.x - widget.x
+                self.y_offset = event.y - widget.y
                 
-                if(self.widgets[key].am_i_pressed_on_edge(event.x, event.y)):
+                if(widget.am_i_pressed_on_edge(event.x, event.y)):
                     print("on edge")
                     self.on_edge = True
     
@@ -125,46 +132,50 @@ class GridGraphics:
         #print("released at: " + str(event.x) + ", " + str(event.y))
         #print("Time between clicks: " + str(time.time() - self.clk_start_time))
         
+        current_tab = GraphicConstants().current_tab
         if(time.time() - self.clk_start_time > 0.2):
             if(self.widget_pressed != ""):
                 gridx,gridy = self.convert_pixel_to_grid(event.x-self.x_offset, event.y-self.y_offset)
-                grid_width,grid_height = self.convert_pixel_to_grid(event.x-self.widgets[self.widget_pressed].width, event.y-self.widgets[self.widget_pressed].height)
+                grid_width,grid_height = self.convert_pixel_to_grid(
+                    event.x-self.tabs[current_tab][self.widget_pressed].width, 
+                    event.y-self.tabs[current_tab][self.widget_pressed].height
+                )
                 
                 if(self.on_edge):
-                    self.widgets[self.widget_pressed].resize_widget(grid_width, grid_height)
+                    self.tabs[current_tab][self.widget_pressed].resize_widget(grid_width, grid_height)
                 else:        
-                    self.widgets[self.widget_pressed].move_widget(gridx, gridy)
+                    self.tabs[current_tab][self.widget_pressed].move_widget(gridx, gridy)
 
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
-    def can_place_rectangle(self, x, y, rect_width, rect_height):
+    def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         
         if x + rect_width > self.grid_width or y + rect_height > self.grid_height:
             return False
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                if self.grid[i][j] != 0:
+                if self.grids[widget_tab][i][j] != 0:
                     return False
         return True
 
     # "Place" a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 1 not actually place anything)
-    def place_rectangle(self, x, y, rect_width, rect_height):
+    def place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                self.grid[i][j] = 1
+                self.grids[widget_tab][i][j] = 1
     
     # Remove a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 0)
-    def remove_rectangle(self, x, y, rect_width, rect_height):
+    def remove_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                self.grid[i][j] = 0
+                self.grids[widget_tab][i][j] = 0
 
     # Find the next available space to place a rectangle of rect_width x rect_height
-    def find_next_available_space(self, rect_width, rect_height):        
+    def find_next_available_space(self, rect_width, rect_height, widget_tab):        
         for y in range(self.grid_height):
             for x in range(self.grid_width):
-                if self.can_place_rectangle(x, y, rect_width, rect_height):
+                if self.can_place_rectangle(x, y, rect_width, rect_height, widget_tab):
                     return (x, y) # Tuple of the x and y coordinates
         return (-1, -1)
     

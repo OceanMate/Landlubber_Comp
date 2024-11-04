@@ -69,7 +69,7 @@ class ControllerListener:
                 self.dpad_state = {}
                 print("Joystick disconnected")
                 
-                Dashboard().update_controller_text("None")
+                Dashboard().bottom_bar.update_controller_text("None")
             
             if event.type == pygame.JOYBUTTONDOWN:
                 self.is_button_down[event.button] = True
@@ -86,6 +86,8 @@ class ControllerListener:
         # Initialize the first controller found
         self.joystick = pygame.joystick.Joystick(id)
         print(f"Controller connected: {self.joystick.get_name()}")
+        
+        # 
         self.is_button_down = {i: False for i in range(self.joystick.get_numbuttons())}
         self.axis_state = {i: 0.0 for i in range(self.joystick.get_numaxes())}
         self.dpad_state = {i: (0, 0) for i in range(self.joystick.get_numhats())}
@@ -95,8 +97,10 @@ class ControllerListener:
             text = "Xbox One"
         elif (text == "Controller (Gamepad F310)"):
             text = "Gamepad F310"
+        elif (text == "Controller (XBOX 360 For Windows)"):
+            text = "Xbox 360"
         
-        Dashboard().update_controller_text(controller_name=text)
+        Dashboard().bottom_bar.update_controller_text(controller_name=text)
 
     
 

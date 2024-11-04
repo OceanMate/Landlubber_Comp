@@ -1,7 +1,7 @@
 from dashboard.GraphicConstants import GraphicConstants
 import tkinter.font as tkfont
 
-from dashboard.GridGraphics import GridGraphics
+from dashboard.graphics.GridGraphics import GridGraphics
 
 
 class Widget():
@@ -18,7 +18,7 @@ class Widget():
         # Need to remove special characters from the label for use in code
         tag_label = ''.join(e for e in self.label if e.isalnum())
         # Extremely important for the widget, used to identify the all the components of a widget on the canvas
-        self.tag = "widget_label" + str(tag_label)
+        self.tag = "widget_tag_" + str(tag_label)
         
         self.gridmanager = GridGraphics()
 
@@ -89,17 +89,19 @@ class Widget():
     
     # Move the widget to a new grid location
     def move_widget(self, grid_x, grid_y): 
-        self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height)
+        opperating_tab = GraphicConstants().current_tab
+        
+        self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
         
         # Calculate the change in x and y
         current_x = self.x
         current_y = self.y
         
         # Moves all items in the tag by the delta x and delta y
-        if(self.gridmanager.can_place_rectangle(grid_x, grid_y, self.grid_width, self.grid_height)):
+        if self.gridmanager.can_place_rectangle(grid_x, grid_y, self.grid_width, self.grid_height, opperating_tab):
             self._set_location(grid_x, grid_y)
         else:
-            new_grid_loc = self.gridmanager.find_next_available_space(self.grid_width, self.grid_height)
+            new_grid_loc = self.gridmanager.find_next_available_space(self.grid_width, self.grid_height, opperating_tab)
             self._set_location(new_grid_loc[0], new_grid_loc[1])
         
         delta_x = self.x - current_x
@@ -107,8 +109,8 @@ class Widget():
         
         self.canvas.move(self.tag, delta_x, delta_y)
         
-        self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height)
-        
+        self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
+            
     # Check if the widget is pressed
     def am_i_pressed(self, x, y):
         # Check if the x and y coordinates are within the widget
@@ -131,8 +133,10 @@ class Widget():
         self._create_widget_frame()
     
     def resize_widget(self, grid_width, grid_height):
-        if self.gridmanager.can_place_rectangle(self.grid_x, self.grid_y, grid_width, grid_height):
-            self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height)
+        operating_tab = GraphicConstants().current_tab
+        
+        if self.gridmanager.can_place_rectangle(self.grid_x, self.grid_y, grid_width, grid_height, operating_tab):
+            self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
             
             print("Resizing widget to: " + str(grid_width) + " x " + str(grid_height))
             
@@ -148,4 +152,11 @@ class Widget():
             # Create the new widget frame
             self._create_widget_frame()
             
-            self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height)
+            self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
+    
+    def hide(self):
+        self.canvas.itemconfigure(self.tag, state='hidden')
+
+    def show(self):
+        self.canvas.tag_raise(self.tag)
+        self.canvas.itemconfigure(self.tag, state='normal')
