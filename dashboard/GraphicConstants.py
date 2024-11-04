@@ -36,8 +36,10 @@ class GraphicConstants:
         self.bottom_bar_font = "Ocr A Extended"
         
         # Tabs
-        self.current_tab = "Dashboard"
         self.default_tab = "Dashboard"
+        # Technically not a constant, but it's easier to access it this way
+        self.current_tab = "Dashboard"
+
     
     # Get the path of an asset in the assets folder
     def get_asset_path(self, path: str) -> Path:

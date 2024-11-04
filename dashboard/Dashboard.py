@@ -13,7 +13,6 @@ from structure.RobotState import RobotState
 
 
 # TODO - Add display for connection to rasberry pi
-# ERROR - widgets with same name on different tabs
 class Dashboard:
     _instance = None
 
