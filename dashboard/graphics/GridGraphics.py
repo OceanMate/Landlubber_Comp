@@ -135,7 +135,10 @@ class GridGraphics:
         current_tab = GraphicConstants().current_tab
         if(time.time() - self.clk_start_time > 0.2):
             if(self.widget_pressed != ""):
-                gridx,gridy = self.convert_pixel_to_grid(event.x-self.x_offset, event.y-self.y_offset)
+                gridx, gridy = self.convert_pixel_to_grid(event.x-self.x_offset, event.y-self.y_offset)
+                gridx = max(0, gridx)
+                gridy = max(0, gridy)
+                
                 grid_width,grid_height = self.convert_pixel_to_grid(
                     event.x-self.tabs[current_tab][self.widget_pressed].width, 
                     event.y-self.tabs[current_tab][self.widget_pressed].height
