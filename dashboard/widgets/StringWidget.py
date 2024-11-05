@@ -6,6 +6,8 @@ class StringWidget(Widget):
     def __init__(self, canvas, label):
         super().__init__(canvas, label)
         
+        self.display_text = ""
+        
         grid_width, grid_height = self.get_default_dimensions()
         self._set_dimensions(grid_width, grid_height)
     
@@ -27,7 +29,7 @@ class StringWidget(Widget):
         return grid_width, grid_height
     
     # Create the string widget on the canvas
-    def create_string_widget(self, grid_x, grid_y, display_text):        
+    def create_string_widget(self, grid_x, grid_y, display_text):                
         # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
         
@@ -39,7 +41,8 @@ class StringWidget(Widget):
         text_y = self.y + self.widget_label_height + (self.height - self.widget_label_height) / 2
         
         # Resize the text to fit in the widget
-        display_text = self.resize_text(display_text)
+        self.display_text = display_text
+        display_text = self.resize_text(self.display_text)
         
         # Create the display text of the widget, stores the graphic object for use in updating the text
         self.g_display_text = self.canvas.create_text(
@@ -64,9 +67,8 @@ class StringWidget(Widget):
         )
     
     def recreate_widget(self):
-        p_text = self.canvas.itemcget(self.g_display_text, "text")
         super().recreate_widget()
-        self.create_string_widget(self.grid_x, self.grid_y, p_text)
+        self.create_string_widget(self.grid_x, self.grid_y, self.display_text)
             
     # Update the text of the widget
     def update_text(self, display_text):
@@ -74,12 +76,10 @@ class StringWidget(Widget):
         self.canvas.itemconfig(self.g_display_text, text=display_text)
 
 
-    def resize_widget(self, grid_x, grid_y, edge_bools):
-        p_text = self.canvas.itemcget(self.g_display_text, "text")
-        
+    def resize_widget(self, grid_x, grid_y, edge_bools):        
         super().resize_widget(grid_x, grid_y, edge_bools)
         
-        self.create_string_widget(self.grid_x, self.grid_y, p_text)
+        self.create_string_widget(self.grid_x, self.grid_y, self.display_text)
 
 
 

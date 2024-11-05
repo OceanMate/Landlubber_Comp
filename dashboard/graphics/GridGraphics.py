@@ -132,7 +132,7 @@ class GridGraphics:
                     self.is_resizing = True
     
     def _on_mouse_release(self, event):
-        print("released at: " + str(event.x) + ", " + str(event.y))
+        #print("released at: " + str(event.x) + ", " + str(event.y))
         #print("Time between clicks: " + str(time.time() - self.clk_start_time))
         
         current_tab = GraphicConstants().current_tab
@@ -164,13 +164,18 @@ class GridGraphics:
                 edge_bools = widget.is_pressed_on_edge(event.x, event.y)
                 if True in edge_bools:
                     cursor_set = True
-                    if edge_bools[0] or edge_bools[3]:  # Top-left or bottom-right corner
+                    on_left_edge, on_right_edge, on_top_edge, on_bottom_edge = edge_bools
+                    if on_left_edge and on_top_edge:  # Top-left corner
                         self.grid_canvas.config(cursor="size_nw_se")
-                    elif edge_bools[1] or edge_bools[2]:  # Top-right or bottom-left corner
+                    elif on_right_edge and on_bottom_edge:  # Bottom-right corner
+                        self.grid_canvas.config(cursor="size_nw_se")
+                    elif on_right_edge and on_top_edge:  # Top-right corner
                         self.grid_canvas.config(cursor="size_ne_sw")
-                    elif edge_bools[4] or edge_bools[5]:  # Left or right edge
+                    elif on_left_edge and on_bottom_edge:  # Bottom-left corner
+                        self.grid_canvas.config(cursor="size_ne_sw")
+                    elif on_left_edge or on_right_edge:  # Left or right edge
                         self.grid_canvas.config(cursor="sb_h_double_arrow")
-                    elif edge_bools[6] or edge_bools[7]:  # Top or bottom edge
+                    elif on_top_edge or on_bottom_edge:  # Top or bottom edge
                         self.grid_canvas.config(cursor="sb_v_double_arrow")
                     break
         if not cursor_set:

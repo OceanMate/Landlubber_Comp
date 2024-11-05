@@ -61,7 +61,8 @@ class Dashboard:
         
         # Enable the dashboard
         self.enable = True
-  
+                
+    # Setup hotkeys for the dashboardf  
     def _setup_hotkeys(self):
         # Event loop for the dashboard for hotkeys
         self.dashboard_hotkeys_loop = EventLoop()
