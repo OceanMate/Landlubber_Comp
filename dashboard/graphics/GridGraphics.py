@@ -1,6 +1,7 @@
 import time
 from tkinter import Canvas, PhotoImage
 from dashboard.GraphicConstants import GraphicConstants
+from dashboard.graphics.UserInput import UserInput
 
 
 class GridGraphics:
@@ -19,6 +20,7 @@ class GridGraphics:
         self.tabs = tabs
         
         self.grids = {}
+        
     
     # Generate the grid on the canvas which the widgets will be placed on
     def generate_grid(self):
@@ -64,9 +66,10 @@ class GridGraphics:
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
 
-        # Bind the left mouse click and release events to the canvas
+        # Bind the left mouse click, release, and move events to the canvas
         self.grid_canvas.bind("<Button-1>", self._on_mouse_click)
         self.grid_canvas.bind("<ButtonRelease-1>", self._on_mouse_release)
+        self.grid_canvas.bind("<Motion>", self._on_mouse_move)
     
     def resize_grid(self):
         self.grid_canvas.config(width=GraphicConstants().window_width)
@@ -113,42 +116,66 @@ class GridGraphics:
         self.clk_start_time = time.time()
         
         self.widget_pressed = ""
-        self.on_edge = False
+        self.is_resizing = False
         
         current_tab = GraphicConstants().current_tab
         for widget in self.tabs[current_tab].values():
-            if(widget.am_i_pressed(event.x, event.y)):
+            if(widget.is_pressed(event.x, event.y)):
                 #print("pressed on: " + key)
                 self.widget_pressed = widget.label
                 
                 self.x_offset = event.x - widget.x
                 self.y_offset = event.y - widget.y
                 
-                if(widget.am_i_pressed_on_edge(event.x, event.y)):
-                    print("on edge")
-                    self.on_edge = True
+                self.edge_bools = widget.is_pressed_on_edge(event.x, event.y)
+                if True in self.edge_bools:
+                    self.is_resizing = True
     
     def _on_mouse_release(self, event):
-        #print("released at: " + str(event.x) + ", " + str(event.y))
+        print("released at: " + str(event.x) + ", " + str(event.y))
         #print("Time between clicks: " + str(time.time() - self.clk_start_time))
         
         current_tab = GraphicConstants().current_tab
-        if(time.time() - self.clk_start_time > 0.2):
-            if(self.widget_pressed != ""):
-                gridx, gridy = self.convert_pixel_to_grid(event.x-self.x_offset, event.y-self.y_offset)
-                gridx = max(0, gridx)
-                gridy = max(0, gridy)
-                
-                grid_width,grid_height = self.convert_pixel_to_grid(
-                    event.x-self.tabs[current_tab][self.widget_pressed].width, 
-                    event.y-self.tabs[current_tab][self.widget_pressed].height
-                )
-                
-                if(self.on_edge):
-                    self.tabs[current_tab][self.widget_pressed].resize_widget(grid_width, grid_height)
-                else:        
-                    self.tabs[current_tab][self.widget_pressed].move_widget(gridx, gridy)
+        if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
+            grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
+            
+            # Check if the widget is out of bounds
+            grid_x = max(0, grid_x)
+            grid_y = max(0, grid_y)
+            grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
+            grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
+            
+            self.widget_new_x = grid_x
+            self.widget_new_y = grid_y
+            
+            if self.is_resizing:
+                self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
+            else:        
+                self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
+        
+        # Reset cursor to default after releasing the mouse
+        self.grid_canvas.config(cursor="")
 
+    def _on_mouse_move(self, event):
+        current_tab = GraphicConstants().current_tab
+        cursor_set = False
+        for widget in self.tabs[current_tab].values():
+            if widget.is_pressed(event.x, event.y):
+                edge_bools = widget.is_pressed_on_edge(event.x, event.y)
+                if True in edge_bools:
+                    cursor_set = True
+                    if edge_bools[0] or edge_bools[3]:  # Top-left or bottom-right corner
+                        self.grid_canvas.config(cursor="size_nw_se")
+                    elif edge_bools[1] or edge_bools[2]:  # Top-right or bottom-left corner
+                        self.grid_canvas.config(cursor="size_ne_sw")
+                    elif edge_bools[4] or edge_bools[5]:  # Left or right edge
+                        self.grid_canvas.config(cursor="sb_h_double_arrow")
+                    elif edge_bools[6] or edge_bools[7]:  # Top or bottom edge
+                        self.grid_canvas.config(cursor="sb_v_double_arrow")
+                    break
+        if not cursor_set:
+            self.grid_canvas.config(cursor="")
+            
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
     def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         
@@ -184,4 +211,4 @@ class GridGraphics:
     
     def convert_pixel_to_grid(self, x, y):
         return x // GraphicConstants().grid_dim, y // GraphicConstants().grid_dim
-    
+

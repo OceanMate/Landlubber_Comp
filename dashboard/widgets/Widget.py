@@ -110,49 +110,84 @@ class Widget():
         self.canvas.move(self.tag, delta_x, delta_y)
         
         self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
-            
+
     # Check if the widget is pressed
-    def am_i_pressed(self, x, y):
+    def is_pressed(self, x, y):
         # Check if the x and y coordinates are within the widget
         in_x = self.x <= x <= self.x + self.width
         in_y = self.y <= y <= self.y + self.height
         return in_x and in_y
     
     # Check if the widget is pressed on the edge
-    def am_i_pressed_on_edge(self, x, y):
-        edge_threshold = 5  # Define how close to the edge the press should be to count as on the edge
+    def is_pressed_on_edge(self, x, y):
+        edge_threshold = 10  # Define how close to the edge the press should be to count as on the edge
+        
+        # Check if the widget is pressed on the corner
+        on_top_left_corner = self.x <= x <= self.x + edge_threshold and self.y <= y <= self.y + edge_threshold
+        on_top_right_corner = self.x + self.width - edge_threshold <= x <= self.x + self.width and self.y <= y <= self.y + edge_threshold
+        on_bottom_left_corner = self.x <= x <= self.x + edge_threshold and self.y + self.height - edge_threshold <= y <= self.y + self.height
+        on_bottom_right_corner = self.x + self.width - edge_threshold <= x <= self.x + self.width and self.y + self.height - edge_threshold <= y <= self.y + self.height
+        
         on_left_edge = self.x <= x <= self.x + edge_threshold
         on_right_edge = self.x + self.width - edge_threshold <= x <= self.x + self.width
         on_top_edge = self.y <= y <= self.y + edge_threshold
         on_bottom_edge = self.y + self.height - edge_threshold <= y <= self.y + self.height
         
-        return on_left_edge or on_right_edge or on_top_edge or on_bottom_edge
+        # Return a tuple of all the edge checks
+        return (on_top_left_corner, on_top_right_corner, on_bottom_left_corner, on_bottom_right_corner, on_left_edge, on_right_edge, on_top_edge, on_bottom_edge)
     
     def recreate_widget(self):
         self.canvas.delete(self.tag)
         self._create_widget_frame()
     
-    def resize_widget(self, grid_width, grid_height):
+    def resize_widget(self, grid_x, grid_y, edge_bools):
         operating_tab = GraphicConstants().current_tab
         
-        if self.gridmanager.can_place_rectangle(self.grid_x, self.grid_y, grid_width, grid_height, operating_tab):
-            self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
-            
-            print("Resizing widget to: " + str(grid_width) + " x " + str(grid_height))
-            
-            # Set the new dimensions
-            self._set_dimensions(grid_width, grid_height)
-            
-            # Move the widget to the new location
-            self.move_widget(self.grid_x, self.grid_y)
-            
-            # Delete the old widget frame
-            self.canvas.delete(self.tag)
-            
-            # Create the new widget frame
-            self._create_widget_frame()
-            
-            self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
+        # Determine which edges are being resized
+        on_top_left_corner, on_top_right_corner, on_bottom_left_corner, on_bottom_right_corner, on_left_edge, on_right_edge, on_top_edge, on_bottom_edge = edge_bools
+        
+        # Remove the current widget from the grid
+        self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
+        
+        # Adjust the position and dimensions based on the edges being resized
+        if on_left_edge or on_top_left_corner or on_bottom_left_corner:
+            new_width = self.grid_width + (self.grid_x - grid_x)
+            new_x = grid_x
+        elif on_right_edge or on_top_right_corner or on_bottom_right_corner:
+            new_width = grid_x - self.grid_x + 1
+            new_x = self.grid_x
+        else:
+            new_width = self.grid_width
+            new_x = self.grid_x
+        
+        if on_top_edge or on_top_left_corner or on_top_right_corner:
+            new_height = self.grid_height + (self.grid_y - grid_y)
+            new_y = grid_y
+        elif on_bottom_edge or on_bottom_left_corner or on_bottom_right_corner:
+            new_height = grid_y - self.grid_y + 1
+            new_y = self.grid_y
+        else:
+            new_height = self.grid_height
+            new_y = self.grid_y
+        
+        # Ensure the new dimensions are valid
+        if new_width <= 0 or new_height <= 0 or not self.gridmanager.can_place_rectangle(new_x, new_y, new_width, new_height, operating_tab):
+            # Revert to original dimensions and location if invalid
+            new_width = self.grid_width
+            new_height = self.grid_height
+            new_x = self.grid_x
+            new_y = self.grid_y
+        
+        # Set the new location and dimensions
+        self._set_location(new_x, new_y)
+        self._set_dimensions(new_width, new_height)
+        
+        # Place the resized widget back on the grid
+        self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, operating_tab)
+        
+        # Recreate the widget to reflect the new size
+        self.recreate_widget()
+    
     
     def hide(self):
         self.canvas.itemconfigure(self.tag, state='hidden')

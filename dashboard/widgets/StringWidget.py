@@ -1,12 +1,13 @@
-
 from dashboard.widgets.Widget import Widget
 from dashboard.GraphicConstants import GraphicConstants
 
 # creates a widget that displays a given string
 class StringWidget(Widget):
     def __init__(self, canvas, label):
-
         super().__init__(canvas, label)
+        
+        grid_width, grid_height = self.get_default_dimensions()
+        self._set_dimensions(grid_width, grid_height)
     
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
@@ -27,11 +28,8 @@ class StringWidget(Widget):
     
     # Create the string widget on the canvas
     def create_string_widget(self, grid_x, grid_y, display_text):        
-        grid_width, grid_height = self.get_default_dimensions()
-        
         # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
-        self._set_dimensions(grid_width, grid_height)
         
         # Create the frame of the widget
         self._create_widget_frame()
@@ -74,6 +72,14 @@ class StringWidget(Widget):
     def update_text(self, display_text):
         display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
+
+
+    def resize_widget(self, grid_x, grid_y, edge_bools):
+        p_text = self.canvas.itemcget(self.g_display_text, "text")
         
-    
-    
+        super().resize_widget(grid_x, grid_y, edge_bools)
+        
+        self.create_string_widget(self.grid_x, self.grid_y, p_text)
+
+
+
