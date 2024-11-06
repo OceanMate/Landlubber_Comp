@@ -131,11 +131,27 @@ class GridGraphics:
                 if True in self.edge_bools:
                     self.is_resizing = True
     
+    # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
         #print("released at: " + str(event.x) + ", " + str(event.y))
         #print("Time between clicks: " + str(time.time() - self.clk_start_time))
-        
         current_tab = GraphicConstants().current_tab
+
+        
+        if self.is_resizing:
+            grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
+            
+            # Check if the widget is out of bounds
+            grid_x = max(0, grid_x)
+            grid_y = max(0, grid_y)
+            grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
+            grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
+            
+            
+            self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
+
+        
+        
         if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
@@ -145,13 +161,10 @@ class GridGraphics:
             grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
             grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
             
-            self.widget_new_x = grid_x
-            self.widget_new_y = grid_y
+            grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
+            grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
             
-            if self.is_resizing:
-                self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
-            else:        
-                self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
+            self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
         
         # Reset cursor to default after releasing the mouse
         self.grid_canvas.config(cursor="")
@@ -216,4 +229,22 @@ class GridGraphics:
     
     def convert_pixel_to_grid(self, x, y):
         return x // GraphicConstants().grid_dim, y // GraphicConstants().grid_dim
+    
+    def debug_grid(self):
+        tag = "grid"
+        self.grid_canvas.delete(tag)
+
+        for y in range(self.grid_height):
+            for x in range(self.grid_width):
+                color = GraphicConstants().red if self.grids[GraphicConstants().current_tab][y][x] else GraphicConstants().dark_green
+                
+                self.grid_canvas.create_text(
+                    x * GraphicConstants().grid_dim + GraphicConstants().grid_dim // 2,
+                    y * GraphicConstants().grid_dim + GraphicConstants().grid_dim // 2,
+                    fill=color,
+                    text=str(self.grids[GraphicConstants().current_tab][y][x]),
+                    tags=tag
+                )
+        
+        self.grid_canvas.tag_raise(tag)
 

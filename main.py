@@ -12,13 +12,13 @@ def main():
 
     run_robot.robot_init()
     
+    start_time = time.time()
 
     while True:
         # Run periodic functions
 
         ControllerListener().update()
         KeyboardListener().update()
-        Dashboard().update()   
                      
         run_robot.robot_periodic()
         
@@ -31,6 +31,7 @@ def main():
         if robot_state.is_init_disable():
             run_robot.disabled_init()
         
+        Dashboard().update()
         
         # Add a small delay to prevent high CPU usage
         time.sleep(0.01)
