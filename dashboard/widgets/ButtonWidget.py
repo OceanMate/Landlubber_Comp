@@ -1,6 +1,8 @@
 from dashboard.widgets.Widget import Widget
 from dashboard.GraphicConstants import GraphicConstants
 
+# creates a widget the user can click on and run a command
+# only have to be called once
 class ButtonWidget(Widget):
     def __init__(self, canvas, label, command):
         super().__init__(canvas, label)
