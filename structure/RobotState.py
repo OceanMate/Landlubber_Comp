@@ -1,3 +1,6 @@
+from transmission.Transmission import Transmission
+
+
 class RobotState:
     _instance = None
 
@@ -31,9 +34,11 @@ class RobotState:
         return self._teleop_enabled
     
     def enable_teleop(self):
+        Transmission().set_enable(True)
         self._teleop_enabled = True
         self._teleop_to_be_initialized = True
     
     def disable_robot(self):
+        Transmission().set_enable(False)
         self._teleop_enabled = False
         self._disabled_to_be_initialized = True
