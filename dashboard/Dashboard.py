@@ -5,11 +5,13 @@ import ctypes
 from dashboard.graphics.BottomBar import BottomBar
 from dashboard.GraphicConstants import GraphicConstants
 from dashboard.graphics.GridGraphics import GridGraphics
+from dashboard.widgets.BooleanWidget import BooleanWidget
 from dashboard.widgets.StringWidget import StringWidget
 from dashboard.graphics.TabBar import TabBar
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
+from dashboard.widgets.ButtonWidget import ButtonWidget
 
 
 # TODO - Add display for connection to rasberry pi
@@ -100,11 +102,54 @@ class Dashboard:
         else:
             # Update the text of the widget if it already exists
             self.tabs[tab][label].update_text(text)
+    
+    def put_boolean(self, label, boolean, tab = GraphicConstants().default_tab):
+        if self.grid_graphics is None:
+            return
+        
+        if label not in self.grid_graphics.tabs[tab].keys():
+            # Create a new widget if it doesn't already exist
+            self.grid_graphics.tabs[tab][label] = BooleanWidget(self.grid_graphics.grid_canvas, label)
+            wigit_grid_width, wigit_grid_height = self.tabs[tab][label].get_default_dimensions()
+            
+            # Find the next available space for the widget, and tell the grid manager to place the widget there
+            loc = self.grid_graphics.find_next_available_space(wigit_grid_width, wigit_grid_height, tab)
+            self.grid_graphics.place_rectangle(loc[0], loc[1], wigit_grid_width, wigit_grid_height, tab)
+            
+            # Create the widget on the canvas
+            self.tabs[tab][label].create_bool_widget(loc[0], loc[1], boolean)
+            
+            if tab != GraphicConstants().current_tab:
+                self.tabs[tab][label].hide()
+        else:
+            # Update the text of the widget if it already exists
+            self.tabs[tab][label].update_bool(boolean)
+
+    def put_button(self, label, command, tab=GraphicConstants().default_tab):
+        if self.grid_graphics is None:
+            return
+        
+        if label not in self.grid_graphics.tabs[tab].keys():
+            # Create a new widget if it doesn't already exist
+            self.grid_graphics.tabs[tab][label] = ButtonWidget(self.grid_graphics.grid_canvas, label, command)
+            widget_grid_width, widget_grid_height = self.tabs[tab][label].get_default_dimensions()
+            
+            # Find the next available space for the widget, and tell the grid manager to place the widget there
+            loc = self.grid_graphics.find_next_available_space(widget_grid_width, widget_grid_height, tab)
+            self.grid_graphics.place_rectangle(loc[0], loc[1], widget_grid_width, widget_grid_height, tab)
+            
+            # Create the widget on the canvas
+            self.tabs[tab][label].create_button_widget(loc[0], loc[1])
+            
+            if tab != GraphicConstants().current_tab:
+                self.tabs[tab][label].hide()
+        else:
+            # Update the command of the widget if it already exists
+            self.tabs[tab][label].command = command
 
     # Function that should be called periodicly to update the dashboard
     def update(self):
-        self.grid_graphics.debug_grid()
-        
+        # Check if the window has been resized, and resize all the widgets if it has        
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
             GraphicConstants().window_width = self.window.winfo_width()
             GraphicConstants().window_height = self.window.winfo_height()
