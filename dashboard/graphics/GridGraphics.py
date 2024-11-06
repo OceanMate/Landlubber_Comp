@@ -137,7 +137,7 @@ class GridGraphics:
         #print("Time between clicks: " + str(time.time() - self.clk_start_time))
         current_tab = GraphicConstants().current_tab
 
-        
+        # Check if the widget is being resized
         if self.is_resizing:
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
@@ -149,9 +149,11 @@ class GridGraphics:
             
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
+            
+            return
 
         
-        
+        # Check if the widget is being moved
         if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
