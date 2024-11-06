@@ -149,6 +149,9 @@ class Dashboard:
 
     # Function that should be called periodicly to update the dashboard
     def update(self):
+        # Debug the grid
+        #self.grid_graphics.debug_grid()
+        
         # Check if the window has been resized, and resize all the widgets if it has        
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
             GraphicConstants().window_width = self.window.winfo_width()
@@ -161,6 +164,7 @@ class Dashboard:
             current_tab = GraphicConstants().current_tab
             for widget in self.tabs[current_tab].values():
                 widget.recreate_widget()
+                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
 
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
