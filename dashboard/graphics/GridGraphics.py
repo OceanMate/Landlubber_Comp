@@ -144,12 +144,11 @@ class GridGraphics:
             # Check if the widget is out of bounds
             grid_x = max(0, grid_x)
             grid_y = max(0, grid_y)
-            grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
-            grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
-            
+            grid_x = min(grid_x, self.grid_width)
+            grid_y = min(grid_y, self.grid_height)
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
-            
+                        
             return
 
         
@@ -157,14 +156,14 @@ class GridGraphics:
         if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
+            grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
+            grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
+            
             # Check if the widget is out of bounds
             grid_x = max(0, grid_x)
             grid_y = max(0, grid_y)
             grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
             grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
-            
-            grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
-            grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
         

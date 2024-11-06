@@ -114,10 +114,10 @@ class Dashboard:
             self.bottom_bar.resize_bottom_bar()
             
             current_tab = GraphicConstants().current_tab
-            for key in self.tabs[current_tab].keys():
-                self.tabs[current_tab][key].recreate_widget()
-            
+            for widget in self.tabs[current_tab].values():
+                widget.recreate_widget()
 
+        
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
         

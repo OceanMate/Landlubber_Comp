@@ -21,6 +21,9 @@ class Widget():
         self.tag = "widget_tag_" + str(tag_label)
         
         self.gridmanager = GridGraphics()
+        
+        #debugging
+        self.did_resize = False
 
     # Set the location of the widget on the canvas given the grid coordinates
     def _set_location(self, grid_x, grid_y):
@@ -37,9 +40,7 @@ class Widget():
         self.grid_height = grid_height
     
     # Create the frame of the widget
-    def _create_widget_frame(self):
-        print("Creating widget frame at grid location: ", self.x //GraphicConstants().grid_dim, self.y //GraphicConstants().grid_dim, self.width//GraphicConstants().grid_dim, self.height//GraphicConstants().grid_dim)
-        
+    def _create_widget_frame(self):        
         # Create the widget frame rectangle
         self.canvas.create_rectangle(
             self.x + self.widget_offset, self.y + self.widget_offset, 
@@ -136,7 +137,6 @@ class Widget():
         self._create_widget_frame()
     
     def resize_widget(self, grid_x, grid_y, edge_bools):
-        print("Resizing widget to grid location: ", grid_x, grid_y)
         operating_tab = GraphicConstants().current_tab
         
         # Determine which edges are being resized
@@ -184,7 +184,7 @@ class Widget():
         # Recreate the widget to reflect the new size
         self.recreate_widget()
         
-        print("new dimensions: ", self.grid_x, self.grid_y, self.grid_width, self.grid_height)
+        #print("new dimensions: ", self.grid_x, self.grid_y, self.grid_width, self.grid_height)
     
     
     def hide(self):
