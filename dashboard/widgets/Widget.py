@@ -9,10 +9,10 @@ class Widget():
         # Important widget variables
         self.widget_label_height = 20
         self.widget_offset = 3
+        
         self.font = tkfont.Font(family=GraphicConstants().font, size=12)
         
         self.label = label
-        
         self.canvas = canvas
         
         # Need to remove special characters from the label for use in code
@@ -20,10 +20,8 @@ class Widget():
         # Extremely important for the widget, used to identify the all the components of a widget on the canvas
         self.tag = "widget_tag_" + str(tag_label)
         
+        # grabs the grid manager for use in placing and removing widgets
         self.gridmanager = GridGraphics()
-        
-        #debugging
-        self.did_resize = False
 
     # Set the location of the widget on the canvas given the grid coordinates
     def _set_location(self, grid_x, grid_y):
@@ -80,8 +78,8 @@ class Widget():
         # Calculate the width of the text
         text_width = self.font.measure(text)
         
+        # If the text is too long, cut off the text with "..."
         if (text_width > self.width - 2 * self.widget_offset - 5):
-            # If the text is too long, cut off the text with "..."
             max_width = self.width - 2 * self.widget_offset - 5
             while (self.font.measure(text + "...") > max_width and len(text) > 0):
                 text = text[:-1]
@@ -114,14 +112,14 @@ class Widget():
         self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
 
     # Check if the widget is pressed
-    def is_pressed(self, x, y):
+    def is_point_inside(self, x, y):
         # Check if the x and y coordinates are within the widget
         in_x = self.x <= x <= self.x + self.width
         in_y = self.y <= y <= self.y + self.height
         return in_x and in_y
     
     # Check if the widget is pressed on the edge
-    def is_pressed_on_edge(self, x, y):
+    def is_point_near_edge(self, x, y):
         edge_threshold = 6  # Define how close to the edge the press should be to count as on the edge
         
         on_left_edge = self.x <= x <= self.x + edge_threshold
@@ -183,9 +181,7 @@ class Widget():
         
         # Recreate the widget to reflect the new size
         self.recreate_widget()
-        
-        #print("new dimensions: ", self.grid_x, self.grid_y, self.grid_width, self.grid_height)
-    
+            
     
     def hide(self):
         self.canvas.itemconfigure(self.tag, state='hidden')

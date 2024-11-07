@@ -16,9 +16,11 @@ class GridGraphics:
         return cls._instance        
     
     def init(self, window, tabs):
+        # Store the tabs dictionary and window for use in the grid
         self.window = window
         self.tabs = tabs
         
+        # Initialize the grids dictionary, there should be a grid for each tab
         self.grids = {}
         
     
@@ -29,6 +31,7 @@ class GridGraphics:
         
         self.grid_width, self.grid_height = self.convert_pixel_to_grid(GraphicConstants().window_width, px_grid_height)
         
+        # Create the grid for the default tab
         self.grids[GraphicConstants().default_tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
         
         # Create the canvas for the grid
@@ -49,7 +52,7 @@ class GridGraphics:
         logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
         logo_y = (px_grid_height - self.rabbit_logo.height()) // 2
         
-        # Create the image on the canvas with slight transparency
+        # Create the logo image on the canvas
         self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
         
         # Draw the vertical grid lines, with thicker lines every 5 grid spaces
@@ -72,15 +75,17 @@ class GridGraphics:
         self.grid_canvas.bind("<Motion>", self._on_mouse_move)
     
     def resize_grid(self):
+        # Resize the canvas to fit the new window dimensions
         self.grid_canvas.config(width=GraphicConstants().window_width)
-    
         px_grid_height = GraphicConstants().window_height - GraphicConstants().tab_bar_height - GraphicConstants().bottom_bar_height
         self.grid_canvas.config(height=px_grid_height)
         
+        # Calculate the new grid dimensions
         self.grid_width, self.grid_height = self.convert_pixel_to_grid(GraphicConstants().window_width, px_grid_height)
         
-        for grid_keys in self.grids.keys():
-            self.grids[grid_keys] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+        # Create the grid for each tab at new dimensions
+        for tab in self.tabs:
+            self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
         
         # Calculate the position to place the image in the center of the grid
         logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
@@ -90,7 +95,7 @@ class GridGraphics:
         if self.background_image is not None:
             self.grid_canvas.delete(self.background_image)
         
-        # Create the image on the canvas with slight transparency
+        # Create the logo image on the canvas
         self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
         
         # Draw the vertical grid lines, with thicker lines every 5 grid spaces
@@ -107,75 +112,85 @@ class GridGraphics:
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
     
+    # Create a new tab grid for a new tab (should be run every time a new tab is created)
     def create_new_tab_grid(self, tab):
         self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
 
     
     def _on_mouse_click(self,event):
-        #print("clicked at: " + str(event.x) + ", " + str(event.y))
+        # Starts a timer when the mouse is clicked to see how long the mouse is held down
         self.clk_start_time = time.time()
         
         self.widget_pressed = ""
         self.is_resizing = False
-        
         current_tab = GraphicConstants().current_tab
+        
+        # Check if the mouse is on a widget
         for widget in self.tabs[current_tab].values():
-            if(widget.is_pressed(event.x, event.y)):
-                #print("pressed on: " + key)
+            if(widget.is_point_inside(event.x, event.y)):
+                # store the widget that is being pressed
                 self.widget_pressed = widget.label
                 
+                # store the offset of the mouse from the top left corner of the widget
                 self.x_offset = event.x - widget.x
                 self.y_offset = event.y - widget.y
                 
-                self.edge_bools = widget.is_pressed_on_edge(event.x, event.y)
+                # Check if the mouse is on the edge of the widget
+                self.edge_bools = widget.is_point_near_edge(event.x, event.y)
                 if True in self.edge_bools:
                     self.is_resizing = True
     
     # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
-        #print("released at: " + str(event.x) + ", " + str(event.y))
-        #print("Time between clicks: " + str(time.time() - self.clk_start_time))
         current_tab = GraphicConstants().current_tab
 
         # Check if the widget is being resized
         if self.is_resizing:
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
-            # Check if the widget is out of bounds
+            # constrain the grid_x and grid_y to the grid
             grid_x = max(0, grid_x)
             grid_y = max(0, grid_y)
             grid_x = min(grid_x, self.grid_width)
             grid_y = min(grid_y, self.grid_height)
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
-                        
+            
+            # Ends the function early if the widget is being resized (prevents the widget from also being moved) 
             return
 
         
         # Check if the widget is being moved
+        # User needs to hold down the mouse for at least 0.2 seconds to move the widget
         if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
+            # Adjust the grid_x and grid_y based on the offset of the first click on the widget
             grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
             grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
             
-            # Check if the widget is out of bounds
+            # constrain the grid_x and grid_y to the grid
             grid_x = max(0, grid_x)
             grid_y = max(0, grid_y)
             grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
             grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
-        
-        # Reset cursor to default after releasing the mouse
-        self.grid_canvas.config(cursor="")
 
+    # Runs when the mouse is moved
     def _on_mouse_move(self, event):
         current_tab = GraphicConstants().current_tab
         cursor_set = False
+        
+        # Check if the mouse is on the edge of a widget, and set the cursor accordingly
         for widget in self.tabs[current_tab].values():
-            if widget.is_pressed(event.x, event.y):
-                edge_bools = widget.is_pressed_on_edge(event.x, event.y)
+            # Check if the mouse is inside the widget
+            if widget.is_point_inside(event.x, event.y):
+                
+                # sets up a list of booleans for each edge of the widget
+                edge_bools = widget.is_point_near_edge(event.x, event.y)
+                
+                # If any of the edges are True, set the cursor to the appropriate cursor
                 if True in edge_bools:
                     cursor_set = True
                     on_left_edge, on_right_edge, on_top_edge, on_bottom_edge = edge_bools
@@ -191,15 +206,19 @@ class GridGraphics:
                         self.grid_canvas.config(cursor="sb_h_double_arrow")
                     elif on_top_edge or on_bottom_edge:  # Top or bottom edge
                         self.grid_canvas.config(cursor="sb_v_double_arrow")
-                    break
+                break
+        
+        # Reset cursor to default if the mouse is not on the edge of a widget
         if not cursor_set:
             self.grid_canvas.config(cursor="")
             
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
     def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
-        
+        # Check if the rectangle is larger than the grid
         if x + rect_width > self.grid_width or y + rect_height > self.grid_height:
             return False
+        
+        # Check if the rectangle overlaps with any other widgets
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
                 if self.grids[widget_tab][i][j] != 0:
@@ -208,14 +227,12 @@ class GridGraphics:
 
     # "Place" a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 1 not actually place anything)
     def place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
-        
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
                 self.grids[widget_tab][i][j] = 1
     
     # Remove a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 0)
     def remove_rectangle(self, x, y, rect_width, rect_height, widget_tab):
-        
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
                 self.grids[widget_tab][i][j] = 0
@@ -228,15 +245,18 @@ class GridGraphics:
                     return (x, y) # Tuple of the x and y coordinates
         return (-1, -1)
     
+    # Convert pixel coordinates to grid coordinates
     def convert_pixel_to_grid(self, x, y):
         return x // GraphicConstants().grid_dim, y // GraphicConstants().grid_dim
     
+    # Debug the grid by displaying the values of the grid on the canvas
     def debug_grid(self):
         tag = "grid"
         self.grid_canvas.delete(tag)
 
         for y in range(self.grid_height):
             for x in range(self.grid_width):
+                # Set the color of the text based on the value of the grid (red for 1, green for 0)
                 color = GraphicConstants().red if self.grids[GraphicConstants().current_tab][y][x] else GraphicConstants().dark_green
                 
                 self.grid_canvas.create_text(
@@ -247,5 +267,6 @@ class GridGraphics:
                     tags=tag
                 )
         
+        # Raise the grid to the top of the canvas so it isn't behind the widgets
         self.grid_canvas.tag_raise(tag)
 
