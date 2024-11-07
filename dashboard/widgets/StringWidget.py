@@ -6,8 +6,10 @@ class StringWidget(Widget):
     def __init__(self, canvas, label):
         super().__init__(canvas, label)
         
+        # Stores the text to be displayed on the widget
         self.display_text = ""
         
+        # Set the default dimensions of the widget
         grid_width, grid_height = self.get_default_dimensions()
         self._set_dimensions(grid_width, grid_height)
     
@@ -66,6 +68,7 @@ class StringWidget(Widget):
             tags=self.tag
         )
     
+    # Override the recreate_widget method to recreate the string widget
     def recreate_widget(self):
         super().recreate_widget()
         self.create_string_widget(self.grid_x, self.grid_y, self.display_text)
@@ -75,7 +78,7 @@ class StringWidget(Widget):
         display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
 
-
+    # Override the resize_widget method to resize the string widget
     def resize_widget(self, grid_x, grid_y, edge_bools):        
         super().resize_widget(grid_x, grid_y, edge_bools)
         

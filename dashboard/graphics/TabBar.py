@@ -12,6 +12,7 @@ class TabBar:
         # Dictionary to map tags to tab names
         self.tags_to_tabs = {}
         
+        # stores the x position of the next tab, 20 for the first tab
         self.next_tab_x = 20
     
     # Generate the tab bar at the top of the window (currently unused)

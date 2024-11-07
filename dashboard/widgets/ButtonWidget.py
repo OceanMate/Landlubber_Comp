@@ -66,10 +66,14 @@ class ButtonWidget(Widget):
 
     # Handle the button click event
     def on_click(self, event):
+        # Change the button color to a darker color
         self.canvas.itemconfig(self.g_button_rect, fill=GraphicConstants().dark_grey, outline=GraphicConstants().dark_grey)
+        # Run the command associated with the button
         self.command()
 
+    # Handle the button release event
     def on_release(self, event):
+        # Change the button color back to the original color
         self.canvas.itemconfig(self.g_button_rect, fill=GraphicConstants().light_grey, outline=GraphicConstants().light_grey)
     
     # Need to override the is_pressed method to account for the button

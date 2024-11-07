@@ -11,12 +11,23 @@ class BottomBar():
     def __init__(self, window, user_inputs):
         self.window = window
         self.user_inputs = user_inputs
+        
+        # Measure the pixel width of the disable text
+        self.bottom_bar_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)
+        self.enable_button_width = self.bottom_bar_font.measure("Disable") + 10
+        
+        # Measure the pixel length of the controller text
+        self.controller_label_width = self.bottom_bar_font.measure("Controller: ")
+        
+        # Some constants for the enable button
+        self.button_y_offset = 5
+        self.button_x_offset = 5
+        
+        # Some constants for the controller text
+        self.controller_x_offset = 5
+        self.controller_y_offset = 10
     
     def create_bottom_bar(self):
-        # Some constants for the enable button
-        button_y_offset = 5
-        button_x_offset = 5
-        
         # Create the canvas for the bottom bar
         self.bottom_bar_canvas = Canvas(
             self.window,
@@ -61,90 +72,80 @@ class BottomBar():
             command=enable_button_press,
         )
         
-        bottom_bar_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)
-        enable_button_width = bottom_bar_font.measure("Disable") + 10
         
+        # Place the enable button on the bottom bar
         self.enable_button.place(
-            x=GraphicConstants().window_width - enable_button_width - button_x_offset,
-            y= button_y_offset,
-            height=GraphicConstants().bottom_bar_height - 2 * button_y_offset,
-            width=enable_button_width
+            x=GraphicConstants().window_width - self.enable_button_width - self.button_x_offset,
+            y= self.button_y_offset,
+            height=GraphicConstants().bottom_bar_height - 2 * self.button_y_offset,
+            width=self.enable_button_width
         )
         
-        text_width = bottom_bar_font.measure("Controller: ")
-        
-        x_offset = 5
-        y_offset = 10
 
-        # Create a text to display the current controller connected
+
+        # Create the rectangle for the controller label
         self.bottom_bar_canvas.create_rectangle(
-            x_offset,
-            y_offset,
-            bottom_bar_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
-            GraphicConstants().bottom_bar_height - y_offset,
+            self.controller_x_offset,
+            self.controller_y_offset,
+            self.bottom_bar_font.measure("Controller: Gamepad F310") + 5 + self.controller_x_offset * 2, # measured width of "Controller: Gamepad F310"
+            GraphicConstants().bottom_bar_height - self.controller_y_offset,
             fill=GraphicConstants().dark_grey,
             outline=GraphicConstants().dark_grey
         )
         
+        # Create the text for the controller label
         self.bottom_bar_canvas.create_text(
-            x_offset + 5,
+            self.controller_x_offset + 5,
             GraphicConstants().bottom_bar_height // 2,
             text="Controller: ",
             fill=GraphicConstants().black,
             anchor="w",
-            font=bottom_bar_font
+            font=self.bottom_bar_font
         )
         
+        # Create the text for the controller
         self.controller_text = self.bottom_bar_canvas.create_text(
-            10 + text_width,
+            10 + self.controller_label_width,
             GraphicConstants().bottom_bar_height // 2,
             text="None",
             fill=GraphicConstants().red,
             anchor="w",
-            font=bottom_bar_font
+            font=self.bottom_bar_font
         )
     
     def resize_bottom_bar(self):
         self.bottom_bar_canvas.config(width=GraphicConstants().window_width)
         self.bottom_bar_canvas.place(x=0, y=GraphicConstants().window_height - GraphicConstants().bottom_bar_height, anchor="nw")
         
-        button_y_offset = 5
-        button_x_offset = 5
-        button_width = 100
         
         self.enable_button.place(
-            x=GraphicConstants().window_width - button_width - button_x_offset,
-            y= button_y_offset,
-            height=GraphicConstants().bottom_bar_height - 2 * button_y_offset,
-            width=button_width
+            x=GraphicConstants().window_width - self.enable_button_width - self.button_x_offset,
+            y= self.button_y_offset,
+            height=GraphicConstants().bottom_bar_height - 2 * self.button_y_offset,
+            width=self.enable_button_width
         )
-        
-        controller_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)
-        text_width = controller_font.measure("Controller: ")
-        
-        x_offset = 5
-        y_offset = 10
 
         self.bottom_bar_canvas.coords(
             1,
-            x_offset,
-            y_offset,
-            controller_font.measure("Controller: Gamepad F310") + 5 + x_offset * 2,
-            GraphicConstants().bottom_bar_height - y_offset
+            self.controller_x_offset,
+            self.controller_y_offset,
+            self.bottom_bar_font.measure("Controller: Gamepad F310") + 5 + self.controller_x_offset * 2,
+            GraphicConstants().bottom_bar_height - self.controller_y_offset
         )
         
         self.bottom_bar_canvas.coords(
             2,
-            x_offset + 5,
+            self.controller_x_offset + 5,
             GraphicConstants().bottom_bar_height // 2
         )
         
         self.bottom_bar_canvas.coords(
             3,
-            10 + text_width,
+            10 + self.controller_label_width,
             GraphicConstants().bottom_bar_height // 2
         )
     
+    # Update the controller text to the given controller name
     def update_controller_text(self, controller_name):
         if controller_name == "None":
             self.bottom_bar_canvas.itemconfig(self.controller_text, fill=GraphicConstants().red)

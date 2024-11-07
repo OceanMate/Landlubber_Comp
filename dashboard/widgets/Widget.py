@@ -10,9 +10,11 @@ class Widget():
         self.widget_label_height = 20
         self.widget_offset = 3
         
+        # Set the font for the widget
         self.font = tkfont.Font(family=GraphicConstants().font, size=12)
         
         self.label = label
+        # Set the canvas the widget is on
         self.canvas = canvas
         
         # Need to remove special characters from the label for use in code
@@ -91,6 +93,7 @@ class Widget():
     def move_widget(self, grid_x, grid_y): 
         opperating_tab = GraphicConstants().current_tab
         
+        # Remove the widget from the grid
         self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
         
         # Calculate the change in x and y
@@ -104,11 +107,14 @@ class Widget():
             new_grid_loc = self.gridmanager.find_next_available_space(self.grid_width, self.grid_height, opperating_tab)
             self._set_location(new_grid_loc[0], new_grid_loc[1])
         
+        # Calculate the change in x and y
         delta_x = self.x - current_x
         delta_y = self.y - current_y
         
+        # Move the widget to the new location
         self.canvas.move(self.tag, delta_x, delta_y)
         
+        # Place the widget back on the grid
         self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
 
     # Check if the widget is pressed
@@ -130,10 +136,12 @@ class Widget():
         # Return a tuple of all the edge checks
         return (on_left_edge, on_right_edge, on_top_edge, on_bottom_edge)
     
+    # Recreate the widget to reflect changes in variables
     def recreate_widget(self):
         self.canvas.delete(self.tag)
         self._create_widget_frame()
     
+    # Resize the widget based on the edges being resized
     def resize_widget(self, grid_x, grid_y, edge_bools):
         operating_tab = GraphicConstants().current_tab
         

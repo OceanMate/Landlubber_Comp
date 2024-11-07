@@ -171,10 +171,12 @@ class Dashboard:
             GraphicConstants().window_width = self.window.winfo_width()
             GraphicConstants().window_height = self.window.winfo_height()
             
+            # recreate all the canvases
             self.tab_bar.resize_tab_bar()
             self.grid_graphics.resize_grid()
             self.bottom_bar.resize_bottom_bar()
             
+            # recreate all the widgets
             current_tab = GraphicConstants().current_tab
             for widget in self.tabs[current_tab].values():
                 widget.recreate_widget()

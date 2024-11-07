@@ -1,6 +1,6 @@
 from dashboard.Dashboard import Dashboard
 
-
+# Creates a tab on the dashboard to put widgets on
 class DashboardTab:
     def __init__(self, tab_name):
         self.tab_name = tab_name
