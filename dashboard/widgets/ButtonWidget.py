@@ -73,7 +73,7 @@ class ButtonWidget(Widget):
         self.canvas.itemconfig(self.g_button_rect, fill=GraphicConstants().light_grey, outline=GraphicConstants().light_grey)
     
     # Need to override the is_pressed method to account for the button
-    def is_pressed(self, x, y):
+    def is_point_inside(self, x, y):
         # Check if the x and y coordinates are within the widget but outside the button rectangle
         in_widget_x = self.x <= x <= self.x + self.width
         in_widget_y = self.y <= y <= self.y + self.height
