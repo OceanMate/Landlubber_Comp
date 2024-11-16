@@ -32,7 +32,7 @@ class GridGraphics:
         self.grid_width, self.grid_height = self.convert_pixel_to_grid(GraphicConstants().window_width, px_grid_height)
         
         # Create the grid for the default tab
-        self.grids[GraphicConstants().default_tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+        self.create_new_tab_grid(GraphicConstants().default_tab)
         
         # Create the canvas for the grid
         self.grid_canvas = Canvas(
@@ -55,19 +55,8 @@ class GridGraphics:
         # Create the logo image on the canvas
         self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
         
-        # Draw the vertical grid lines, with thicker lines every 5 grid spaces
-        for i in range(GraphicConstants().grid_dim, GraphicConstants().window_width, GraphicConstants().grid_dim):
-            color = GraphicConstants().middle_blue if (i // GraphicConstants().grid_dim) % 5 == 0 else GraphicConstants().light_blue
-            width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
-            
-            self.grid_canvas.create_line(i, 0, i, px_grid_height, fill=color, width=width)
-    
-        # Draw the horizontal grid lines, with thicker lines every 5 grid spaces
-        for i in range(GraphicConstants().grid_dim, px_grid_height, GraphicConstants().grid_dim):
-            color = GraphicConstants().middle_blue if (i // GraphicConstants().grid_dim) % 5 == 0 else GraphicConstants().light_blue
-            width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
-            
-            self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
+        # Draw the grid on the canvas
+        self.draw_grid()
 
         # Bind the left mouse click, release, and move events to the canvas
         self.grid_canvas.bind("<Button-1>", self._on_mouse_click)
@@ -85,7 +74,7 @@ class GridGraphics:
         
         # Create the grid for each tab at new dimensions
         for tab in self.tabs:
-            self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+            self.create_new_tab_grid(tab)
         
         # Calculate the position to place the image in the center of the grid
         logo_x = (GraphicConstants().window_width - self.rabbit_logo.width()) // 2
@@ -97,6 +86,18 @@ class GridGraphics:
         
         # Create the logo image on the canvas
         self.background_image = self.grid_canvas.create_image(logo_x, logo_y, image=self.rabbit_logo, anchor="nw")
+        
+        # Redraw the grid
+        self.draw_grid()
+    
+    # Create a new tab grid for a new tab (should be run every time a new tab is created)
+    def create_new_tab_grid(self, tab):
+        self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
+
+    # Draw the grid on the canvas
+    def draw_grid(self):
+        # Calculate the height of the grid
+        px_grid_height = GraphicConstants().window_height - GraphicConstants().tab_bar_height - GraphicConstants().bottom_bar_height
         
         # Draw the vertical grid lines, with thicker lines every 5 grid spaces
         for i in range(GraphicConstants().grid_dim, GraphicConstants().window_width, GraphicConstants().grid_dim):
@@ -111,11 +112,6 @@ class GridGraphics:
             width = 2 if (i // GraphicConstants().grid_dim) % 5 == 0 else 1
             
             self.grid_canvas.create_line(0, i, GraphicConstants().window_width, i, fill=color, width=width)
-    
-    # Create a new tab grid for a new tab (should be run every time a new tab is created)
-    def create_new_tab_grid(self, tab):
-        self.grids[tab] = [[0 for _ in range(self.grid_width)] for _ in range(self.grid_height)]
-
     
     def _on_mouse_click(self,event):
         # Starts a timer when the mouse is clicked to see how long the mouse is held down

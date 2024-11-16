@@ -6,31 +6,36 @@ from structure.Input.ControllerListener import ControllerListener
 
 import time
 
+from transmission.Transmission import Transmission
+
 def main():
     run_robot = Robot()
     robot_state = RobotState()
+    naut_coms = Transmission()
 
+    naut_coms.start()
     run_robot.robot_init()
     
     start_time = time.time()
 
     while True:
         # Run periodic functions
-
         ControllerListener().update()
         KeyboardListener().update()
                      
         run_robot.robot_periodic()
+        naut_coms.update()
         
-        if robot_state.is_init_teleop():
+        if robot_state.should_init_teleop():
             run_robot.teleop_init()
         
         if robot_state.is_teleop_enabled():
             run_robot.teleop_periodic()
             
-        if robot_state.is_init_disable():
+        if robot_state.should_init_disable():
             run_robot.disabled_init()
         
+        # Update the dashboard
         Dashboard().update()
         
         # Add a small delay to prevent high CPU usage

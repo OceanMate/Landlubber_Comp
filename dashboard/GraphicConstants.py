@@ -30,6 +30,7 @@ class GraphicConstants:
         self.light_blue = "#e0f7fa"
         self.dark_green = "#006400"
         self.red = "#FF0000"
+        self.orange = "#FFA500"
         
         # Font
         self.font = "Cascadia Code"

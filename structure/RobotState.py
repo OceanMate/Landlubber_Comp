@@ -18,13 +18,13 @@ class RobotState:
         self._teleop_to_be_initialized = False
         self._disabled_to_be_initialized = False
         
-    def is_init_teleop(self):
+    def should_init_teleop(self):
         should_boot_teleop = self._teleop_enabled and self._teleop_to_be_initialized
         self._teleop_to_be_initialized = False
         
         return should_boot_teleop
     
-    def is_init_disable(self):
+    def should_init_disable(self):
         should_boot_disable = not self._teleop_enabled and self._disabled_to_be_initialized
         self._disabled_to_be_initialized = False
         
@@ -34,9 +34,17 @@ class RobotState:
         return self._teleop_enabled
     
     def enable_teleop(self):
+        
+        # prevent enabling teleop if not connected to pi, disable if debugging
+        if not Transmission().connected:
+            print("Cannot enable teleop, not connected to pi")
+            return False
+        
+        
         Transmission().set_enable(True)
         self._teleop_enabled = True
         self._teleop_to_be_initialized = True
+        return True
     
     def disable_robot(self):
         Transmission().set_enable(False)

@@ -12,6 +12,7 @@ from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
 from dashboard.widgets.ButtonWidget import ButtonWidget
+from transmission.Transmission import Transmission
 
 
 # TODO - Add display for connection to rasberry pi
@@ -183,6 +184,7 @@ class Dashboard:
                 self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
 
         
+        
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
         
@@ -191,7 +193,10 @@ class Dashboard:
             if self.user_inputs[user_input].run:
                 self.user_inputs[user_input].function()
                 self.user_inputs[user_input].run = False
-                
+        
+        # Update the connection status in the bottom bar
+        self.bottom_bar.update_comms_text(Transmission().connected)
+        
         # Check hotkeys
         self.dashboard_hotkeys_loop.poll()
         

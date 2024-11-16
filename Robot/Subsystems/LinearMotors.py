@@ -1,6 +1,7 @@
 from dashboard.DashboardTab import DashboardTab
 from dashboard.Dashboard import Dashboard
 from structure.Subsystem import Subsystem
+from transmission.Transmission import Transmission
 
 class LinearMotors(Subsystem):
     def __init__(self):
@@ -10,8 +11,8 @@ class LinearMotors(Subsystem):
         
         self.FL = 0
         self.FR = 0
-        self.BR = 0
         self.BL = 0
+        self.BR = 0
     
     # Runs the motors given the x, y, and z speeds (each from -1 to 1)
     def runMotors(self, xSpeed, ySpeed, zRotation):
@@ -26,10 +27,7 @@ class LinearMotors(Subsystem):
         # prevent division by zero
         if (total_sum == 0):
             # no movement
-            self._setMotor("FL", 0)
-            self._setMotor("FR", 0)
-            self._setMotor("BR", 0)
-            self._setMotor("BL", 0)
+            self.stop_motors()
             return
 
         # actual matrix input
@@ -38,20 +36,25 @@ class LinearMotors(Subsystem):
         reducedZ = zRotation / total_sum
 
         # motor matrix output
-        self.FL = reducedX + reducedY + reducedZ
-        self.FR = reducedX - reducedY - reducedZ
-        self.BR = reducedZ - reducedX - reducedY
-        self.BL = reducedY - reducedX - reducedZ
+        fl_speed = reducedX + reducedY + reducedZ
+        fr_speed = reducedX - reducedY - reducedZ
+        bl_speed = reducedY - reducedX - reducedZ
+        br_speed = reducedZ - reducedX - reducedY
         
-        self._setMotor("FL", self.FL)
-        self._setMotor("FR", self.FR)
-        self._setMotor("BR", self.BR)
-        self._setMotor("BL", self.BL)
+        self._set_motor_speeds(fl_speed, fr_speed, bl_speed, br_speed)
         
     
-    def _setMotor(self, motor, speed):
-        # TODO define better
-        pass
+    def _set_motor_speeds(self, fl_speed, fr_speed, bl_speed, br_speed):
+        self.FL = fl_speed
+        self.FR = fr_speed
+        self.BL = bl_speed
+        self.BR = br_speed
+        
+        Transmission().set_linear_motor_speeds(fl_speed, fr_speed, bl_speed, br_speed)
+        
+    
+    def stop_motors(self):
+        self._set_motor_speeds(0, 0, 0, 0)
     
     def periodic(self):
         self.programmer_tab.put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
