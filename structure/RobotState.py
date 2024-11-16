@@ -34,12 +34,12 @@ class RobotState:
         return self._teleop_enabled
     
     def enable_teleop(self):
-        
+        '''
         # prevent enabling teleop if not connected to pi, disable if debugging
         if not Transmission().connected:
             print("Cannot enable teleop, not connected to pi")
             return False
-        
+        '''
         
         Transmission().set_enable(True)
         self._teleop_enabled = True

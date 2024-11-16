@@ -4,6 +4,7 @@ from Robot.Commands.FunkyMotorCmd import FunkyMotorCmd
 from Robot.Commands.OverrideCmd import OverrideCmd
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.Input.ControllerButton import ControllerButton
+from structure.commands.InstantCommand import InstantCommand
 
 class RobotContainer:
     def __init__(self):
@@ -17,6 +18,7 @@ class RobotContainer:
 
     def configure_button_bindings(self):
         # schedule FunkyMotorCmd when "f" is pressed
-        KeyboardInput("f").on_false(FunkyMotorCmd(self.linear_motors))
+        KeyboardInput("f").on_true(FunkyMotorCmd(self.linear_motors))
         KeyboardInput("o").while_false(OverrideCmd(self.linear_motors))
         ControllerButton(0).on_true(FunkyMotorCmd(self.linear_motors)) 
+        KeyboardInput("w").on_true(InstantCommand(lambda: print("w")))

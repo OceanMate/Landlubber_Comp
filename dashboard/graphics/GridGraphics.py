@@ -23,7 +23,6 @@ class GridGraphics:
         # Initialize the grids dictionary, there should be a grid for each tab
         self.grids = {}
         
-    
     # Generate the grid on the canvas which the widgets will be placed on
     def generate_grid(self):
         # Calculate the height of the grid

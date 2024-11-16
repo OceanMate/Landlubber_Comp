@@ -181,9 +181,6 @@ class Dashboard:
             current_tab = GraphicConstants().current_tab
             for widget in self.tabs[current_tab].values():
                 widget.recreate_widget()
-                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
-
-        
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()

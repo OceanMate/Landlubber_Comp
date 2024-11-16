@@ -1,5 +1,3 @@
-from re import sub
-from token import EQUAL
 from structure.CommandRunner import CommandRunner
 
 class Command:

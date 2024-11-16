@@ -69,7 +69,7 @@ class Transmission:
             return True
         except socket.error as e:
             # debug
-            print(f"Connection failed: {e}")
+            #print(f"Connection failed: {e}")
             self.connected = False
             return False
     

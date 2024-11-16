@@ -140,6 +140,7 @@ class Widget():
     def recreate_widget(self):
         self.canvas.delete(self.tag)
         self._create_widget_frame()
+        self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, GraphicConstants().current_tab)
     
     # Resize the widget based on the edges being resized
     def resize_widget(self, grid_x, grid_y, edge_bools):
