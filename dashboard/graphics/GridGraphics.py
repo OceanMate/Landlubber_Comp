@@ -23,6 +23,10 @@ class GridGraphics:
         # Initialize the grids dictionary, there should be a grid for each tab
         self.grids = {}
         
+        # Initialize variables for moving and resizing widgets
+        self.is_moving = False
+        self.is_resizing = False
+        
     # Generate the grid on the canvas which the widgets will be placed on
     def generate_grid(self):
         # Calculate the height of the grid
@@ -117,8 +121,8 @@ class GridGraphics:
         self.clk_start_time = time.time()
         
         self.widget_pressed = ""
-        self.is_moving = False
         self.is_resizing = False
+        self.is_moving = False
         current_tab = GraphicConstants().current_tab
         
         # Check if the mouse is on a widget
@@ -154,7 +158,6 @@ class GridGraphics:
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
             
-            self.is_resizing = False
             
             # Ends the function early if the widget is being resized (prevents the widget from also being moved) 
             return
@@ -162,22 +165,26 @@ class GridGraphics:
         
         # Check if the widget is being moved
         # User needs to hold down the mouse for at least 0.2 seconds to move the widget
-        if time.time() - self.clk_start_time > 0.2 and self.is_moving:
-            grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
-            
-            # Adjust the grid_x and grid_y based on the offset of the first click on the widget
-            grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
-            grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
-            
-            # constrain the grid_x and grid_y to the grid
-            grid_x = max(0, grid_x)
-            grid_y = max(0, grid_y)
-            grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
-            grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
-            
-            self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
-            
-            self.is_moving = False
+        if self.is_moving:
+            if time.time() - self.clk_start_time > 0.2:
+                grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
+                
+                # Adjust the grid_x and grid_y based on the offset of the first click on the widget
+                grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
+                grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
+                
+                # constrain the grid_x and grid_y to the grid
+                grid_x = max(0, grid_x)
+                grid_y = max(0, grid_y)
+                grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
+                grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
+                
+                self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
+        
+        # Reset the variables for the next mouse click   
+        self.is_moving = False
+        self.is_resizing = False
+
 
     # Runs when the mouse is moved
     def _on_mouse_move(self, event):
