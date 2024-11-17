@@ -81,8 +81,7 @@ class Dashboard:
         # Set the function to run when the hotkey is pressed
         enter_hotkey.non_cmd_on_true(func=on_enter)
         # Set the loop for the hotkey to be the dashboard loop
-        enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)
-        
+        enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)     
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
     def put_string(self, label, text, tab = GraphicConstants().default_tab):
@@ -165,7 +164,7 @@ class Dashboard:
     # Function that should be called periodicly to update the dashboard
     def update(self):
         # Debug the grid
-        # self.grid_graphics.debug_grid()
+        self.grid_graphics.debug_grid()
         
         # Check if the window has been resized, and resize all the widgets if it has        
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
@@ -181,6 +180,11 @@ class Dashboard:
             current_tab = GraphicConstants().current_tab
             for widget in self.tabs[current_tab].values():
                 widget.recreate_widget()
+            
+            for widget in self.tabs[current_tab].values():
+                if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
+                    new_x, new_y =self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
+                    widget.move_widget(new_x, new_y)
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()

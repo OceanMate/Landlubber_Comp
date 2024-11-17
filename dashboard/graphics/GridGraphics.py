@@ -216,7 +216,8 @@ class GridGraphics:
         # Check if the rectangle overlaps with any other widgets
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                if self.grids[widget_tab][i][j] != 0:
+                # Check if the rectangle is out of bounds or overlaps with another widget
+                if i < 0 or j < 0 or i >= self.grid_height or j >= self.grid_width or self.grids[widget_tab][i][j] != 0:
                     return False
         return True
 
@@ -224,13 +225,17 @@ class GridGraphics:
     def place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                self.grids[widget_tab][i][j] = 1
+                # Check if the rectangle is in bounds
+                if 0 <= i < self.grid_height and 0 <= j < self.grid_width:
+                    self.grids[widget_tab][i][j] = 1
     
     # Remove a rectangle of rect_width x rect_height at x, y (set all values in the rectangle to 0)
     def remove_rectangle(self, x, y, rect_width, rect_height, widget_tab):
         for i in range(y, y + rect_height):
             for j in range(x, x + rect_width):
-                self.grids[widget_tab][i][j] = 0
+                # Check if the rectangle is in bounds
+                if 0 <= i < self.grid_height and 0 <= j < self.grid_width:
+                    self.grids[widget_tab][i][j] = 0
 
     # Find the next available space to place a rectangle of rect_width x rect_height
     def find_next_available_space(self, rect_width, rect_height, widget_tab):        
@@ -238,7 +243,11 @@ class GridGraphics:
             for x in range(self.grid_width):
                 if self.can_place_rectangle(x, y, rect_width, rect_height, widget_tab):
                     return (x, y) # Tuple of the x and y coordinates
-        return (-1, -1)
+        return (-1 - rect_width, -1 - rect_height) # Move the widget off the screen if there is no available space
+    
+    # Check if the rectangle is out of bounds
+    def is_out_of_bounds(self, x, y, rect_width, rect_height):
+        return x < 0 or y < 0 or x + rect_width > self.grid_width or y + rect_height > self.grid_height
     
     # Convert pixel coordinates to grid coordinates
     def convert_pixel_to_grid(self, x, y):

@@ -11,7 +11,7 @@ class Transmission:
             cls._instance = super().__new__(cls)
         return cls._instance    
        
-    def start(self, host: str = '192.168.1.101', port: int = 8000):
+    def start(self, host: str = '192.168.1.100', port: int = 8000):
         self.linear_motor_speeds = f"linear_motor_speeds {0} {0} {0} {0}"
         self.vertical_motor_speeds = f"vertical_motor_speeds {0} {0}"
         self.enabled = f"enabled {False}"
@@ -66,10 +66,12 @@ class Transmission:
             self.socket.settimeout(0)  # 0 second timeout to make non-blocking
             self.socket.connect((self.host, self.port))
             self.connected = True
+            
+            print("Connected to server")
             return True
         except socket.error as e:
             # debug
-            #print(f"Connection failed: {e}")
+            print(f"Connection failed: {e}")
             self.connected = False
             return False
     
