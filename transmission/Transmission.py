@@ -67,11 +67,11 @@ class Transmission:
             self.socket.connect((self.host, self.port))
             self.connected = True
             
-            print("Connected to server")
+            #print("Connected to server")
             return True
         except socket.error as e:
             # debug
-            print(f"Connection failed: {e}")
+            #print(f"Connection failed: {e}")
             self.connected = False
             return False
     

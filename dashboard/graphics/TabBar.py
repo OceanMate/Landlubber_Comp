@@ -2,6 +2,7 @@ from tkinter import Canvas
 
 import tkinter.font as tkfont
 from dashboard.GraphicConstants import GraphicConstants
+from dashboard.graphics.GridGraphics import GridGraphics
 
 
 class TabBar:
@@ -80,6 +81,12 @@ class TabBar:
         # Show all widgets in the current tab
         for widget in self.tabs[tab_name].values():
             widget.show()
+        
+        # Move all widgets that are out of bounds to the next available space
+        for widget in self.tabs[tab_name].values():
+            if GridGraphics().is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
+                new_x, new_y = GridGraphics().find_next_available_space(widget.grid_width, widget.grid_height, tab_name)
+                widget.move_widget(new_x, new_y)
     
     # Get the tag name of a tab name
     def get_tag_name(self, tab_name):
