@@ -117,6 +117,7 @@ class GridGraphics:
         self.clk_start_time = time.time()
         
         self.widget_pressed = ""
+        self.is_moving = False
         self.is_resizing = False
         current_tab = GraphicConstants().current_tab
         
@@ -134,6 +135,8 @@ class GridGraphics:
                 self.edge_bools = widget.is_point_near_edge(event.x, event.y)
                 if True in self.edge_bools:
                     self.is_resizing = True
+                else:
+                    self.is_moving = True
     
     # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
@@ -151,13 +154,15 @@ class GridGraphics:
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
             
+            self.is_resizing = False
+            
             # Ends the function early if the widget is being resized (prevents the widget from also being moved) 
             return
 
         
         # Check if the widget is being moved
         # User needs to hold down the mouse for at least 0.2 seconds to move the widget
-        if time.time() - self.clk_start_time > 0.2 and self.widget_pressed != "":
+        if time.time() - self.clk_start_time > 0.2 and self.is_moving:
             grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
             
             # Adjust the grid_x and grid_y based on the offset of the first click on the widget
@@ -171,6 +176,8 @@ class GridGraphics:
             grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
+            
+            self.is_moving = False
 
     # Runs when the mouse is moved
     def _on_mouse_move(self, event):
@@ -206,6 +213,12 @@ class GridGraphics:
         # Reset cursor to default if the mouse is not on the edge of a widget
         if not cursor_set:
             self.grid_canvas.config(cursor="")
+        
+        # make the widget follow the mouse if the widget is being moved
+        if self.is_moving:
+            self.tabs[current_tab][self.widget_pressed].move_widget_unrestricted(event.x - self.x_offset, event.y - self.y_offset)
+            # bring the widget to the front of the canvas
+            self.tabs[current_tab][self.widget_pressed].show()
             
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
     def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):

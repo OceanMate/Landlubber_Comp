@@ -1,11 +1,12 @@
 from dashboard.GraphicConstants import GraphicConstants
+import tkinter as tk
 import tkinter.font as tkfont
 
 from dashboard.graphics.GridGraphics import GridGraphics
 
 
 class Widget():
-    def __init__(self, canvas, label):
+    def __init__(self, canvas: tk.Canvas, label: str):
         # Important widget variables
         self.widget_label_height = 20
         self.widget_offset = 3
@@ -96,10 +97,6 @@ class Widget():
         # Remove the widget from the grid
         self.gridmanager.remove_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
         
-        # Calculate the change in x and y
-        current_x = self.x
-        current_y = self.y
-        
         # Moves all items in the tag by the delta x and delta y
         if self.gridmanager.can_place_rectangle(grid_x, grid_y, self.grid_width, self.grid_height, opperating_tab):
             self._set_location(grid_x, grid_y)
@@ -107,15 +104,17 @@ class Widget():
             new_grid_loc = self.gridmanager.find_next_available_space(self.grid_width, self.grid_height, opperating_tab)
             self._set_location(new_grid_loc[0], new_grid_loc[1])
         
-        # Calculate the change in x and y
-        delta_x = self.x - current_x
-        delta_y = self.y - current_y
         
         # Move the widget to the new location
-        self.canvas.move(self.tag, delta_x, delta_y)
+        self.canvas.moveto(self.tag, self.x + self.widget_offset, self.y + self.widget_offset)
         
         # Place the widget back on the grid
         self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
+
+    # Move the widget to a new location without restrictions and without changing the grid location
+    def move_widget_unrestricted(self, x, y):
+        # Move the widget to the new location
+        self.canvas.moveto(self.tag, x, y)
 
     # Check if the widget is pressed
     def is_point_inside(self, x, y):

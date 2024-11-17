@@ -164,7 +164,7 @@ class Dashboard:
     # Function that should be called periodicly to update the dashboard
     def update(self):
         # Debug the grid
-        #self.grid_graphics.debug_grid()
+        # self.grid_graphics.debug_grid()
         
         # Check if the window has been resized, and resize all the widgets if it has        
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
