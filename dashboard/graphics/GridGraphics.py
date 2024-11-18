@@ -1,7 +1,8 @@
 import time
 from tkinter import Canvas, PhotoImage
 from dashboard.GraphicConstants import GraphicConstants
-from dashboard.graphics.UserInput import UserInput
+from collections import deque
+
 
 
 class GridGraphics:
@@ -140,6 +141,7 @@ class GridGraphics:
                 if True in self.edge_bools:
                     self.is_resizing = True
                 else:
+                    self.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
                     self.is_moving = True
     
     # TODO make move widget based of previous mouse location
@@ -158,7 +160,8 @@ class GridGraphics:
             
             self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
             
-            
+            self.is_resizing = False
+
             # Ends the function early if the widget is being resized (prevents the widget from also being moved) 
             return
 
@@ -166,12 +169,16 @@ class GridGraphics:
         # Check if the widget is being moved
         # User needs to hold down the mouse for at least 0.2 seconds to move the widget
         if self.is_moving:
-            if time.time() - self.clk_start_time > 0.2:
-                grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
+            # Delete all previous overlap rectangles
+            self.grid_canvas.delete("overlap_rect")
+            
+            if time.time() - self.clk_start_time > 0.15:
+                # Snap the mouse position to the pixel position on the grid
+                # add half the grid dimensions to aid in calculating the grid position
+                px_pos_x = event.x - self.x_offset + int(GraphicConstants().grid_dim / 2)
+                px_pos_y = event.y - self.y_offset + int(GraphicConstants().grid_dim / 2)
                 
-                # Adjust the grid_x and grid_y based on the offset of the first click on the widget
-                grid_x = grid_x - self.x_offset // GraphicConstants().grid_dim
-                grid_y = grid_y - self.y_offset // GraphicConstants().grid_dim
+                grid_x, grid_y = self.convert_pixel_to_grid(px_pos_x, px_pos_y)
                 
                 # constrain the grid_x and grid_y to the grid
                 grid_x = max(0, grid_x)
@@ -180,11 +187,10 @@ class GridGraphics:
                 grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
                 
                 self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
-        
-        # Reset the variables for the next mouse click   
-        self.is_moving = False
-        self.is_resizing = False
-
+                
+            self.is_moving = False
+            # Ends the function early if the widget is being moved
+            return
 
     # Runs when the mouse is moved
     def _on_mouse_move(self, event):
@@ -222,8 +228,38 @@ class GridGraphics:
             self.grid_canvas.config(cursor="")
         
         # make the widget follow the mouse if the widget is being moved
-        if self.is_moving:
+        if self.is_moving and  time.time() - self.clk_start_time > 0.15:
             self.tabs[current_tab][self.widget_pressed].move_widget_unrestricted(event.x - self.x_offset, event.y - self.y_offset)
+            
+            # Snap the mouse position to the pixel position on the grid
+            # add half the grid dimensions to aid in calculating the grid position
+            px_pos_x = event.x - self.x_offset + int(GraphicConstants().grid_dim / 2)
+            px_pos_y = event.y - self.y_offset + int(GraphicConstants().grid_dim / 2)
+            
+            # Convert the pixel position of the mouse to grid coordinates
+            grid_x, grid_y = self.convert_pixel_to_grid(px_pos_x, px_pos_y)
+            # Get the grid dimensions of the widget being moved
+            widget_grid_width = self.tabs[current_tab][self.widget_pressed].grid_width
+            widget_grid_height = self.tabs[current_tab][self.widget_pressed].grid_height
+            
+            # Delete all previous overlap rectangles
+            self.grid_canvas.delete("overlap_rect")
+            
+            # Draw a rectangle on the canvas to show where the widget will be placed
+            self.grid_canvas.create_rectangle(
+                grid_x * GraphicConstants().grid_dim, grid_y * GraphicConstants().grid_dim,
+                grid_x * GraphicConstants().grid_dim + widget_grid_width * GraphicConstants().grid_dim,
+                grid_y * GraphicConstants().grid_dim + widget_grid_height * GraphicConstants().grid_dim,
+                fill=GraphicConstants().light_red,
+                outline=GraphicConstants().red,
+                stipple="gray50",  # This makes the rectangle appear semi-transparent
+                tags="overlap_rect"
+            )
+            
+            if self.can_place_rectangle(grid_x, grid_y, widget_grid_width, widget_grid_height, current_tab):
+                self.grid_canvas.itemconfig("overlap_rect", fill=GraphicConstants().light_green)
+                self.grid_canvas.itemconfig("overlap_rect", outline=GraphicConstants().green)
+            
             # bring the widget to the front of the canvas
             self.tabs[current_tab][self.widget_pressed].show()
             
@@ -265,12 +301,32 @@ class GridGraphics:
                     return (x, y) # Tuple of the x and y coordinates
         return (-1 - rect_width, -1 - rect_height) # Move the widget off the screen if there is no available space
     
+    def find_nearest_available_space(self, x, y, rect_width, rect_height, widget_tab):
+        # Use a breadth-first search (BFS) to find the nearest available space
+        queue = deque([(x, y)])
+        visited = set((x, y))
+        
+        while queue:
+            cx, cy = queue.popleft()
+            
+            if self.can_place_rectangle(cx, cy, rect_width, rect_height, widget_tab):
+                return (cx, cy)
+            
+            # Check the neighboring cells
+            for nx, ny in [(cx-1, cy), (cx+1, cy), (cx, cy-1), (cx, cy+1)]:
+                if (nx, ny) not in visited and 0 <= nx < self.grid_width and 0 <= ny < self.grid_height:
+                    visited.add((nx, ny))
+                    queue.append((nx, ny))
+        
+        # If no available space is found, return an invalid position
+        return (-1 - rect_width, -1 - rect_height)
+    
     # Check if the rectangle is out of bounds
     def is_out_of_bounds(self, x, y, rect_width, rect_height):
         return x < 0 or y < 0 or x + rect_width > self.grid_width or y + rect_height > self.grid_height
     
     # Convert pixel coordinates to grid coordinates
-    def convert_pixel_to_grid(self, x, y):
+    def convert_pixel_to_grid(self, x, y) -> tuple[int, int]:
         return x // GraphicConstants().grid_dim, y // GraphicConstants().grid_dim
     
     # Debug the grid by displaying the values of the grid on the canvas
@@ -293,4 +349,3 @@ class GridGraphics:
         
         # Raise the grid to the top of the canvas so it isn't behind the widgets
         self.grid_canvas.tag_raise(tag)
-

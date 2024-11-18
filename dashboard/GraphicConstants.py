@@ -28,7 +28,10 @@ class GraphicConstants:
         self.blue = "#2caad3"
         self.middle_blue = "#d0f0f8"
         self.light_blue = "#e0f7fa"
+        self.light_green = "#90EE90"
+        self.green = "#008000"
         self.dark_green = "#006400"
+        self.light_red = "#FFB6C1"
         self.red = "#FF0000"
         self.orange = "#FFA500"
         

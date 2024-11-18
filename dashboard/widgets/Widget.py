@@ -101,7 +101,7 @@ class Widget():
         if self.gridmanager.can_place_rectangle(grid_x, grid_y, self.grid_width, self.grid_height, opperating_tab):
             self._set_location(grid_x, grid_y)
         else:
-            new_grid_loc = self.gridmanager.find_next_available_space(self.grid_width, self.grid_height, opperating_tab)
+            new_grid_loc = self.gridmanager.find_nearest_available_space(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)
             self._set_location(new_grid_loc[0], new_grid_loc[1])
         
         
