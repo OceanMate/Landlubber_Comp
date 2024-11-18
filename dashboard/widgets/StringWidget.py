@@ -80,5 +80,3 @@ class StringWidget(Widget):
         self.display_text = display_text
         display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
-
-

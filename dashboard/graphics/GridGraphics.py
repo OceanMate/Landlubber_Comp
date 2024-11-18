@@ -3,8 +3,6 @@ from tkinter import Canvas, PhotoImage
 from dashboard.GraphicConstants import GraphicConstants
 from collections import deque
 
-
-
 class GridGraphics:
     _instance = None
     
@@ -151,6 +149,7 @@ class GridGraphics:
         current_tab = GraphicConstants().current_tab
         # Delete all previous overlap rectangles
         self.grid_canvas.delete("overlap_rect")
+        widget = self.tabs[current_tab][self.widget_pressed]
 
         # Check if the widget is being resized
         if self.is_resizing:
@@ -162,7 +161,7 @@ class GridGraphics:
             grid_x = min(grid_x, self.grid_width)
             grid_y = min(grid_y, self.grid_height)
             
-            self.tabs[GraphicConstants().current_tab][self.widget_pressed].resize_widget(grid_x, grid_y, self.edge_bools)
+            widget.resize_widget(grid_x, grid_y, self.edge_bools)
             
             self.is_resizing = False
 
@@ -184,11 +183,14 @@ class GridGraphics:
                 # constrain the grid_x and grid_y to the grid
                 grid_x = max(0, grid_x)
                 grid_y = max(0, grid_y)
-                grid_x = min(grid_x, self.grid_width - self.tabs[current_tab][self.widget_pressed].grid_width)
-                grid_y = min(grid_y, self.grid_height - self.tabs[current_tab][self.widget_pressed].grid_height)
+                grid_x = min(grid_x, self.grid_width - widget.grid_width)
+                grid_y = min(grid_y, self.grid_height - widget.grid_height)
                 
-                self.tabs[GraphicConstants().current_tab][self.widget_pressed].move_widget(grid_x, grid_y)
-                
+                widget.move_widget(grid_x, grid_y)
+            else:
+                # If the mouse is released too quickly, the widget will not be moved and should replace the rectangle on the grid
+                self.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
+        
             self.is_moving = False
             # Ends the function early if the widget is being moved
             return
