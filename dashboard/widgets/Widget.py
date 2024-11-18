@@ -104,9 +104,8 @@ class Widget():
             new_grid_loc = self.gridmanager.find_nearest_available_space(grid_x, grid_y, self.grid_width, self.grid_height, opperating_tab)
             self._set_location(new_grid_loc[0], new_grid_loc[1])
         
-        
-        # Move the widget to the new location
-        self.canvas.moveto(self.tag, self.x + self.widget_offset, self.y + self.widget_offset)
+        # recreate the widget to reflect the new location
+        self.recreate_widget()
         
         # Place the widget back on the grid
         self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, opperating_tab)

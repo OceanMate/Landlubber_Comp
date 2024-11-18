@@ -188,8 +188,8 @@ class GridGraphics:
                 
                 widget.move_widget(grid_x, grid_y)
             else:
-                # If the mouse is released too quickly, the widget will not be moved and should replace the rectangle on the grid
-                self.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
+                # If the mouse is released too quickly, the widget will not be moved
+                widget.move_widget(widget.grid_x, widget.grid_y)
         
             self.is_moving = False
             # Ends the function early if the widget is being moved
