@@ -28,14 +28,16 @@ class ButtonWidget(Widget):
         
         return grid_width, grid_height
 
-    # Create the button widget on the canvas
     def create_button_widget(self, grid_x, grid_y):
         # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
         
         # Create the frame of the widget
         self._create_widget_frame()
-        
+        self._make_button_widget()
+
+    # Create the button widget on the canvas
+    def _make_button_widget(self):
         # Create the button rectangle
         button_offset = 5
         offset = self.widget_offset + button_offset
@@ -51,9 +53,13 @@ class ButtonWidget(Widget):
         text_x = self.x + self.width / 2
         text_y = self.y + (self.height + self.widget_label_height) / 2
         
+        # Resize the text to fit in the widget
+        label = self.resize_text(self.label)
+        
+        # Create the display text of the widget, stores the graphic object for use in updating the text
         self.g_button_text = self.canvas.create_text(
             text_x, text_y,
-            text=self.label,
+            text=label,
             fill=GraphicConstants().blue,
             anchor="center",
             font=self.font,
@@ -88,4 +94,4 @@ class ButtonWidget(Widget):
 
     def recreate_widget(self):
         super().recreate_widget()
-        self.create_button_widget(self.grid_x, self.grid_y)
+        self._make_button_widget()

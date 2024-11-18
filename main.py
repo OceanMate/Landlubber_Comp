@@ -19,10 +19,12 @@ def main():
     start_time = time.time()
 
     while True:
+        # Update the dashboard
+        Dashboard().update()
+        
         # Run periodic functions
         ControllerListener().update()
-        KeyboardListener().update()
-                     
+        KeyboardListener().update()      
         run_robot.robot_periodic()
         naut_coms.update()
         
@@ -34,9 +36,6 @@ def main():
             
         if robot_state.should_init_disable():
             run_robot.disabled_init()
-        
-        # Update the dashboard
-        Dashboard().update()
         
         # Add a small delay to prevent high CPU usage
         time.sleep(0.01)

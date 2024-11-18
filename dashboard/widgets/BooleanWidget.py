@@ -28,19 +28,22 @@ class BooleanWidget(Widget):
         
         return grid_width, grid_height
     
-    # Create the string widget on the canvas
-    def create_bool_widget(self, grid_x, grid_y, display_bool):                
+    def create_bool_widget(self, grid_x, grid_y, display_bool):
         # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
+        self.display_bool = display_bool
         
         # Create the frame of the widget
         self._create_widget_frame()
-        
+        self._make_bool_widget()
+    
+    # Create the string widget on the canvas
+    def _make_bool_widget(self):
         bool_offset = 5
         offset = self.widget_offset + bool_offset
         
         # Create a rectangle under the label
-        rect_color = GraphicConstants().dark_green if display_bool else GraphicConstants().red
+        rect_color = GraphicConstants().dark_green if self.display_bool else GraphicConstants().red
         self.g_bool_rect = self.canvas.create_rectangle(
             self.x + offset, self.y + self.widget_label_height + offset, 
             self.x + self.width - offset, self.y + self.height - offset,
@@ -50,7 +53,7 @@ class BooleanWidget(Widget):
         
     def recreate_widget(self):
         super().recreate_widget()
-        self.create_bool_widget(self.grid_x, self.grid_y, self.display_bool)
+        self._make_bool_widget()
             
     # Update the text of the widget
     def update_bool(self, display_bool):

@@ -77,6 +77,7 @@ class StringWidget(Widget):
             
     # Update the text of the widget
     def update_text(self, display_text):
+        self.display_text = display_text
         display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
 
