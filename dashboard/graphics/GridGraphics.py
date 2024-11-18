@@ -136,17 +136,21 @@ class GridGraphics:
                 self.x_offset = event.x - widget.x
                 self.y_offset = event.y - widget.y
                 
+                # Remove the rectangle from the grid
+                self.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
+                
                 # Check if the mouse is on the edge of the widget
                 self.edge_bools = widget.is_point_near_edge(event.x, event.y)
                 if True in self.edge_bools:
                     self.is_resizing = True
                 else:
-                    self.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, current_tab)
                     self.is_moving = True
     
     # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
         current_tab = GraphicConstants().current_tab
+        # Delete all previous overlap rectangles
+        self.grid_canvas.delete("overlap_rect")
 
         # Check if the widget is being resized
         if self.is_resizing:
@@ -169,9 +173,6 @@ class GridGraphics:
         # Check if the widget is being moved
         # User needs to hold down the mouse for at least 0.2 seconds to move the widget
         if self.is_moving:
-            # Delete all previous overlap rectangles
-            self.grid_canvas.delete("overlap_rect")
-            
             if time.time() - self.clk_start_time > 0.15:
                 # Snap the mouse position to the pixel position on the grid
                 # add half the grid dimensions to aid in calculating the grid position
@@ -229,7 +230,8 @@ class GridGraphics:
         
         # make the widget follow the mouse if the widget is being moved
         if self.is_moving and  time.time() - self.clk_start_time > 0.15:
-            self.tabs[current_tab][self.widget_pressed].move_widget_unrestricted(event.x - self.x_offset, event.y - self.y_offset)
+            widget = self.tabs[current_tab][self.widget_pressed]
+            widget.move_widget_unrestricted(event.x - self.x_offset, event.y - self.y_offset)
             
             # Snap the mouse position to the pixel position on the grid
             # add half the grid dimensions to aid in calculating the grid position
@@ -239,8 +241,8 @@ class GridGraphics:
             # Convert the pixel position of the mouse to grid coordinates
             grid_x, grid_y = self.convert_pixel_to_grid(px_pos_x, px_pos_y)
             # Get the grid dimensions of the widget being moved
-            widget_grid_width = self.tabs[current_tab][self.widget_pressed].grid_width
-            widget_grid_height = self.tabs[current_tab][self.widget_pressed].grid_height
+            widget_grid_width = widget.grid_width
+            widget_grid_height = widget.grid_height
             
             # Delete all previous overlap rectangles
             self.grid_canvas.delete("overlap_rect")
@@ -261,7 +263,72 @@ class GridGraphics:
                 self.grid_canvas.itemconfig("overlap_rect", outline=GraphicConstants().green)
             
             # bring the widget to the front of the canvas
-            self.tabs[current_tab][self.widget_pressed].show()
+            widget.show()
+        
+        if self.is_resizing:
+            widget = self.tabs[current_tab][self.widget_pressed]
+            widget.resize_widget_unrestricted(event.x, event.y, self.edge_bools)
+                        
+            # Convert the pixel position of the mouse to grid coordinates
+            grid_x, grid_y = self.convert_pixel_to_grid(event.x, event.y)
+            
+            # Get the grid dimensions of the widget being resized
+            widget_grid_width = widget.grid_width
+            widget_grid_height = widget.grid_height
+            
+            on_left_edge, on_right_edge, on_top_edge, on_bottom_edge = self.edge_bools
+
+            # Adjust the position and dimensions based on the edges being resized
+            if on_left_edge:
+                new_x = grid_x
+                new_width = widget.grid_x + widget_grid_width - grid_x
+            elif on_right_edge:
+                new_x = widget.grid_x
+                new_width = grid_x - widget.grid_x + 1
+            else:
+                new_x = widget.grid_x
+                new_width = widget_grid_width
+            
+            if on_top_edge:
+                new_y = grid_y
+                new_height = widget.grid_y + widget_grid_height - grid_y
+            elif on_bottom_edge:
+                new_y = widget.grid_y
+                new_height = grid_y - widget.grid_y + 1
+            else:
+                new_y = widget.grid_y
+                new_height = widget_grid_height
+            
+            # Check if the new dimensions are valid
+            if new_width <= 0:
+                new_width = 1
+            if new_height <= 0:
+                new_height = 1
+            if new_x > widget.grid_x + widget.grid_width - 1:
+                new_x = widget.grid_x + widget.grid_width - 1
+            if new_y > widget.grid_y + widget.grid_height - 1:
+                new_y = widget.grid_y + widget.grid_height - 1
+                
+            # Delete all previous overlap rectangles
+            self.grid_canvas.delete("overlap_rect")
+            
+            # Draw a rectangle on the canvas to show where the widget will be resized
+            self.grid_canvas.create_rectangle(
+                new_x * GraphicConstants().grid_dim,
+                new_y * GraphicConstants().grid_dim,
+                new_x * GraphicConstants().grid_dim + new_width * GraphicConstants().grid_dim,
+                new_y * GraphicConstants().grid_dim + new_height * GraphicConstants().grid_dim,
+                fill=GraphicConstants().light_red,
+                outline=GraphicConstants().red,
+                stipple="gray50",  # This makes the rectangle appear semi-transparent
+                tags="overlap_rect"
+            )
+            
+            if self.can_place_rectangle(new_x, new_y, new_width, new_height, current_tab):
+                self.grid_canvas.itemconfig("overlap_rect", fill=GraphicConstants().light_green)
+                self.grid_canvas.itemconfig("overlap_rect", outline=GraphicConstants().green)
+            
+            widget.show()
             
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
     def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):

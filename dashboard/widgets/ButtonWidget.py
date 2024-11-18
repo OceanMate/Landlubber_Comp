@@ -89,7 +89,3 @@ class ButtonWidget(Widget):
     def recreate_widget(self):
         super().recreate_widget()
         self.create_button_widget(self.grid_x, self.grid_y)
-            
-    def resize_widget(self, grid_x, grid_y, edge_bools):        
-        super().resize_widget(grid_x, grid_y, edge_bools)
-        self.create_button_widget(self.grid_x, self.grid_y)

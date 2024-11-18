@@ -139,7 +139,6 @@ class Widget():
     def recreate_widget(self):
         self.canvas.delete(self.tag)
         self._create_widget_frame()
-        self.gridmanager.place_rectangle(self.grid_x, self.grid_y, self.grid_width, self.grid_height, GraphicConstants().current_tab)
     
     # Resize the widget based on the edges being resized
     def resize_widget(self, grid_x, grid_y, edge_bools):
@@ -189,7 +188,52 @@ class Widget():
         
         # Recreate the widget to reflect the new size
         self.recreate_widget()
+    
+    def resize_widget_unrestricted(self, px_x, px_y, edge_bools):     
+        # Determine which edges are being resized
+        on_left_edge, on_right_edge, on_top_edge, on_bottom_edge = edge_bools
+        
+        # Adjust the position and dimensions based on the edges being resized
+        if on_left_edge:
+            new_width = self.width + (self.x - px_x)
+            new_x = px_x
+        elif on_right_edge:
+            new_width = px_x - self.x
+            new_x = self.x
+        else:
+            new_width = self.width
+            new_x = self.x
+        
+        if on_top_edge:
+            new_height = self.height + (self.y - px_y)
+            new_y = px_y
+        elif on_bottom_edge:
+            new_height = px_y - self.y
+            new_y = self.y
+        else:
+            new_height = self.height
+            new_y = self.y
+        
+        grid_dim = GraphicConstants().grid_dim
             
+        # Ensure the new dimensions are valid
+        if new_width <= grid_dim:
+            new_width = grid_dim
+        if new_height <= grid_dim:
+            new_height = grid_dim
+        if new_x > self.grid_x * grid_dim + self.grid_width * grid_dim - grid_dim:
+            new_x = self.grid_x * grid_dim + self.grid_width * grid_dim - grid_dim
+        if new_y > self.grid_y * grid_dim + self.grid_height * grid_dim - grid_dim:
+            new_y = self.grid_y * grid_dim + self.grid_height * grid_dim - grid_dim
+
+        # Set the new location and dimensions
+        self.x = new_x
+        self.y = new_y
+        self.width = new_width
+        self.height = new_height
+
+        # Recreate the widget to reflect the new size
+        self.recreate_widget()
     
     def hide(self):
         self.canvas.itemconfigure(self.tag, state='hidden')

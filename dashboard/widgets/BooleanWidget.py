@@ -59,10 +59,4 @@ class BooleanWidget(Widget):
         self.canvas.itemconfig(self.g_bool_rect, fill=rect_color, outline=rect_color)
 
 
-    def resize_widget(self, grid_x, grid_y, edge_bools):        
-        super().resize_widget(grid_x, grid_y, edge_bools)
-        
-        self.create_bool_widget(self.grid_x, self.grid_y, self.display_bool)
-
-
 

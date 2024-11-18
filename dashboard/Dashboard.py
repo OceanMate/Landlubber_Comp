@@ -180,6 +180,8 @@ class Dashboard:
             current_tab = GraphicConstants().current_tab
             for widget in self.tabs[current_tab].values():
                 widget.recreate_widget()
+                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
+
             
             # Move all widgets that are out of bounds to the next available space
             for widget in self.tabs[current_tab].values():

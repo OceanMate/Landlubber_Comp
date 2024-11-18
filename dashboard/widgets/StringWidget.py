@@ -34,16 +34,18 @@ class StringWidget(Widget):
     def create_string_widget(self, grid_x, grid_y, display_text):                
         # Set the location and dimensions of the widget
         self._set_location(grid_x, grid_y)
+        self.display_text = display_text
         
         # Create the frame of the widget
         self._create_widget_frame()
-        
+        self._make_string_widget()
+    
+    def _make_string_widget(self):
         # find the center of the widget for the text
         text_x = self.x + (self.width) / 2
         text_y = self.y + self.widget_label_height + (self.height - self.widget_label_height) / 2
         
         # Resize the text to fit in the widget
-        self.display_text = display_text
         display_text = self.resize_text(self.display_text)
         
         # Create the display text of the widget, stores the graphic object for use in updating the text
@@ -71,18 +73,11 @@ class StringWidget(Widget):
     # Override the recreate_widget method to recreate the string widget
     def recreate_widget(self):
         super().recreate_widget()
-        self.create_string_widget(self.grid_x, self.grid_y, self.display_text)
+        self._make_string_widget()
             
     # Update the text of the widget
     def update_text(self, display_text):
         display_text = self.resize_text(display_text)
         self.canvas.itemconfig(self.g_display_text, text=display_text)
-
-    # Override the resize_widget method to resize the string widget
-    def resize_widget(self, grid_x, grid_y, edge_bools):        
-        super().resize_widget(grid_x, grid_y, edge_bools)
-        
-        self.create_string_widget(self.grid_x, self.grid_y, self.display_text)
-
 
 
