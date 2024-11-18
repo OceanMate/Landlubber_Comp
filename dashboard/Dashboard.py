@@ -182,12 +182,20 @@ class Dashboard:
                 widget.recreate_widget()
                 self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
 
-            
             # Move all widgets that are out of bounds to the next available space
+            out_of_bound_widgets = []
+            
+            # Check if the widget is out of bounds and add it to the list
             for widget in self.tabs[current_tab].values():
                 if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
-                    new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
-                    widget.move_widget(new_x, new_y)
+                    self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
+                    out_of_bound_widgets.append(widget)
+            
+            # Move all widgets in the list to the next available space
+            for widget in out_of_bound_widgets:
+                new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
+                widget.move_widget(new_x, new_y)
+                    
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()

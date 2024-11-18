@@ -146,9 +146,13 @@ class GridGraphics:
     
     # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
+        if self.widget_pressed == "":
+            return
+        
         current_tab = GraphicConstants().current_tab
         # Delete all previous overlap rectangles
         self.grid_canvas.delete("overlap_rect")
+        
         widget = self.tabs[current_tab][self.widget_pressed]
 
         # Check if the widget is being resized
