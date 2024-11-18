@@ -1,17 +1,19 @@
 import sys
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk
 import ctypes
 
 from dashboard.graphics.BottomBar import BottomBar
-from dashboard.GraphicConstants import GraphicConstants
+from dashboard.graphics.TabBar import TabBar
 from dashboard.graphics.GridGraphics import GridGraphics
+from dashboard.GraphicConstants import GraphicConstants
+
 from dashboard.widgets.BooleanWidget import BooleanWidget
 from dashboard.widgets.StringWidget import StringWidget
-from dashboard.graphics.TabBar import TabBar
+from dashboard.widgets.ButtonWidget import ButtonWidget
+
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
-from dashboard.widgets.ButtonWidget import ButtonWidget
 from transmission.Transmission import Transmission
 
 
@@ -90,9 +92,9 @@ class Dashboard:
             return
         
         # Check if the widget already exists
-        if label not in self.grid_graphics.tabs[tab].keys():
+        if label not in self.tabs[tab].keys():
             # Create a new widget if it doesn't already exist
-            self.grid_graphics.tabs[tab][label] = StringWidget(self.grid_graphics.grid_canvas, label)
+            self.tabs[tab][label] = StringWidget(self.grid_graphics.grid_canvas, label)
             wigit_grid_width, wigit_grid_height = self.tabs[tab][label].get_default_dimensions()
             
             # Find the next available space for the widget, and tell the grid manager to place the widget there
@@ -116,9 +118,9 @@ class Dashboard:
             return
         
         # Check if the widget already exists
-        if label not in self.grid_graphics.tabs[tab].keys():
+        if label not in self.tabs[tab].keys():
             # Create a new widget if it doesn't already exist
-            self.grid_graphics.tabs[tab][label] = BooleanWidget(self.grid_graphics.grid_canvas, label)
+            self.tabs[tab][label] = BooleanWidget(self.grid_graphics.grid_canvas, label)
             wigit_grid_width, wigit_grid_height = self.tabs[tab][label].get_default_dimensions()
             
             # Find the next available space for the widget, and tell the grid manager to place the widget there
@@ -136,15 +138,15 @@ class Dashboard:
             self.tabs[tab][label].update_bool(boolean)
 
     # Create a button widget on the dashboard, or can be called again to update the command of the widget
-    def put_button(self, label, command, tab=GraphicConstants().default_tab):
+    def put_button(self, label, command, tab = GraphicConstants().default_tab):
         # Check if the grid graphics have been initialized
         if self.grid_graphics is None:
             return
         
         # Check if the widget already exists
-        if label not in self.grid_graphics.tabs[tab].keys():
+        if label not in self.tabs[tab].keys():
             # Create a new widget if it doesn't already exist
-            self.grid_graphics.tabs[tab][label] = ButtonWidget(self.grid_graphics.grid_canvas, label, command)
+            self.tabs[tab][label] = ButtonWidget(self.grid_graphics.grid_canvas, label, command)
             widget_grid_width, widget_grid_height = self.tabs[tab][label].get_default_dimensions()
             
             # Find the next available space for the widget, and tell the grid manager to place the widget there
@@ -160,7 +162,7 @@ class Dashboard:
         else:
             # Update the command of the widget if it already exists
             self.tabs[tab][label].command = command
-
+    
     # Function that should be called periodicly to update the dashboard
     def update(self):
         # Debug the grid
@@ -168,34 +170,7 @@ class Dashboard:
         
         # Check if the window has been resized, and resize all the widgets if it has        
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
-            GraphicConstants().window_width = self.window.winfo_width()
-            GraphicConstants().window_height = self.window.winfo_height()
-            
-            # recreate all the canvases
-            self.tab_bar.resize_tab_bar()
-            self.grid_graphics.resize_grid()
-            self.bottom_bar.resize_bottom_bar()
-            
-            # recreate all the widgets
-            current_tab = GraphicConstants().current_tab
-            for widget in self.tabs[current_tab].values():
-                widget.recreate_widget()
-                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-
-            # Move all widgets that are out of bounds to the next available space
-            out_of_bound_widgets = []
-            
-            # Check if the widget is out of bounds and add it to the list
-            for widget in self.tabs[current_tab].values():
-                if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
-                    self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-                    out_of_bound_widgets.append(widget)
-            
-            # Move all widgets in the list to the next available space
-            for widget in out_of_bound_widgets:
-                new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
-                widget.move_widget(new_x, new_y)
-                    
+            self.remake_window()
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()
@@ -215,6 +190,36 @@ class Dashboard:
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:
             self._close()
+    
+    # Remake the whole window to reflect changes in the window size
+    def remake_window(self):
+        GraphicConstants().window_width = self.window.winfo_width()
+        GraphicConstants().window_height = self.window.winfo_height()
+        
+        # recreate all the canvases
+        self.tab_bar.resize_tab_bar()
+        self.grid_graphics.resize_grid()
+        self.bottom_bar.resize_bottom_bar()
+        
+        # recreate all the widgets
+        current_tab = GraphicConstants().current_tab
+        for widget in self.tabs[current_tab].values():
+            widget.recreate_widget()
+            self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
+
+        # Move all widgets that are out of bounds to the next available space
+        out_of_bound_widgets = []
+        
+        # Check if the widget is out of bounds and add it to the list
+        for widget in self.tabs[current_tab].values():
+            if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
+                self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
+                out_of_bound_widgets.append(widget)
+        
+        # Move all widgets in the list to the next available space
+        for widget in out_of_bound_widgets:
+            new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
+            widget.move_widget(new_x, new_y)
     
     # Close the window and exit the program
     def _close(self):

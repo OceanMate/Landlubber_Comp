@@ -113,7 +113,11 @@ class Widget():
     # Move the widget to a new location without restrictions and without changing the grid location
     def move_widget_unrestricted(self, x, y):
         # Move the widget to the new location
-        self.canvas.moveto(self.tag, x, y)
+        self.x = x
+        self.y = y
+        
+        # recreate the widget to reflect the new location
+        self.recreate_widget()
 
     # Check if the widget is pressed
     def is_point_inside(self, x, y):
