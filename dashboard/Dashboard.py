@@ -1,6 +1,7 @@
 import sys
 from tkinter import Tk
 import ctypes
+from typing import Callable
 
 from dashboard.graphics.BottomBar import BottomBar
 from dashboard.graphics.TabBar import TabBar
@@ -86,7 +87,7 @@ class Dashboard:
         enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)     
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
-    def put_string(self, label, text, tab = GraphicConstants().default_tab):
+    def put_string(self, label : str, text : str, tab = GraphicConstants().default_tab):
         # Check if the grid graphics have been initialized
         if self.grid_graphics is None:
             return
@@ -137,8 +138,7 @@ class Dashboard:
             # Update the text of the widget if it already exists
             self.tabs[tab][label].update_bool(boolean)
 
-    # Create a button widget on the dashboard, or can be called again to update the command of the widget
-    def put_button(self, label, command, tab = GraphicConstants().default_tab):
+    def put_button(self, label, command: Callable, tab = GraphicConstants().default_tab):
         # Check if the grid graphics have been initialized
         if self.grid_graphics is None:
             return

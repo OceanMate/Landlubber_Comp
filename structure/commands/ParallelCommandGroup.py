@@ -1,6 +1,6 @@
 from structure.commands.Command import Command
 
-class SequentialCommandGroup(Command):
+class ParallelCommandGroup(Command):
     def __init__(self):
         super().__init__()
         self.commands = []
