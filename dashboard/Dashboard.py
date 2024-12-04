@@ -201,25 +201,36 @@ class Dashboard:
         self.grid_graphics.resize_grid()
         self.bottom_bar.resize_bottom_bar()
         
-        # recreate all the widgets
-        current_tab = GraphicConstants().current_tab
-        for widget in self.tabs[current_tab].values():
-            widget.recreate_widget()
-            self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-
+        # replace all the widgets on the grid and show/hide them as needed
+        for tab in self.tabs.keys():
+            for widget in self.tabs[tab].values():
+                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, tab)
+                
+                if tab != GraphicConstants().current_tab:
+                    widget.hide()
+                else:
+                    widget.show()
+        
         # Move all widgets that are out of bounds to the next available space
-        out_of_bound_widgets = []
+        out_of_bound_widgets = {}
         
         # Check if the widget is out of bounds and add it to the list
-        for widget in self.tabs[current_tab].values():
-            if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
-                self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-                out_of_bound_widgets.append(widget)
-        
-        # Move all widgets in the list to the next available space
-        for widget in out_of_bound_widgets:
-            new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
-            widget.move_widget(new_x, new_y)
+        for tab in self.tabs.keys():
+            out_of_bound_widgets[tab] = []
+            
+            for widget in self.tabs[tab].values():
+                if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
+                    self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, tab)
+                    out_of_bound_widgets[tab].append(widget)
+
+        # Move all widgets in the out of bounds list to the next available space
+        for tab in out_of_bound_widgets.keys():
+            for widget in out_of_bound_widgets[tab]:
+                new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, tab)
+                widget.move_widget(new_x, new_y)
+                
+                if tab != GraphicConstants().current_tab:
+                    widget.hide()
     
     # Close the window and exit the program
     def _close(self):

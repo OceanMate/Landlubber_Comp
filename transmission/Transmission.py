@@ -1,4 +1,5 @@
 import socket
+import select
 
 class Transmission:
     _instance = None
@@ -12,20 +13,24 @@ class Transmission:
         return cls._instance    
        
     def start(self, host: str = '192.168.1.100', port: int = 8000):
-        self.linear_motor_speeds = f"linear_motor_speeds {0} {0} {0} {0}"
-        self.vertical_motor_speeds = f"vertical_motor_speeds {0} {0}"
+        self.linear_motor_speeds = f"l_motors {0} {0} {0} {0}"
+        self.vertical_motor_speeds = f"v_motors {0} {0}"
         self.enabled = f"enabled {False}"
         
         self.host = host
         self.port = port
-        self.socket = socket.socket()
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setblocking(False)
         self.connected = False
-    
-    def set_connected(self, connected : bool):
-        self.connected = connected
+        
+        self.disconnect()
+        
     
     def set_linear_motor_speeds(self, flSpeed : float, frSpeed : float, blSpeed : float, brSpeed : float):
         self.linear_motor_speeds = f"motor_speeds {flSpeed} {frSpeed} {blSpeed} {brSpeed}"
+        
+        print(self.linear_motor_speeds)
         
         return self.send_command(self.linear_motor_speeds)
     
@@ -43,39 +48,26 @@ class Transmission:
         if not self.connected:
             self.connect()
             return
-        
-        # Receive data from server
-        try:
-            # Receive data from server
-            data = self.socket.recv(1024)
-            if not data:
-                return
-            # put a function to process the data here
-            
-        except socket.error as e:
-            # debug
-            # print(f"Failed to receive data: {e}")
-            self.connected = False
+    
+    def connect(self):
+        if self.connected:
             return
-    
-    def connect(self) -> bool:
-        # Establish connection to ROV server
+        
         try:
-            self.socket = socket.socket()
-            
-            self.socket.settimeout(0)  # 0 second timeout to make non-blocking
             self.socket.connect((self.host, self.port))
+            print(f"Connected to server at {self.host}:{self.port}")
             self.connected = True
-            
-            #print("Connected to server")
-            return True
+        except BlockingIOError:
+            pass
         except socket.error as e:
-            # debug
-            #print(f"Connection failed: {e}")
-            self.connected = False
-            return False
+            if e.errno == 10056:  # WSAEISCONN (already connected)
+                print("Socket is already connected.")
+                self.connected = True
+            else:
+                print(f"Failed to connect to server: {e}")
+                self.connected = False
     
-    def disconnect(self) -> None:
+    def disconnect(self):
         # Gracefully disconnect from server
         if self.connected:
             try:
@@ -96,8 +88,7 @@ class Transmission:
             return True
         except socket.error as e:
             # debug
-            # print(f"Failed to send command: {e}")
+            print(f"Failed to send command: {e}")
             self.connected = False
             return False
-    
-    
+

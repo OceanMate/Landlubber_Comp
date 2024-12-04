@@ -20,7 +20,7 @@ class DefaultLinearMotorCmd(Command):
     def end(self, interrupted):
         if (interrupted):
             print("Default command interrupted")
-        self.linear_motors.runMotors(0, 0, 0)
+        self.linear_motors.stop_motors()
     
     def is_finished(self):
         return False
