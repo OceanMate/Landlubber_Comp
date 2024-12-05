@@ -1,5 +1,5 @@
-from dashboard.widgets.Widget import Widget
-from dashboard.GraphicConstants import GraphicConstants   
+from jigboard.widgets.Widget import Widget
+from jigboard.GraphicConstants import GraphicConstants   
 
 # creates a widget that displays a given string
 class BooleanWidget(Widget):

@@ -1,5 +1,4 @@
 from structure.commands.Command import Command
-from Robot.Subsystems.LinearMotors import LinearMotors
 
 class DefaultLinearMotorCmd(Command):
     def __init__(self, linear_motors):

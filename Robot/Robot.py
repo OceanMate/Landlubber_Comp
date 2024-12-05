@@ -1,6 +1,6 @@
-from dashboard.Dashboard import Dashboard
+from jigboard.Jigboard import Jigboard
 from structure.CommandRunner import CommandRunner
-from Robot.RobotContainer import RobotContainer
+from robot.RobotContainer import RobotContainer
 
 class Robot:    
     def __init__(self):
@@ -10,13 +10,13 @@ class Robot:
     def robot_init(self):
         def print_hi():
             print("hi")
-        Dashboard().put_button("HIIII", print_hi)
+        Jigboard().put_button("HIIII", print_hi)
 
         return
     
     def robot_periodic(self):
         self.command_runner.run_commands()
-        Dashboard().put_boolean("enabled", self.command_runner.enabled)
+        Jigboard().put_boolean("enabled", self.command_runner.enabled)
 
         
     

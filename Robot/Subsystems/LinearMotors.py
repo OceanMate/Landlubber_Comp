@@ -1,5 +1,5 @@
-from dashboard.DashboardTab import DashboardTab
-from dashboard.Dashboard import Dashboard
+from jigboard.DashboardTab import DashboardTab
+from jigboard.Jigboard import Jigboard
 from structure.Subsystem import Subsystem
 from transmission.Transmission import Transmission
 
@@ -58,5 +58,5 @@ class LinearMotors(Subsystem):
     
     def periodic(self):
         self.programmer_tab.put_string("Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
-        Dashboard().put_string("Motor Speedz", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
+        Jigboard().put_string("Motor Speedz", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
 

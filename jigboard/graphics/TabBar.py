@@ -1,8 +1,8 @@
 from tkinter import Canvas
 
 import tkinter.font as tkfont
-from dashboard.GraphicConstants import GraphicConstants
-from dashboard.graphics.GridGraphics import GridGraphics
+from jigboard.GraphicConstants import GraphicConstants
+from jigboard.graphics.GridGraphics import GridGraphics
 
 
 class TabBar:

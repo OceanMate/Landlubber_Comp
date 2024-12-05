@@ -3,14 +3,14 @@ from tkinter import Tk
 import ctypes
 from typing import Callable
 
-from dashboard.graphics.BottomBar import BottomBar
-from dashboard.graphics.TabBar import TabBar
-from dashboard.graphics.GridGraphics import GridGraphics
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.graphics.BottomBar import BottomBar
+from jigboard.graphics.TabBar import TabBar
+from jigboard.graphics.GridGraphics import GridGraphics
+from jigboard.GraphicConstants import GraphicConstants
 
-from dashboard.widgets.BooleanWidget import BooleanWidget
-from dashboard.widgets.StringWidget import StringWidget
-from dashboard.widgets.ButtonWidget import ButtonWidget
+from jigboard.widgets.BooleanWidget import BooleanWidget
+from jigboard.widgets.StringWidget import StringWidget
+from jigboard.widgets.ButtonWidget import ButtonWidget
 
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
@@ -18,8 +18,7 @@ from structure.RobotState import RobotState
 from transmission.Transmission import Transmission
 
 
-# TODO - Add display for connection to rasberry pi
-class Dashboard:
+class Jigboard:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
@@ -40,13 +39,13 @@ class Dashboard:
         self.window = Tk()
         self.window.geometry(str(GraphicConstants().window_width) + "x" + str(GraphicConstants().window_height))
         self.window.configure(bg = "#FFFFFF")
-        self.window.title("Dashboard")
+        self.window.title("Jigboard")
         
         # Make the program exit when the window is closed
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
         # Set the icon for the window
-        appID = "Rabbit Dashboard"
+        appID = "Jigboard"
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
         self.window.iconbitmap(GraphicConstants().get_asset_path("rabbit_logo.ico"))
         
@@ -70,7 +69,7 @@ class Dashboard:
     # Setup hotkeys for the dashboard 
     def _setup_hotkeys(self):
         # Event loop for the dashboard for hotkeys, need this to manage the keyboardListener thread
-        self.dashboard_hotkeys_loop = EventLoop()
+        self.hotkeys_loop = EventLoop()
         
         # Hotkey to disable the robot
         def on_enter():
@@ -84,7 +83,7 @@ class Dashboard:
         # Set the function to run when the hotkey is pressed
         enter_hotkey.non_cmd_on_true(func=on_enter)
         # Set the loop for the hotkey to be the dashboard loop
-        enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)     
+        enter_hotkey.set_loop(loop=self.hotkeys_loop)     
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
     def put_string(self, label : str, text : str, tab = GraphicConstants().default_tab):
@@ -185,7 +184,7 @@ class Dashboard:
         self.bottom_bar.update_comms_text(Transmission().connected)
         
         # Check hotkeys
-        self.dashboard_hotkeys_loop.poll()
+        self.hotkeys_loop.poll()
         
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:

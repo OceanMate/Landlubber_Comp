@@ -1,6 +1,6 @@
 import time
 from tkinter import Canvas, PhotoImage
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.GraphicConstants import GraphicConstants
 from collections import deque
 
 class GridGraphics:

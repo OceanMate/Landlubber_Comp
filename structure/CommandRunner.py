@@ -1,4 +1,4 @@
-from dashboard.Dashboard import Dashboard
+from jigboard.Jigboard import Jigboard
 from structure.Input.EventLoop import EventLoop
 
 class CommandRunner:
@@ -54,7 +54,7 @@ class CommandRunner:
                 self.commands.remove(command)
                 continue
                     
-            Dashboard().put_string("Command", command.__class__.__name__)
+            Jigboard().put_string("Command", command.__class__.__name__)
             command.execute()
 
             # If the command is finished, end and remove it

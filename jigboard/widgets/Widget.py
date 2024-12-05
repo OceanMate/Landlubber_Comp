@@ -1,8 +1,8 @@
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.GraphicConstants import GraphicConstants
 import tkinter as tk
 import tkinter.font as tkfont
 
-from dashboard.graphics.GridGraphics import GridGraphics
+from jigboard.graphics.GridGraphics import GridGraphics
 
 
 class Widget():
