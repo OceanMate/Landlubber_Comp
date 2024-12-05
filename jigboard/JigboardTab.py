@@ -1,7 +1,7 @@
 from jigboard.Jigboard import Jigboard
 
 # Creates a tab on the dashboard to put widgets on
-class DashboardTab:
+class JigboardTab:
     def __init__(self, tab_name):
         self.tab_name = tab_name
         Jigboard().add_tab(tab_name)

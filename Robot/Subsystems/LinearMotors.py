@@ -1,4 +1,4 @@
-from jigboard.DashboardTab import DashboardTab
+from jigboard.JigboardTab import JigboardTab
 from jigboard.Jigboard import Jigboard
 from structure.Subsystem import Subsystem
 from transmission.Transmission import Transmission
@@ -7,7 +7,7 @@ class LinearMotors(Subsystem):
     def __init__(self):
         super().__init__()
         
-        self.programmer_tab = DashboardTab("Programmer Party")
+        self.programmer_tab = JigboardTab("Programmer Party")
         
         self.FL = 0
         self.FR = 0
