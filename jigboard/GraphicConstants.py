@@ -40,9 +40,9 @@ class GraphicConstants:
         self.bottom_bar_font = "Ocr A Extended"
         
         # Tabs
-        self.default_tab = "Dashboard"
+        self.default_tab = "Jigboard"
         # Technically not a constant, but it's easier to access it this way
-        self.current_tab = "Dashboard"
+        self.current_tab = "Jigboard"
 
     
     # Get the path of an asset in the assets folder
