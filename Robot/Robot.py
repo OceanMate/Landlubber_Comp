@@ -8,9 +8,7 @@ class Robot:
         self.robot_container = RobotContainer()
     
     def robot_init(self):
-        def print_hi():
-            print("hi")
-        Jigboard().put_button("HIIII", print_hi)
+        Jigboard().put_button("example button", lambda: print("Hello World!"))
 
         return
     

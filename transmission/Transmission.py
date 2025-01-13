@@ -10,7 +10,7 @@ class Transmission:
         # Otherwise, return already created instance
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-        return cls._instance    
+        return cls._instance
        
     def start(self, host: str = '192.168.1.100', port: int = 8000):
         self.linear_motor_speeds = f"l_motors {0} {0} {0} {0}"
