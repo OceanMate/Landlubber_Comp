@@ -1,6 +1,6 @@
 from jigboard.Jigboard import Jigboard
 from structure.CommandRunner import CommandRunner
-from robot.RobotContainer import RobotContainer
+from Robot.RobotContainer import RobotContainer
 
 class Robot:    
     def __init__(self):
