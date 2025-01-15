@@ -1,4 +1,4 @@
-from robot.Robot import Robot
+from Robot.Robot import Robot
 from jigboard.Jigboard import Jigboard
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener

@@ -1,5 +1,5 @@
 import sys
-from tkinter import Tk
+from tkinter import PhotoImage, Tk
 import ctypes
 from typing import Callable
 
@@ -44,10 +44,14 @@ class Jigboard:
         # Make the program exit when the window is closed
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
-        # Set the icon for the window
+        # Set the icon and ID for the window
         appID = "Jigboard"
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
-        self.window.iconbitmap(GraphicConstants().get_asset_path("rabbit_logo.ico"))
+        # set task bar icon
+        icon = PhotoImage( file = GraphicConstants().get_asset_path("Rabbit_logo.png"))
+        self.window.iconphoto(True, icon)
+        # set upper left icon
+        self.window.iconbitmap(GraphicConstants().get_asset_path("Rabbit_logo.ico"))
         
         # Generate the various components of the dashboard
         self.tab_bar = TabBar(self.window, self.tabs)
