@@ -13,10 +13,8 @@ def main():
     robot_state = RobotState()
     naut_coms = Transmission()
 
-    naut_coms.start()
     run_robot.robot_init()
     
-    start_time = time.time()
 
     while True:
         # Update the dashboard
