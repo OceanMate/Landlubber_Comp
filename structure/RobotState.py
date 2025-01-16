@@ -41,12 +41,12 @@ class RobotState:
             return False
         '''
         
-        Transmission().set_enable(True)
+        Transmission().setEnable(True)
         self._teleop_enabled = True
         self._teleop_to_be_initialized = True
         return True
     
     def disable_robot(self):
-        Transmission().set_enable(False)
+        Transmission().setEnable(False)
         self._teleop_enabled = False
         self._disabled_to_be_initialized = True

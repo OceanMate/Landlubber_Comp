@@ -106,7 +106,8 @@ class CommandRunner:
         # Interrupts any already scheduled commands that require the same subsystem
         for cmd in self.commands:
             if command.is_confliting(cmd):
-                self.cancel_command(cmd)
+                command.end(True)
+                self.commands.remove(cmd)
         
         command.initalize()
         self.commands.append(command)
