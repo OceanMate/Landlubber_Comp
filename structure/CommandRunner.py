@@ -1,4 +1,4 @@
-from dashboard.Dashboard import Dashboard
+from jigboard.Jigboard import Jigboard
 from structure.Input.EventLoop import EventLoop
 
 class CommandRunner:
@@ -38,12 +38,12 @@ class CommandRunner:
         if self.canceled_commands and not self.enabled:
             return
         
-        # Polls the input loop for any new commands to schedule
-        self.default_input_loop.poll()
-        
         # Runs the periodic functions of each subsystem
         for periodic in self.subsystem_periodics:
             periodic()
+        
+        # Polls the input loop for any new commands to schedule
+        self.default_input_loop.poll()
         
         self.in_run_loop = True
         # Loops through each command to execute and end it if it's finished
@@ -54,7 +54,7 @@ class CommandRunner:
                 self.commands.remove(command)
                 continue
                     
-            Dashboard().put_string("Command", command.__class__.__name__)
+            Jigboard().put_string("Command", command.__class__.__name__)
             command.execute()
 
             # If the command is finished, end and remove it
@@ -79,8 +79,7 @@ class CommandRunner:
         self.commands_to_schedule = []
         self.commands_to_cancel = []
         
-        # If there are no commands that require a subsystem
-        # schedules that subsystem's default command
+        # If there are no commands that require a subsystem, schedules that subsystem's default command
         for default_command in self.default_commands:
             not_conflicting = True
             for command in self.commands:
@@ -96,6 +95,10 @@ class CommandRunner:
         
     # Schedules the given command to run
     def schedule_command(self, command):
+        # If the command runner is disabled, don't schedule the command
+        if not self.enabled:
+            return
+        
         if self.in_run_loop:
             self.commands_to_schedule.append(command)
             return
@@ -103,7 +106,8 @@ class CommandRunner:
         # Interrupts any already scheduled commands that require the same subsystem
         for cmd in self.commands:
             if command.is_confliting(cmd):
-                self.cancel_command(cmd)
+                command.end(True)
+                self.commands.remove(cmd)
         
         command.initalize()
         self.commands.append(command)

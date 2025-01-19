@@ -1,8 +1,8 @@
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.GraphicConstants import GraphicConstants
 import tkinter as tk
 import tkinter.font as tkfont
 
-from dashboard.graphics.GridGraphics import GridGraphics
+from jigboard.graphics.GridGraphics import GridGraphics
 
 
 class Widget():
@@ -173,9 +173,19 @@ class Widget():
         else:
             new_height = self.grid_height
             new_y = self.grid_y
+            
+        # set the new dimensions to 1 if the go beyond the opposite edge
+        if new_width <= 0:
+            new_width = 1
+        if new_height <= 0:
+            new_height = 1
+        if new_x > self.grid_x + self.grid_width - 1:
+            new_x = self.grid_x + self.grid_width - 1
+        if new_y > self.grid_y + self.grid_height - 1:
+            new_y = self.grid_y + self.grid_height - 1
         
-        # Ensure the new dimensions are valid
-        if new_width <= 0 or new_height <= 0 or not self.gridmanager.can_place_rectangle(new_x, new_y, new_width, new_height, operating_tab):
+        # if the new dimensions cover another widget, revert to original dimensions
+        if not self.gridmanager.can_place_rectangle(new_x, new_y, new_width, new_height, operating_tab):
             # Revert to original dimensions and location if invalid
             new_width = self.grid_width
             new_height = self.grid_height

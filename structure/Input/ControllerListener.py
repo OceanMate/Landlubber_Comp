@@ -1,7 +1,7 @@
 # Docutmentation: https://www.pygame.org/docs/ref/joystick.html
 import pygame
 
-from dashboard.Dashboard import Dashboard
+from jigboard.Jigboard import Jigboard
 
 ''' Xbox 360 Controller Mapping
 Left Stick:
@@ -69,7 +69,7 @@ class ControllerListener:
                 self.dpad_state = {}
                 print("Joystick disconnected")
                 
-                Dashboard().bottom_bar.update_controller_text("None")
+                Jigboard().bottom_bar.update_controller_text("None")
             
             if event.type == pygame.JOYBUTTONDOWN:
                 self.is_button_down[event.button] = True
@@ -100,7 +100,7 @@ class ControllerListener:
         elif (text == "Controller (XBOX 360 For Windows)"):
             text = "Xbox 360"
         
-        Dashboard().bottom_bar.update_controller_text(controller_name=text)
+        Jigboard().bottom_bar.update_controller_text(controller_name=text)
 
     
 

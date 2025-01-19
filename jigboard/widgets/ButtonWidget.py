@@ -1,5 +1,5 @@
-from dashboard.widgets.Widget import Widget
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.widgets.Widget import Widget
+from jigboard.GraphicConstants import GraphicConstants
 
 # creates a widget the user can click on and run a command
 # only have to be called once

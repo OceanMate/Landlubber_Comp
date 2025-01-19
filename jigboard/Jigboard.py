@@ -1,15 +1,16 @@
 import sys
-from tkinter import Tk
+from tkinter import PhotoImage, Tk
 import ctypes
+from typing import Callable
 
-from dashboard.graphics.BottomBar import BottomBar
-from dashboard.graphics.TabBar import TabBar
-from dashboard.graphics.GridGraphics import GridGraphics
-from dashboard.GraphicConstants import GraphicConstants
+from jigboard.graphics.BottomBar import BottomBar
+from jigboard.graphics.TabBar import TabBar
+from jigboard.graphics.GridGraphics import GridGraphics
+from jigboard.GraphicConstants import GraphicConstants
 
-from dashboard.widgets.BooleanWidget import BooleanWidget
-from dashboard.widgets.StringWidget import StringWidget
-from dashboard.widgets.ButtonWidget import ButtonWidget
+from jigboard.widgets.BooleanWidget import BooleanWidget
+from jigboard.widgets.StringWidget import StringWidget
+from jigboard.widgets.ButtonWidget import ButtonWidget
 
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
@@ -17,8 +18,7 @@ from structure.RobotState import RobotState
 from transmission.Transmission import Transmission
 
 
-# TODO - Add display for connection to rasberry pi
-class Dashboard:
+class Jigboard:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
@@ -39,15 +39,19 @@ class Dashboard:
         self.window = Tk()
         self.window.geometry(str(GraphicConstants().window_width) + "x" + str(GraphicConstants().window_height))
         self.window.configure(bg = "#FFFFFF")
-        self.window.title("Dashboard")
+        self.window.title("Jigboard")
         
         # Make the program exit when the window is closed
         self.window.protocol("WM_DELETE_WINDOW", self._disable)
         
-        # Set the icon for the window
-        appID = "Rabbit Dashboard"
+        # Set the icon and ID for the window
+        appID = "Jigboard"
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
-        self.window.iconbitmap(GraphicConstants().get_asset_path("rabbit_logo.ico"))
+        # set task bar icon
+        icon = PhotoImage( file = GraphicConstants().get_asset_path("Rabbit_logo.png"))
+        self.window.iconphoto(True, icon)
+        # set upper left icon
+        self.window.iconbitmap(GraphicConstants().get_asset_path("Rabbit_logo.ico"))
         
         # Generate the various components of the dashboard
         self.tab_bar = TabBar(self.window, self.tabs)
@@ -69,7 +73,7 @@ class Dashboard:
     # Setup hotkeys for the dashboard 
     def _setup_hotkeys(self):
         # Event loop for the dashboard for hotkeys, need this to manage the keyboardListener thread
-        self.dashboard_hotkeys_loop = EventLoop()
+        self.hotkeys_loop = EventLoop()
         
         # Hotkey to disable the robot
         def on_enter():
@@ -83,10 +87,10 @@ class Dashboard:
         # Set the function to run when the hotkey is pressed
         enter_hotkey.non_cmd_on_true(func=on_enter)
         # Set the loop for the hotkey to be the dashboard loop
-        enter_hotkey.set_loop(loop=self.dashboard_hotkeys_loop)     
+        enter_hotkey.set_loop(loop=self.hotkeys_loop)     
     
     # Create a string widget on the dashboard, or can be called multiple times to update the text of the widget
-    def put_string(self, label, text, tab = GraphicConstants().default_tab):
+    def put_string(self, label : str, text : str, tab = GraphicConstants().default_tab):
         # Check if the grid graphics have been initialized
         if self.grid_graphics is None:
             return
@@ -137,8 +141,7 @@ class Dashboard:
             # Update the text of the widget if it already exists
             self.tabs[tab][label].update_bool(boolean)
 
-    # Create a button widget on the dashboard, or can be called again to update the command of the widget
-    def put_button(self, label, command, tab = GraphicConstants().default_tab):
+    def put_button(self, label, command: Callable, tab = GraphicConstants().default_tab):
         # Check if the grid graphics have been initialized
         if self.grid_graphics is None:
             return
@@ -185,7 +188,7 @@ class Dashboard:
         self.bottom_bar.update_comms_text(Transmission().connected)
         
         # Check hotkeys
-        self.dashboard_hotkeys_loop.poll()
+        self.hotkeys_loop.poll()
         
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:
@@ -201,25 +204,36 @@ class Dashboard:
         self.grid_graphics.resize_grid()
         self.bottom_bar.resize_bottom_bar()
         
-        # recreate all the widgets
-        current_tab = GraphicConstants().current_tab
-        for widget in self.tabs[current_tab].values():
-            widget.recreate_widget()
-            self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-
+        # replace all the widgets on the grid and show/hide them as needed
+        for tab in self.tabs.keys():
+            for widget in self.tabs[tab].values():
+                self.grid_graphics.place_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, tab)
+                
+                if tab != GraphicConstants().current_tab:
+                    widget.hide()
+                else:
+                    widget.show()
+        
         # Move all widgets that are out of bounds to the next available space
-        out_of_bound_widgets = []
+        out_of_bound_widgets = {}
         
         # Check if the widget is out of bounds and add it to the list
-        for widget in self.tabs[current_tab].values():
-            if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
-                self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, GraphicConstants().current_tab)
-                out_of_bound_widgets.append(widget)
-        
-        # Move all widgets in the list to the next available space
-        for widget in out_of_bound_widgets:
-            new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, current_tab)
-            widget.move_widget(new_x, new_y)
+        for tab in self.tabs.keys():
+            out_of_bound_widgets[tab] = []
+            
+            for widget in self.tabs[tab].values():
+                if self.grid_graphics.is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
+                    self.grid_graphics.remove_rectangle(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height, tab)
+                    out_of_bound_widgets[tab].append(widget)
+
+        # Move all widgets in the out of bounds list to the next available space
+        for tab in out_of_bound_widgets.keys():
+            for widget in out_of_bound_widgets[tab]:
+                new_x, new_y = self.grid_graphics.find_next_available_space(widget.grid_width, widget.grid_height, tab)
+                widget.move_widget(new_x, new_y)
+                
+                if tab != GraphicConstants().current_tab:
+                    widget.hide()
     
     # Close the window and exit the program
     def _close(self):

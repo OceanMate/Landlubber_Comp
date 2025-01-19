@@ -1,7 +1,7 @@
 from tkinter import Button, Canvas
 
-from dashboard.GraphicConstants import GraphicConstants
-from dashboard.graphics.UserInput import UserInput
+from jigboard.GraphicConstants import GraphicConstants
+from jigboard.graphics.UserInput import UserInput
 from structure.RobotState import RobotState
 
 import tkinter.font as tkfont

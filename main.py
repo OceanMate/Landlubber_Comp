@@ -1,5 +1,5 @@
 from Robot.Robot import Robot
-from dashboard.Dashboard import Dashboard
+from jigboard.Jigboard import Jigboard
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
 from structure.Input.ControllerListener import ControllerListener
@@ -13,14 +13,12 @@ def main():
     robot_state = RobotState()
     naut_coms = Transmission()
 
-    naut_coms.start()
     run_robot.robot_init()
     
-    start_time = time.time()
 
     while True:
         # Update the dashboard
-        Dashboard().update()
+        Jigboard().update()
         
         # Run periodic functions
         ControllerListener().update()
