@@ -1,4 +1,4 @@
-from transmission.ClientSocket import ClientSocket
+from transmission.ClientSender import ClientSocket
 
 class TransManager:
     def __init__(self):
