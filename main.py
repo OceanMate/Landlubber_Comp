@@ -6,12 +6,10 @@ from structure.Input.ControllerListener import ControllerListener
 
 import time
 
-from transmission.Transmission import Transmission
 
 def main():
     run_robot = Robot()
     robot_state = RobotState()
-    naut_coms = Transmission()
 
     run_robot.robot_init()
     

@@ -4,9 +4,9 @@ import selectors
 import struct
 import sys
 
-# don't look at this to closely, it just works
+
 class Message:
-    def __init__(self, selector, sock, addr, request):
+    def __init__(self, selector, sock, addr, request, default_robot_state, default_sensor_data):
         self.selector = selector
         self.sock = sock
         self.addr = addr
@@ -17,6 +17,9 @@ class Message:
         self._jsonheader_len = None
         self.jsonheader = None
         self.response = None
+        
+        self.sensor_data = default_sensor_data
+        self.robot_state = default_robot_state
 
     def _set_selector_events_mask(self, mode):
         """Set selector to listen for events: mode is 'r', 'w', or 'rw'."""
@@ -33,7 +36,7 @@ class Message:
     def _read(self):
         try:
             # Should be ready to read
-            data = self.sock.recv(4096)
+            data = self.sock.recv(4096) # type: ignore
         except BlockingIOError:
             # Resource temporarily unavailable (errno EWOULDBLOCK)
             pass
@@ -48,7 +51,7 @@ class Message:
             print(f"Sending {self._send_buffer!r} to {self.addr}")
             try:
                 # Should be ready to write
-                sent = self.sock.send(self._send_buffer)
+                sent = self.sock.send(self._send_buffer) # type: ignore
             except BlockingIOError:
                 # Resource temporarily unavailable (errno EWOULDBLOCK)
                 pass
@@ -80,20 +83,15 @@ class Message:
         message = message_hdr + jsonheader_bytes + content_bytes
         return message
 
-    def _process_response_json_content(self):
-        content = self.response
-        result = content.get("result")
-        print(f"Got result: {result}")
-
-    def _process_response_binary_content(self):
-        content = self.response
-        print(f"Got response: {content!r}")
-
-    def process_events(self, mask):
+    def process_events(self, mask, robot_state):
+        self.robot_state = robot_state
+        
         if mask & selectors.EVENT_READ:
             self.read()
         if mask & selectors.EVENT_WRITE:
             self.write()
+        
+        return self.sensor_data
 
     def read(self):
         self._read()
@@ -113,6 +111,7 @@ class Message:
         if not self._request_queued:
             self.queue_request()
 
+        self.request["content"] = self.robot_state
         self._write()
 
         if self._request_queued:
@@ -131,7 +130,7 @@ class Message:
             )
 
         try:
-            self.sock.close()
+            self.sock.close() # type: ignore
         except OSError as e:
             print(f"Error: socket.close() exception for {self.addr}: {e!r}")
         finally:
@@ -149,11 +148,7 @@ class Message:
                 "content_encoding": content_encoding,
             }
         else:
-            req = {
-                "content_bytes": content,
-                "content_type": content_type,
-                "content_encoding": content_encoding,
-            }
+            raise ValueError(f"Unsupported request type: {content_type!r}")
         message = self._create_message(**req)
         self._send_buffer += message
         self._request_queued = True
@@ -168,7 +163,7 @@ class Message:
 
     def process_jsonheader(self):
         hdrlen = self._jsonheader_len
-        if len(self._recv_buffer) >= hdrlen:
+        if len(self._recv_buffer) >= hdrlen: # type: ignore
             self.jsonheader = self._json_decode(
                 self._recv_buffer[:hdrlen], "utf-8"
             )
@@ -183,23 +178,25 @@ class Message:
                     raise ValueError(f"Missing required header '{reqhdr}'.")
 
     def process_response(self):
-        content_len = self.jsonheader["content-length"]
+        content_len = self.jsonheader["content-length"] # type: ignore
         if not len(self._recv_buffer) >= content_len:
             return
         data = self._recv_buffer[:content_len]
         self._recv_buffer = self._recv_buffer[content_len:]
-        if self.jsonheader["content-type"] == "text/json":
-            encoding = self.jsonheader["content-encoding"]
+        
+        if self.jsonheader["content-type"] == "text/json": # type: ignore
+            encoding = self.jsonheader["content-encoding"] # type: ignore
             self.response = self._json_decode(data, encoding)
-            print(f"Received response {self.response!r} from {self.addr}")
-            self._process_response_json_content()
+            
+            self.sensor_data = dict(self.response)
         else:
-            # Binary or unknown content-type
-            self.response = data
-            print(
-                f"Received {self.jsonheader['content-type']} "
-                f"response from {self.addr}"
-            )
-            self._process_response_binary_content()
-        # Close when response has been processed
-        self.close()
+            raise ValueError(f"Bad content type header.")
+        
+        # reset state to read the next message
+        self._request_queued = False
+        self._jsonheader_len = None
+        self.jsonheader = None
+        self.response = None
+        
+        self._set_selector_events_mask("w")  # Switch to write mode to send the response        
+
