@@ -3,7 +3,7 @@ from jigboard.Jigboard import Jigboard
 from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
 from structure.Input.ControllerListener import ControllerListener
-from transmission.RelayThread import RelayThread
+from transmission.ComsThread import ComsThread
 
 import time
 
@@ -12,7 +12,7 @@ def main():
     run_robot = Robot()
     robot_state = RobotState()
     
-    naut_coms = RelayThread()
+    naut_coms = ComsThread()
     naut_coms.begin_thread()
 
     run_robot.robot_init()

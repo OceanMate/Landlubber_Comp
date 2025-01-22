@@ -15,7 +15,7 @@ from jigboard.widgets.ButtonWidget import ButtonWidget
 from structure.Input.EventLoop import EventLoop
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.RobotState import RobotState
-from transmission.RelayThread import RelayThread
+from transmission.ComsThread import ComsThread
 
 class Jigboard:
     _instance = None
@@ -184,7 +184,7 @@ class Jigboard:
                 self.user_inputs[user_input].run = False
         
         # Update the connection status in the bottom bar
-        self.bottom_bar.update_comms_text(RelayThread().connected)
+        self.bottom_bar.update_comms_text(ComsThread().connected)
         
         # Check hotkeys
         self.hotkeys_loop.poll()

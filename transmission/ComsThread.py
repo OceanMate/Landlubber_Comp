@@ -6,7 +6,7 @@ import traceback
 import transmission.libclient as libclient
 
 
-class RelayThread:
+class ComsThread:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
@@ -24,7 +24,8 @@ class RelayThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
         
-        self.host = 'localhost'
+        self.host = self.get_ethernet_ip()
+        print(f"Host IP: {self.host}")
         self.port = 65432
         self.connected = False
     
@@ -43,6 +44,17 @@ class RelayThread:
     def begin_thread(self):
         thread = threading.Thread(target=self._run_client_socket)
         thread.start()
+    
+    def get_ethernet_ip(self):
+        #Retrieves the IP address of the ethernet adapter on the current system.
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect(('8.8.8.8', 80))  # Connect to a public DNS server to get the IP
+            ip = s.getsockname()[0]
+        finally:
+            s.close()
+
+        return ip
 
     def _create_request(self, robot_state):
         return dict(
