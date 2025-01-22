@@ -1,7 +1,7 @@
 from jigboard.JigboardTab import JigboardTab
 from jigboard.Jigboard import Jigboard
 from structure.Subsystem import Subsystem
-from transmission.Transmission import Transmission
+from transmission.RelayThread import RelayThread
 
 class LinearMotors(Subsystem):
     def __init__(self):
@@ -50,7 +50,7 @@ class LinearMotors(Subsystem):
         self.BL = bl_speed
         self.BR = br_speed
         
-        Transmission().set_linear_motor_speeds(fl_speed, fr_speed, bl_speed, br_speed)
+        RelayThread().set_horizontal_motors(fl_speed, fr_speed, br_speed, bl_speed)
         
     
     def stop_motors(self):

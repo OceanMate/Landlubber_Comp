@@ -1,10 +1,9 @@
-
 import selectors
 import socket
 import threading
 import traceback
 
-import libclient as libclient
+import transmission.libclient as libclient
 
 
 class RelayThread:
@@ -27,6 +26,7 @@ class RelayThread:
         
         self.host = 'localhost'
         self.port = 65432
+        self.connected = False
     
     def set_horizontal_motors(self, fl : float, fr : float, br : float, bl : float):
         self.robot_state["horizontal_motors"] = (fl, fr, br, bl)
@@ -57,21 +57,38 @@ class RelayThread:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setblocking(False)
         sock.connect_ex(addr)
+
         events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        
+
         # Send intial message to establish connection with initial robot state
         request = self._create_request(self.robot_state)
         message = libclient.Message(self.sel, sock, addr, request, self.robot_state, self.sensor_data)
         self.sel.register(sock, events, data=message)
+    
+    def _check_for_connection(self):
+        try:
+            with socket.create_connection((self.host, self.port), timeout=3) as sock:
+                print(f"Connection to {self.host}:{self.port} successful")
+            return True
+        except (socket.timeout, ConnectionRefusedError, OSError) as e:
+            return False
 
     def _run_client_socket(self):
         try:
-            # Start the connection
-            self._start_connection(self.host, self.port)
-
             # Send and recieve messages
             while True:
+                # pass on the rest of  if it can't be found
+                if not self.sel.get_map() and not self._check_for_connection():
+                    self.connected = False
+                    continue
+                
+                # connect if there are no active connections
+                if not self.sel.get_map():
+                    self._start_connection(self.host, self.port)
+                    self.connected = True
+
                 events = self.sel.select(timeout=1)
+                
                 for key, mask in events:
                     message = key.data
                     try:
@@ -83,15 +100,8 @@ class RelayThread:
                             f"{traceback.format_exc()}"
                         )
                         message.close()
-                # reconnect if there are no active connections
-                if not self.sel.get_map():
-                    self._start_connection(self.host, self.port)
-
+                        self.connected = False
         except KeyboardInterrupt:
             print("Caught keyboard interrupt, exiting")
         finally:
             self.sel.close()
-
-transmission = RelayThread()
-transmission.begin_thread()
-transmission.set_horizontal_motors(1.0, 1.0, 1.0, 1.0)

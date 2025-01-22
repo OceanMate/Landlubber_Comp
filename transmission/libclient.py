@@ -198,5 +198,5 @@ class Message:
         self.jsonheader = None
         self.response = None
         
-        self._set_selector_events_mask("w")  # Switch to write mode to send the response        
+        self._set_selector_events_mask("w")  # Switch to write mode to send the response
 

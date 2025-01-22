@@ -1,4 +1,4 @@
-from transmission.Transmission import Transmission
+from transmission.RelayThread import RelayThread
 
 
 class RobotState:
@@ -41,12 +41,12 @@ class RobotState:
             return False
         '''
         
-        Transmission().setEnable(True)
+        RelayThread().set_enabled(True)
         self._teleop_enabled = True
         self._teleop_to_be_initialized = True
         return True
     
     def disable_robot(self):
-        Transmission().setEnable(False)
+        RelayThread().set_enabled(False)
         self._teleop_enabled = False
         self._disabled_to_be_initialized = True
