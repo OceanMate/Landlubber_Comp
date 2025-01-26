@@ -24,7 +24,8 @@ class ComsThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
         
-        self.host = self.get_ethernet_ip()
+        #self.host = self.get_ethernet_ip()
+        self.host = '172.61.18.127'
         print(f"Host IP: {self.host}")
         self.port = 65432
         self.connected = False
@@ -43,6 +44,7 @@ class ComsThread:
     
     def begin_thread(self):
         thread = threading.Thread(target=self._run_client_socket)
+        thread.daemon = True
         thread.start()
     
     def get_ethernet_ip(self):
