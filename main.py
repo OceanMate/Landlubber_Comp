@@ -27,6 +27,11 @@ def main():
         KeyboardListener().update()      
         run_robot.robot_periodic()
         
+        if ComsThread().connected:
+            robot_state.disable_robot()
+            # Update the enable button text and color to reflect the new state
+            Jigboard().bottom_bar.update_enable_button(is_enabling=False)
+        
         if robot_state.should_init_teleop():
             run_robot.teleop_init()
         

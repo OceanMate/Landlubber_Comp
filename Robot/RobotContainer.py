@@ -15,9 +15,6 @@ class RobotContainer:
         self.linear_motors.defaultCommand(DefaultLinearMotorCmd(self.linear_motors))
         
         self.configure_button_bindings()
-        
-        
-
 
     def configure_button_bindings(self):
         # schedule FunkyMotorCmd when "f" is pressed
@@ -25,3 +22,6 @@ class RobotContainer:
         KeyboardInput("o").while_false(OverrideCmd(self.linear_motors))
         ControllerButton(0).on_true(FunkyMotorCmd(self.linear_motors)) 
         KeyboardInput("w").on_true(InstantCommand(lambda: print("w")))
+    
+    def stop_subsystems(self):
+        self.linear_motors.stop_motors()

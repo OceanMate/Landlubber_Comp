@@ -25,3 +25,4 @@ class Robot:
     
     def disabled_init(self):
         self.command_runner.turn_off()
+        self.robot_container.stop_subsystems()

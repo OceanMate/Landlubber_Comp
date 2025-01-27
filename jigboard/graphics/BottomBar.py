@@ -61,13 +61,13 @@ class BottomBar():
                     self.flash_comms = True
                     return
                 
-                self.enable_button.config(fg=GraphicConstants().red)
-                self.enable_button.config(text="Disable")
+                # switch the color and text of the enable button to reflect the new state
+                self.update_enable_button(is_enabling=True)
             
             elif robot_state.is_teleop_enabled():
+                # the switching of the button text and color is handled in the disable_robot function
                 robot_state.disable_robot()
-                self.enable_button.config(fg=GraphicConstants().dark_green)
-                self.enable_button.config(text="Enable")
+                self.update_enable_button(is_enabling=False)
 
         # Create the enable button and add it to the user inputs
         self.user_inputs["enable_button"] = UserInput()
@@ -199,3 +199,11 @@ class BottomBar():
                     self.bottom_bar_canvas.itemconfig(self.comms_text, fill=GraphicConstants().red)
             else:
                 self.bottom_bar_canvas.itemconfig(self.comms_text, fill=GraphicConstants().orange)
+    
+    def update_enable_button(self, is_enabling):
+        if is_enabling:
+            self.enable_button.config(fg=GraphicConstants().red)
+            self.enable_button.config(text="Disable")
+        else:
+            self.enable_button.config(fg=GraphicConstants().dark_green)
+            self.enable_button.config(text="Enable")

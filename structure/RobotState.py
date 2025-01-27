@@ -1,6 +1,5 @@
 from transmission.ComsThread import ComsThread
 
-
 class RobotState:
     _instance = None
 
@@ -47,5 +46,6 @@ class RobotState:
     
     def disable_robot(self):
         ComsThread().set_enabled(False)
+        
         self._teleop_enabled = False
         self._disabled_to_be_initialized = True

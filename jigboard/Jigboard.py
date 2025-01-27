@@ -78,8 +78,7 @@ class Jigboard:
         def on_enter():
             if RobotState().is_teleop_enabled():
                 RobotState().disable_robot()
-                self.bottom_bar.enable_button.config(fg=GraphicConstants().dark_green)
-                self.bottom_bar.enable_button.config(text="Enable")
+                self.bottom_bar.update_enable_button(is_enabling=False)
         
         # Create the hotkey for the enter key
         enter_hotkey = KeyboardInput("enter")
