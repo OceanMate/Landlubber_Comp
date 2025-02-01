@@ -24,7 +24,6 @@ class ComsThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
         
-        #self.host = self.get_ethernet_ip()
         self.host = '172.61.18.127'
         print(f"Host IP: {self.host}")
         self.port = 65432
@@ -46,17 +45,6 @@ class ComsThread:
         thread = threading.Thread(target=self._run_client_socket)
         thread.daemon = True
         thread.start()
-    
-    def get_ethernet_ip(self):
-        #Retrieves the IP address of the ethernet adapter on the current system.
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            s.connect(('8.8.8.8', 80))  # Connect to a public DNS server to get the IP
-            ip = s.getsockname()[0]
-        finally:
-            s.close()
-
-        return ip
 
     def _create_request(self, robot_state):
         return dict(
