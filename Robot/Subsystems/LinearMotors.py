@@ -20,15 +20,22 @@ class LinearMotors(Subsystem):
         abs_x = abs(xSpeed)
         abs_y = abs(ySpeed)
         abs_z = abs(zRotation)
-
-        # Calculate the sum of absolute values
-        total_sum = abs_x + abs_y + abs_z
+        
+        # Find the maximum of the absolute values
+        maxXYZ = max([abs_x, abs_y, abs_z])
         
         # prevent division by zero
-        if (total_sum == 0):
+        if (maxXYZ == 0):
             # no movement
             self.stop_motors()
             return
+        
+        x_div_max = abs_x / maxXYZ
+        y_div_max = abs_y / maxXYZ
+        z_div_max = abs_z / maxXYZ
+        
+        # sum of the divided values
+        total_sum = x_div_max + y_div_max + z_div_max
 
         # actual matrix input
         reducedX = xSpeed / total_sum

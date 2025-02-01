@@ -1,7 +1,6 @@
 from tkinter import Button, Canvas
 
 from jigboard.GraphicConstants import GraphicConstants
-from jigboard.graphics.UserInput import UserInput
 from structure.RobotState import RobotState
 
 import tkinter.font as tkfont
@@ -68,14 +67,6 @@ class BottomBar():
                 # the switching of the button text and color is handled in the disable_robot function
                 robot_state.disable_robot()
                 self.update_enable_button(is_enabling=False)
-
-        # Create the enable button and add it to the user inputs
-        self.user_inputs["enable_button"] = UserInput()
-        self.user_inputs["enable_button"].function = enable_robot
-        
-        # Function that is called when the enable button is pressed, sets its associated user input to run
-        def enable_button_press():
-            self.user_inputs["enable_button"].run = True
         
         # Create the enable button
         self.enable_button = Button(
@@ -84,7 +75,7 @@ class BottomBar():
             bg=GraphicConstants().dark_grey,
             fg=GraphicConstants().dark_green,
             font=(GraphicConstants().bottom_bar_font, 16),
-            command=enable_button_press,
+            command=enable_robot,
         )
         
         

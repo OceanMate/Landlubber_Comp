@@ -52,6 +52,7 @@ class ControllerListener:
         #initializes pygame and joystick
         pygame.init()
         pygame.joystick.init()
+        self.deadband = 0.05
         
         if (pygame.joystick.get_count() != 0):
             self._connect_new_controller(0)
@@ -99,6 +100,8 @@ class ControllerListener:
             text = "Gamepad F310"
         elif (text == "Controller (XBOX 360 For Windows)"):
             text = "Xbox 360"
+        elif (text == "Controller (Xbox One For Windows)"):
+            text = "Xbox One"
         
         Jigboard().bottom_bar.update_controller_text(controller_name=text)
 
@@ -111,6 +114,8 @@ class ControllerListener:
     
     def get_axis(self, axis):
         if (pygame.joystick.get_count() == 0):
+            return 0.0
+        if (self.axis_state[axis] < self.deadband and self.axis_state[axis] > -self.deadband):
             return 0.0
         return self.axis_state[axis]
 
