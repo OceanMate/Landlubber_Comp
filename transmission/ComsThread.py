@@ -107,7 +107,7 @@ class ComsThread:
                     message = key.data
                     try:
                         message.process_events(mask, self.robot_state)
-                        print(f"Received: {message.sensor_data}")
+                        #print(f"Received: {message.sensor_data}")
                     except Exception:
                         print(
                             f"Main: Error: Exception for {message.addr}:\n"
