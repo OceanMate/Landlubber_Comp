@@ -65,6 +65,9 @@ class GridGraphics:
         self.grid_canvas.bind("<ButtonRelease-1>", self._on_mouse_release)
         self.grid_canvas.bind("<Motion>", self._on_mouse_move)
     
+    def move_grid(self, x, y):
+        self.grid_canvas.place(x=x, y=y, anchor="nw")
+    
     def resize_grid(self):
         # Resize the canvas to fit the new window dimensions
         self.grid_canvas.config(width=GraphicConstants().window_width)
@@ -91,6 +94,10 @@ class GridGraphics:
         
         # Redraw the grid
         self.draw_grid()
+        
+        
+        
+        
     
     # Create a new tab grid for a new tab (should be run every time a new tab is created)
     def create_new_tab_grid(self, tab):
@@ -144,7 +151,6 @@ class GridGraphics:
                 else:
                     self.is_moving = True
     
-    # TODO make move widget based of previous mouse location
     def _on_mouse_release(self, event):
         if self.widget_pressed == "":
             return
@@ -422,3 +428,6 @@ class GridGraphics:
         
         # Raise the grid to the top of the canvas so it isn't behind the widgets
         self.grid_canvas.tag_raise(tag)
+        
+
+        

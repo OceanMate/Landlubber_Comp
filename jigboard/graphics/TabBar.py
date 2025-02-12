@@ -3,6 +3,8 @@ from tkinter import Canvas
 import tkinter.font as tkfont
 from jigboard.GraphicConstants import GraphicConstants
 from jigboard.graphics.GridGraphics import GridGraphics
+from jigboard.graphics.NetworkData import NetworkData
+
 
 
 class TabBar:
@@ -16,7 +18,7 @@ class TabBar:
         # stores the x position of the next tab, 20 for the first tab
         self.next_tab_x = 20
     
-    # Generate the tab bar at the top of the window (currently unused)
+    # Generate the tab bar at the top of the window 
     def generate_tab_bar(self):
         # Create the tab bar canvas
         self.tab_bar_canvas = Canvas(
@@ -29,6 +31,9 @@ class TabBar:
         
         self.tab_bar_canvas.place(x=0, y=0, anchor="nw")
         
+        # Network Data Tab
+        self.add_tab("Network Data")
+        self.network_data_active = False
         # Add the default tab and set it as the current tab
         self.add_tab(GraphicConstants().default_tab)
         self.set_current_tab(GraphicConstants().default_tab)
@@ -63,6 +68,26 @@ class TabBar:
     
     # Set the current tab to the given tab name
     def set_current_tab(self, tab_name):
+        
+        if(tab_name == "Network Data"):
+            self.network_data_active = not self.network_data_active
+            if( self.network_data_active):
+                
+                # Add an underline to the current tab
+                tag_name = self.get_tag_name(tab_name)
+                self.tab_bar_canvas.itemconfig(tag_name, font=(GraphicConstants().font, 16, 'underline'))
+                NetworkData().init(self.window)
+                
+            else:
+                
+                # Remove the underline from the tab
+                tag_name = self.get_tag_name(tab_name)
+                self.tab_bar_canvas.itemconfig(tag_name, font=(GraphicConstants().font, 16))
+                GridGraphics().grid_canvas.itemconfig("network_data", state="hidden")
+                NetworkData().destroy_grid()
+                
+            return
+                
         # Hide all widgets in the previous tab
         for widget in self.tabs[GraphicConstants().current_tab].values():
             widget.hide()
@@ -87,6 +112,8 @@ class TabBar:
             if GridGraphics().is_out_of_bounds(widget.grid_x, widget.grid_y, widget.grid_width, widget.grid_height):
                 new_x, new_y = GridGraphics().find_next_available_space(widget.grid_width, widget.grid_height, tab_name)
                 widget.move_widget(new_x, new_y)
+            
+                
     
     # Get the tag name of a tab name
     def get_tag_name(self, tab_name):

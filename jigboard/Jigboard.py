@@ -232,6 +232,8 @@ class Jigboard:
                 
                 if tab != GraphicConstants().current_tab:
                     widget.hide()
+                    
+        
     
     # Close the window and exit the program
     def _close(self):

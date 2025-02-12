@@ -19,6 +19,7 @@ class GraphicConstants:
         self.tab_bar_height = 30
         self.grid_dim = 30
         self.bottom_bar_height = 70
+        self.network_data_width = 300
         
         # Colors
         self.white = "#FFFFFF"
