@@ -1,5 +1,5 @@
 pynput
 pygame-ce
 opencv-python
-imutils
+numpy
 pillow

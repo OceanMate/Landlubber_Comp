@@ -18,7 +18,6 @@ class ComsThread:
             cls._instance._start()
         return cls._instance
     
-    
     def _start(self):
         self.sel = selectors.DefaultSelector()
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
