@@ -19,7 +19,7 @@ class CameraComs:
             cls._instance._init()
         return cls._instance
     
-    def _init(self, host='localhost', port=9999):
+    def _init(self, host='172.61.34.186', port=9999):
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
         # I think this can be 1 instead of 5 because we make separate threads for each client
@@ -67,13 +67,3 @@ class CameraComs:
         else:
             # Handle the case where the lock is not acquired
             return None
-
-    def update_image(self, labels, max_width=None, max_height=None):
-        with self.lock:
-            for client_id, frame in self.frames.items():
-                img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                if max_width and max_height:
-                    img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
-                imgtk = ImageTk.PhotoImage(image=img)
-                labels[client_id].imgtk = imgtk
-                labels[client_id].config(image=imgtk)
