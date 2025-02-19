@@ -9,9 +9,8 @@ import time
 
 
 class BottomBar():
-    def __init__(self, window, user_inputs):
+    def __init__(self, window):
         self.window = window
-        self.user_inputs = user_inputs
         
         # Measure the pixel width of the disable text
         self.bottom_bar_font = tkfont.Font(family=GraphicConstants().bottom_bar_font, size=16)

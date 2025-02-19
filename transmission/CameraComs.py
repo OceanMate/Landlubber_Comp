@@ -7,7 +7,7 @@ import numpy
 import threading
 import tkinter as tk
 
-class CameraServer:
+class CameraComs:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
@@ -39,10 +39,10 @@ class CameraServer:
                 image_stream = io.BytesIO()
                 image_stream.write(connection.read(image_len))
                 image_stream.seek(0)
-                image = Image.open(image_stream)
-                im = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
+                frame = Image.open(image_stream)
+                image = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
                 with self.lock:
-                    self.frames[client_id] = im
+                    self.frames[client_id] = image
         finally:
             connection.close()
 
