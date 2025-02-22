@@ -132,6 +132,6 @@ class NetworkData:
         # Check if the click is within the bounds of a data entry
         for entry in self.data_entries:
             if (entry.is_point_inside(event.x, event.y)):
-                print(f"Clicked on {entry.name}")
-                self.jigboard.put_string(entry.name, entry.dictionary[entry.name], tab=GraphicConstants().current_tab)
+                # print(f"Clicked on {entry.name}")
+                self.jigboard.put_data(entry.name, entry.dictionary[entry.name], tab=GraphicConstants().current_tab)
                 

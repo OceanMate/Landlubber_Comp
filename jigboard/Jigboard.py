@@ -126,6 +126,18 @@ class Jigboard:
             update_func(self.tabs[tab][widget_label], *args)
         
         return self.tabs[tab][widget_label]
+    
+    def put_data(self, label: str, data, tab=GraphicConstants().default_tab):
+        if type(data) == bool or type(data) == tuple:
+            return self.put_boolean(label, data, tab)
+        if type(data) == str:
+            return self.put_string(label, data, tab)
+        if type(data) ==Callable:
+            return self.put_button(label, data, tab)
+        if type(data) == int:
+            return self.put_camera(label, data, tab)
+        
+        print("Data type not supported, please use a boolean, string, callable or int")
 
     def put_string(self, label: str, text: str, tab=GraphicConstants().default_tab):
         self._create_or_update_widget(

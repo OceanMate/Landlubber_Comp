@@ -16,7 +16,7 @@ def main():
     naut_coms = ComsThread()
     naut_coms.begin_thread()
     
-    cam_coms = CameraComs()
+    #cam_coms = CameraComs()
 
     run_robot.robot_init()
     
