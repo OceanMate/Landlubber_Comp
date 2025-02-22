@@ -71,6 +71,9 @@ class Jigboard:
         self.bottom_bar = BottomBar(self.window)
         self.bottom_bar.create_bottom_bar()
         
+        self.network_data = NetworkData()
+        self.network_data.init(self.window)
+        
         # Setup hotkeys for the dashboard
         self._setup_hotkeys()
         
@@ -172,6 +175,9 @@ class Jigboard:
         if GraphicConstants().window_width != self.window.winfo_width() or GraphicConstants().window_height != self.window.winfo_height():
             self._remake_window()
         
+        if self.network_data.enabled:
+            self.network_data.draw_network_data()
+        
         for camera_widget in self.camera_widgets:
             camera_widget.update_image()
         
@@ -197,8 +203,9 @@ class Jigboard:
         self.tab_bar.resize_tab_bar()
         self.grid_graphics.resize_grid()
         self.bottom_bar.resize_bottom_bar()
-        if NetworkData() is not None:
-            NetworkData().resize_canvas()
+        
+        if self.network_data.enabled:
+            self.network_data.resize_network_data()
         
         # replace all the widgets on the grid and show/hide them as needed
         for tab in self.tabs.keys():
