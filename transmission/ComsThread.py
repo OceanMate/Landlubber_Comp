@@ -23,7 +23,7 @@ class ComsThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
         
-        self.host = '172.61.18.127'
+        self.host = '172.61.34.186'
         print(f"Host IP: {self.host}")
         self.port = 65432
         self.connected = False

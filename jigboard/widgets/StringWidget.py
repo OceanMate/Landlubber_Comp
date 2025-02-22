@@ -3,11 +3,11 @@ from jigboard.GraphicConstants import GraphicConstants
 
 # creates a widget that displays a given string
 class StringWidget(Widget):
-    def __init__(self, canvas, label):
+    def __init__(self, canvas, label, display_text):
         super().__init__(canvas, label)
         
         # Stores the text to be displayed on the widget
-        self.display_text = ""
+        self.display_text = display_text
         
         # Set the default dimensions of the widget
         grid_width, grid_height = self.get_default_dimensions()

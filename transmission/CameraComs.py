@@ -7,7 +7,7 @@ import numpy
 import threading
 import tkinter as tk
 
-class CameraServer:
+class CameraComs:
     _instance = None
 
     # When a new instance is created, sets it to the same global instance
@@ -19,7 +19,7 @@ class CameraServer:
             cls._instance._init()
         return cls._instance
     
-    def _init(self, host='localhost', port=9999):
+    def _init(self, host='172.61.34.186', port=9999):
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
         # I think this can be 1 instead of 5 because we make separate threads for each client
@@ -39,10 +39,10 @@ class CameraServer:
                 image_stream = io.BytesIO()
                 image_stream.write(connection.read(image_len))
                 image_stream.seek(0)
-                image = Image.open(image_stream)
-                im = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
+                frame = Image.open(image_stream)
+                image = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
                 with self.lock:
-                    self.frames[client_id] = im
+                    self.frames[client_id] = image
         finally:
             connection.close()
 
@@ -67,13 +67,3 @@ class CameraServer:
         else:
             # Handle the case where the lock is not acquired
             return None
-
-    def update_image(self, labels, max_width=None, max_height=None):
-        with self.lock:
-            for client_id, frame in self.frames.items():
-                img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                if max_width and max_height:
-                    img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
-                imgtk = ImageTk.PhotoImage(image=img)
-                labels[client_id].imgtk = imgtk
-                labels[client_id].config(image=imgtk)

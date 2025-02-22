@@ -3,10 +3,10 @@ from jigboard.GraphicConstants import GraphicConstants
 
 # creates a widget that displays a given string
 class BooleanWidget(Widget):
-    def __init__(self, canvas, label):
+    def __init__(self, canvas, label, display_bool):
         super().__init__(canvas, label)
         
-        self.display_bool = False
+        self.display_bool = display_bool
         
         grid_width, grid_height = self.get_default_dimensions()
         self._set_dimensions(grid_width, grid_height)
