@@ -76,7 +76,7 @@ class TabBar:
                 # Add an underline to the current tab
                 tag_name = self.get_tag_name(tab_name)
                 self.tab_bar_canvas.itemconfig(tag_name, font=(GraphicConstants().font, 16, 'underline'))
-                NetworkData().init(self.window)
+                NetworkData().generate_grid()
                 
             else:
                 
