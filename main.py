@@ -4,6 +4,7 @@ from structure.RobotState import RobotState
 from structure.Input.KeyboardListener import KeyboardListener
 from structure.Input.ControllerListener import ControllerListener
 from transmission.ComsThread import ComsThread
+from transmission.CameraComs import CameraComs
 
 import time
 
@@ -14,6 +15,8 @@ def main():
     
     naut_coms = ComsThread()
     naut_coms.begin_thread()
+    
+    cam_coms = CameraComs()
 
     run_robot.robot_init()
     

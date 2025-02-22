@@ -124,6 +124,8 @@ class Jigboard:
         else:
             # Update the widget
             update_func(self.tabs[tab][widget_label], *args)
+        
+        return self.tabs[tab][widget_label]
 
     def put_string(self, label: str, text: str, tab=GraphicConstants().default_tab):
         self._create_or_update_widget(
@@ -150,12 +152,14 @@ class Jigboard:
         )
 
     def put_camera(self, label: str, camera_id: int, tab=GraphicConstants().default_tab):
-        self._create_or_update_widget(
+        cam_widget = self._create_or_update_widget(
             label, CameraWidget,
             lambda widget, x, y: widget.create_camera_widget(x, y),
             lambda widget, camera_id: setattr(widget, 'camera_id', camera_id),
             camera_id, tab=tab
         )
+        
+        self.camera_widgets.append(cam_widget)
 
     def put_all_camera_widgets(self, tab = GraphicConstants().default_tab):
         # Create a camera widget for each camera
