@@ -1,11 +1,11 @@
 import io
 import socket
 import struct
-from PIL import Image, ImageTk
+from PIL import Image
 import cv2
 import numpy
 import threading
-import tkinter as tk
+import time
 
 class CameraComs:
     _instance = None
@@ -19,16 +19,18 @@ class CameraComs:
             cls._instance._init()
         return cls._instance
     
-    def _init(self, host='172.61.34.186', port=9999):
+    def _init(self, host='172.60.58.193', port=46389):
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
         # I think this can be 1 instead of 5 because we make separate threads for each client
         # but it doesn't hurt to have a higher number
         self.server_socket.listen(5)
-        # print(f"Listening on {host}:{port}")
+        print(f"Listening on {host}:{port}")
         self.frames = {}
         self.lock = threading.Lock()
         self.num_cameras = 0
+        
+        self.start()
 
     def handle_client(self, connection, client_id):
         try:
@@ -40,25 +42,36 @@ class CameraComs:
                 image_stream.write(connection.read(image_len))
                 image_stream.seek(0)
                 frame = Image.open(image_stream)
-                image = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
+                frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
                 with self.lock:
-                    self.frames[client_id] = image
+                        
+                    self.frames[client_id] = frame
+                time.sleep(0.01)                
         finally:
             connection.close()
 
     def start(self):
-        threading.Thread(target=self._start).start()
+        thread = threading.Thread(target=self._start)
+        thread.daemon = True
+        thread.start()
         
     def _start(self):
         while True:
             connection = self.server_socket.accept()[0].makefile('rb')
-            threading.Thread(target=self.handle_client, args=(connection, self.num_cameras)).start()
+            # Create a new thread for each client connection
+            thread = threading.Thread(target=self.handle_client, args=(connection, self.num_cameras))
+            thread.daemon = True
+            thread.start()
+            
+            print(f"Camera {self.num_cameras} connected")
             self.num_cameras += 1
     
     def get_num_of_cameras(self):
         return self.num_cameras
     
-    def get_camera_image(self, camera_id):
+    from typing import Union
+
+    def get_camera_frame(self, camera_id) -> Union[numpy.ndarray, None]:
         if self.lock.acquire(blocking=False):  # Try to acquire the lock without blocking
             try:
                 return self.frames.get(camera_id, None)
