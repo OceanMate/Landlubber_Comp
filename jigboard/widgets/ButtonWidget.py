@@ -4,8 +4,8 @@ from jigboard.GraphicConstants import GraphicConstants
 # creates a widget the user can click on and run a command
 # only have to be called once
 class ButtonWidget(Widget):
-    def __init__(self, canvas, label, command):
-        super().__init__(canvas, label)
+    def __init__(self, canvas, label, name, command):
+        super().__init__(canvas, label, name)
         self.command = command
         grid_width, grid_height = self.get_default_dimensions()
         self._set_dimensions(grid_width, grid_height)
@@ -54,12 +54,12 @@ class ButtonWidget(Widget):
         text_y = self.y + (self.height + self.widget_label_height) / 2
         
         # Resize the text to fit in the widget
-        label = self.resize_text(self.label)
+        name = self.resize_text(self.name)
         
         # Create the display text of the widget, stores the graphic object for use in updating the text
         self.g_button_text = self.canvas.create_text(
             text_x, text_y,
-            text=label,
+            text=name,
             fill=GraphicConstants().blue,
             anchor="center",
             font=self.font,

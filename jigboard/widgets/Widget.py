@@ -6,13 +6,15 @@ from jigboard.graphics.GridGraphics import GridGraphics
 
 
 class Widget():
-    def __init__(self, canvas: tk.Canvas, label: str):
+    def __init__(self, canvas: tk.Canvas, label: str, name: str):
         # Important widget variables
         self.widget_label_height = 20
         self.widget_offset = 3
         
         # Set the font for the widget
         self.font = tkfont.Font(family=GraphicConstants().font, size=12)
+        
+        self.name = name
         
         self.label = label
         # Set the canvas the widget is on
@@ -64,7 +66,7 @@ class Widget():
         text_x = self.x + (self.width) / 2
         text_y = self.y + self.widget_label_height / 2 + self.widget_offset
         
-        display_label = self.resize_text(self.label)
+        display_label = self.resize_text(self.name)
         
         # Create the widget label text
         self.g_label_display = self.canvas.create_text(

@@ -8,8 +8,8 @@ from transmission.CameraComs import CameraComs
 
 # creates a widget that displays a given string
 class CameraWidget(Widget):
-    def __init__(self, canvas, label, camera_id):
-        super().__init__(canvas, label)
+    def __init__(self, canvas, label, name, camera_id):
+        super().__init__(canvas, label, name)
         
         # Set the default dimensions of the widget
         grid_width, grid_height = self.get_default_dimensions()

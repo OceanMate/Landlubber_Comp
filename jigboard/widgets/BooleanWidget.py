@@ -3,8 +3,8 @@ from jigboard.GraphicConstants import GraphicConstants
 
 # creates a widget that displays a given string
 class BooleanWidget(Widget):
-    def __init__(self, canvas, label, display_bool):
-        super().__init__(canvas, label)
+    def __init__(self, canvas, label, name, display_bool):
+        super().__init__(canvas, label, name)
         
         self.display_bool = display_bool
         
@@ -60,6 +60,3 @@ class BooleanWidget(Widget):
         self.display_bool = display_bool
         rect_color = GraphicConstants().dark_green if display_bool else GraphicConstants().red
         self.canvas.itemconfig(self.g_bool_rect, fill=rect_color, outline=rect_color)
-
-
-

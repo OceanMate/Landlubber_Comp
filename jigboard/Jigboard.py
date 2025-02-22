@@ -98,15 +98,15 @@ class Jigboard:
         # Set the loop for the hotkey to be the dashboard loop
         enter_hotkey.set_loop(loop=self.hotkeys_loop)     
     
-    def _create_or_update_widget(self, label, widget_class, create_func, update_func, *args, tab):
+    def _create_or_update_widget(self, name, widget_class, create_func, update_func, *args, tab):
         if self.grid_graphics is None:
             return
         
-        widget_label = tab + label
+        widget_label = tab + str(widget_class) + name
         
         # Check if the tab exists, if not create it
         if widget_label not in self.tabs[tab].keys():
-            self.tabs[tab][widget_label] = widget_class(self.grid_graphics.grid_canvas, widget_label, *args)
+            self.tabs[tab][widget_label] = widget_class(self.grid_graphics.grid_canvas, widget_label, name, *args)
             
             # Get the default dimensions of the widget
             widget_grid_width, widget_grid_height = self.tabs[tab][widget_label].get_default_dimensions()
@@ -139,33 +139,33 @@ class Jigboard:
         
         print("Data type not supported, please use a boolean, string, callable or int")
 
-    def put_string(self, label: str, text: str, tab=GraphicConstants().default_tab):
+    def put_string(self, name: str, text: str, tab=GraphicConstants().default_tab):
         self._create_or_update_widget(
-            label, StringWidget,
+            name, StringWidget,
             lambda widget, x, y: widget.create_string_widget(x, y, text),
             lambda widget, text: widget.update_text(text),
             text, tab=tab
         )
 
-    def put_boolean(self, label: str, boolean: bool, tab=GraphicConstants().default_tab):
+    def put_boolean(self, name: str, boolean: bool, tab=GraphicConstants().default_tab):
         self._create_or_update_widget(
-            label, BooleanWidget,
+            name, BooleanWidget,
             lambda widget, x, y: widget.create_bool_widget(x, y, boolean),
             lambda widget, boolean: widget.update_bool(boolean),
             boolean, tab=tab
         )
 
-    def put_button(self, label: str, command: Callable, tab=GraphicConstants().default_tab):
+    def put_button(self, name: str, command: Callable, tab=GraphicConstants().default_tab):
         self._create_or_update_widget(
-            label, ButtonWidget,
+            name, ButtonWidget,
             lambda widget, x, y: widget.create_button_widget(x, y),
             lambda widget, command: setattr(widget, 'command', command),
             command, tab=tab
         )
 
-    def put_camera(self, label: str, camera_id: int, tab=GraphicConstants().default_tab):
+    def put_camera(self, name: str, camera_id: int, tab=GraphicConstants().default_tab):
         cam_widget = self._create_or_update_widget(
-            label, CameraWidget,
+            name, CameraWidget,
             lambda widget, x, y: widget.create_camera_widget(x, y),
             lambda widget, camera_id: setattr(widget, 'camera_id', camera_id),
             camera_id, tab=tab
