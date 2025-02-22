@@ -128,9 +128,9 @@ class Jigboard:
         return self.tabs[tab][widget_label]
     
     def put_data(self, label: str, data, tab=GraphicConstants().default_tab):
-        if type(data) == bool or type(data) == tuple:
+        if type(data) == bool:
             return self.put_boolean(label, data, tab)
-        if type(data) == str:
+        if type(data) == str or type(data) == tuple:
             return self.put_string(label, data, tab)
         if type(data) ==Callable:
             return self.put_button(label, data, tab)
@@ -217,7 +217,7 @@ class Jigboard:
         self.bottom_bar.resize_bottom_bar()
         
         if self.network_data.enabled:
-            self.network_data.resize_network_data()
+            self.network_data.resize_canvas()
         
         # replace all the widgets on the grid and show/hide them as needed
         for tab in self.tabs.keys():
