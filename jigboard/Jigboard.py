@@ -4,6 +4,7 @@ import ctypes
 from typing import Callable
 
 from jigboard.graphics.BottomBar import BottomBar
+from jigboard.graphics.NetworkData import NetworkData
 from jigboard.graphics.TabBar import TabBar
 from jigboard.graphics.GridGraphics import GridGraphics
 from jigboard.GraphicConstants import GraphicConstants
@@ -201,6 +202,8 @@ class Jigboard:
         self.tab_bar.resize_tab_bar()
         self.grid_graphics.resize_grid()
         self.bottom_bar.resize_bottom_bar()
+        if NetworkData() is not None:
+            NetworkData().resize_canvas()
         
         # replace all the widgets on the grid and show/hide them as needed
         for tab in self.tabs.keys():
