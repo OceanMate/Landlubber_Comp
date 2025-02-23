@@ -4,22 +4,21 @@ from jigboard.graphics.GridGraphics import GridGraphics
 from transmission.ComsThread import ComsThread
 import tkinter.font as tkfont
 
+class NetworkDataEntry:
+    def __init__(self, x, y, width, height, name, dictionary):
+        self.dictionary = dictionary
+        self.name = name
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        
+    def is_point_inside(self, x, y):
+        return (x >= self.x and x <= self.x + self.width and
+                y >= self.y and y <= self.y + self.height)
 
 class NetworkData:  
     _instance = None
-    
-    class network_data_entry:
-        def __init__(self, x, y, width, height, name, dictionary):
-            self.dictionary = dictionary
-            self.name = name
-            self.x = x
-            self.y = y
-            self.width = width
-            self.height = height
-            
-        def is_point_inside(self, x, y):
-            return (x >= self.x and x <= self.x + self.width and
-                    y >= self.y and y <= self.y + self.height)
     
     # When a new instance is created, sets it to the same global instance
     def __new__(cls):
@@ -95,8 +94,8 @@ class NetworkData:
         
 
     # Create function to display the dictionary data on the canvas
-    def dictionary_list(self, dictionary, initial_y):
-        y_position = initial_y ;int
+    def dictionary_list(self, dictionary, initial_y : int):
+        y_position = initial_y
         
         # Iterate through the dictionary and create text for each key-value pair
         for key, value in dictionary.items():
@@ -107,15 +106,13 @@ class NetworkData:
                 fill="black",
                 font=self.font,
             )
-            self.data_entries.append(self.network_data_entry(20, y_position, 180, 12, key, dictionary))
+            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, key, dictionary))
             y_position += self.data_spacing
         return y_position
             
         
-        
-        
     def resize_canvas(self):
-        # Resize the canvas to fit the new window dimensions
+        # Resize the canvas to fit the new window di5mensions
         self.network_data_canvas.config(width=GraphicConstants().network_data_width)
         px_grid_height = GraphicConstants().window_height - GraphicConstants().tab_bar_height - GraphicConstants().bottom_bar_height
         self.network_data_canvas.config(height=px_grid_height)
