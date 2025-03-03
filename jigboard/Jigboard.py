@@ -131,7 +131,7 @@ class Jigboard:
         if type(data) == bool:
             return self.put_boolean(label, data, tab)
         if type(data) == str or type(data) == tuple:
-            return self.put_string(label, data, tab)
+            return self.put_string(label, data, tab) # type: ignore
         if type(data) ==Callable:
             return self.put_button(label, data, tab)
         if type(data) == int:

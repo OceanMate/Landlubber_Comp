@@ -154,7 +154,7 @@ class BottomBar():
     
     # Update the controller text to the given controller name
     def update_controller_text(self, controller_name):
-        if controller_name == "None":
+        if (controller_name == "None"):
             self.bottom_bar_canvas.itemconfig(self.controller_text, fill=GraphicConstants().red)
         else:
             self.bottom_bar_canvas.itemconfig(self.controller_text, fill=GraphicConstants().dark_green)

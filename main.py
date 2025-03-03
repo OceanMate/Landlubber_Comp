@@ -1,3 +1,4 @@
+from Debug import Debug
 from Robot.Robot import Robot
 from jigboard.Jigboard import Jigboard
 from structure.RobotState import RobotState
@@ -8,8 +9,8 @@ from transmission.CameraComs import CameraComs
 
 import time
 
-
 def main():
+    
     run_robot = Robot()
     robot_state = RobotState()
     
@@ -30,7 +31,7 @@ def main():
         KeyboardListener().update()      
         run_robot.robot_periodic()
         
-        if not ComsThread().connected:
+        if not ComsThread().connected and not Debug.ignoreComs:
             robot_state.disable_robot()
             # Update the enable button text and color to reflect the new state
             Jigboard().bottom_bar.update_enable_button(is_enabling=False)
