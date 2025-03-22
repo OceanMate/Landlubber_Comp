@@ -2,6 +2,8 @@ import selectors
 import socket
 import threading
 import traceback
+import netifaces  # Add this import to retrieve Ethernet interface IP
+import psutil  # Add this import to retrieve Ethernet interface IP
 
 import transmission.libclient as libclient
 
@@ -23,10 +25,30 @@ class ComsThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
         
-        self.host = '172.61.34.186'
+        self.host = '192.168.1.2'  # Dynamically retrieve Ethernet IP
         print(f"Host IP: {self.host}")
         self.port = 65432
         self.connected = False
+
+    def _get_ethernet_ip(self):
+        """Retrieve the IP address of any active network with 'Ethernet' in its name."""
+        try:
+            addresses = psutil.net_if_addrs()
+            stats = psutil.net_if_stats()
+
+            for intface, addr_list in addresses.items():
+                # Check if the interface is up and contains 'Ethernet' in its name
+                if intface in stats and stats[intface].isup and "eth" in intface.lower():
+                    for addr in addr_list:
+                        # Ensure it's an IPv4 address and not a link-local address (169.254.x.x)
+                        if addr.family == socket.AF_INET and not addr.address.startswith("169.254"):
+                            print(f"Found active interface: {intface} with IP {addr.address}")
+                            return addr.address
+
+            raise RuntimeError("No active interface found with 'Ethernet' in its name")
+        except Exception as e:
+            print(f"Error retrieving Ethernet IP: {e}")
+            return "127.0.0.1"  # Fallback to localhost if no Ethernet IP is found
     
     def set_horizontal_motors(self, fl : float, fr : float, br : float, bl : float):
         self.robot_state["horizontal_motors"] = (fl, fr, br, bl)
