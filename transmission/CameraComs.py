@@ -37,7 +37,6 @@ class CameraComs:
 
     def handle_client(self, connection, client_id):
         try:
-            last_time = time.time()  # Initialize the last frame time
             while True:
                 # Read the length of the image data
                 data = connection.read(struct.calcsize('<L'))
