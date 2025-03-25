@@ -5,7 +5,6 @@ from PIL import Image
 import cv2
 import numpy
 import threading
-import time
 from typing import Union
 
 
@@ -96,14 +95,6 @@ class CameraComs:
             thread = threading.Thread(target=self.handle_client, args=(connection, client_id))
             thread.daemon = True
             thread.start()
-
-    def _adjust_port(self, client_id):
-        try:
-            new_port = self.port + client_id
-            print(f"Adjusting port for Camera {client_id} to {new_port}")
-            # Logic for handling the new port can be added here
-        except Exception as e:
-            print(f"Error adjusting port for Camera {client_id}: {e}")
     
     def get_camera_frame(self, camera_id) -> Union[numpy.ndarray, None]:
         if self.locks[camera_id].acquire(blocking=False):  # Try to acquire the lock without blocking
