@@ -22,17 +22,12 @@ class CameraComs:
         return cls._instance
     
     def _init(self, host='192.168.1.1', port=46389):
-        self.server_socket = socket.socket()
-        self.server_socket.bind((host, port))
-        # I think this can be 1 instead of 5 because we make separate threads for each client
-        # but it doesn't hurt to have a higher number
-        self.server_socket.listen(5)
-        print(f"Listening on {host}:{port}")
+        self.host = host
+        self.port = port
         self.frames = {}
-        self.lock = threading.Lock()
+        self.locks = {}  # Create a lock for each camera thread
         self.num_cameras = 0
         self.frame_displayed = {}  # Track if a frame has been displayed for each camera
-        
         self.start()
 
     def handle_client(self, connection, client_id):
@@ -63,14 +58,14 @@ class CameraComs:
                 frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
 
                 # Store the frame in a thread-safe manner
-                with self.lock:
+                with self.locks[client_id]:
                     self.frames[client_id] = frame
                     self.frame_displayed[client_id] = False  # Mark frame as not displayed
         except Exception as e:
             print(f"Error with client {client_id}: {e}")
         finally:
             connection.close()
-            with self.lock:
+            with self.locks[client_id]:
                 if client_id in self.frames:
                     del self.frames[client_id]  # Remove stored frame
                 if client_id in self.frame_displayed:
@@ -83,32 +78,46 @@ class CameraComs:
         thread.start()
         
     def _start(self):
+        self.server_sockets = []
+        
         while True:
-            connection, _ = self.server_socket.accept()
+            self.server_sockets.append(socket.socket())
+            self.server_sockets[self.num_cameras].bind((self.host, self.port + self.num_cameras))
+            self.server_sockets[self.num_cameras].listen(5)
+            print(f"Camera Stream listening on {self.host}:{self.port} for Camera {self.num_cameras}")
+            
+            connection, _ = self.server_sockets[self.num_cameras].accept()
             connection = connection.makefile('rb')
-            # Reuse the lowest available client ID in a thread-safe manner
             client_id = self.num_cameras
             self.num_cameras += 1
+            self.locks[client_id] = threading.Lock()  # Create a lock for the new client
+            
             # Create a new thread for each client connection
             thread = threading.Thread(target=self.handle_client, args=(connection, client_id))
             thread.daemon = True
             thread.start()
-            
-            print(f"Camera {client_id} connected")
+
+    def _adjust_port(self, client_id):
+        try:
+            new_port = self.port + client_id
+            print(f"Adjusting port for Camera {client_id} to {new_port}")
+            # Logic for handling the new port can be added here
+        except Exception as e:
+            print(f"Error adjusting port for Camera {client_id}: {e}")
     
     def get_camera_frame(self, camera_id) -> Union[numpy.ndarray, None]:
-        if self.lock.acquire(blocking=False):  # Try to acquire the lock without blocking
+        if self.locks[camera_id].acquire(blocking=False):  # Try to acquire the lock without blocking
             try:
                 frame = self.frames.get(camera_id, None)
                 if frame is not None:
                     self.frame_displayed[camera_id] = True  # Mark frame as displayed
                 return frame
             finally:
-                self.lock.release()  # Make sure to release the lock
+                self.locks[camera_id].release()  # Make sure to release the lock
         else:
             # Handle the case where the lock is not acquired
             return None
 
     def is_frame_displayed(self, camera_id):
-        with self.lock:
+        with self.locks[camera_id]:
             return self.frame_displayed.get(camera_id, True)  # Default to True if not found
