@@ -6,6 +6,8 @@ import cv2
 import numpy
 import threading
 import time
+from typing import Union
+
 
 class CameraComs:
     _instance = None
@@ -95,11 +97,6 @@ class CameraComs:
             
             print(f"Camera {client_id} connected")
     
-    def get_num_of_cameras(self):
-        return self.num_cameras
-    
-    from typing import Union
-
     def get_camera_frame(self, camera_id) -> Union[numpy.ndarray, None]:
         if self.lock.acquire(blocking=False):  # Try to acquire the lock without blocking
             try:

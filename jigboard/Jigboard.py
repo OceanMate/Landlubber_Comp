@@ -175,7 +175,7 @@ class Jigboard:
 
     def put_all_camera_widgets(self, tab = GraphicConstants().default_tab):
         # Create a camera widget for each camera
-        for camera_id in range(CameraComs().get_num_of_cameras()):
+        for camera_id in range(CameraComs().num_cameras):
             self.put_camera("Camera " + str(camera_id), camera_id, tab)
     
     # Function that should be called periodicly to update the dashboard
