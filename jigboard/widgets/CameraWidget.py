@@ -4,6 +4,7 @@ from jigboard.widgets.Widget import Widget
 from jigboard.GraphicConstants import GraphicConstants
 from PIL import Image, ImageTk
 from transmission.CameraComs import CameraComs
+from Debug import Debug
 
 
 # creates a widget that displays a given string
@@ -17,6 +18,9 @@ class CameraWidget(Widget):
         self.camera_id = camera_id
         
         self.time_since_update = time.time()
+        self.camera_coms = CameraComs()  # Reuse the CameraComs instance
+        self.last_frame_time = None  # Initialize for FPS calculation
+        self.fps_text = None  # Initialize FPS text object
     
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
@@ -69,12 +73,27 @@ class CameraWidget(Widget):
         
         self.canvas.itemconfig(self.error_text, state='hidden')
         
+        self.fps_text = self.canvas.create_text(
+            self.x + self.width - 10, self.y + 5,  # Position at the top-right corner
+            text="FPS: 0",
+            fill="green",
+            anchor="ne",
+            font=self.font,
+            tags=self.tag
+        )
+        if not Debug.displayCameraFPS:
+            self.canvas.itemconfig(self.fps_text, state='hidden')
+        
     def update_image(self):
-        frame = CameraComs().get_camera_frame(self.camera_id)
+        if self.camera_coms.is_frame_displayed(self.camera_id):
+            # If the frame is already displayed, skip updating
+            return
+        
+        frame = self.camera_coms.get_camera_frame(self.camera_id)  # Reuse the instance
         
         # If the image is not found, display the error message
         if frame is None:
-            if abs(self.time_since_update - time.time()) > 3:
+            if time.time() - self.time_since_update > 3:  # Simplify time comparison
                 self.canvas.itemconfig(self.error_text, state='normal')
             return
         
@@ -82,13 +101,21 @@ class CameraWidget(Widget):
         self.time_since_update = time.time()
         self.canvas.itemconfig(self.error_text, state='hidden')
         
+        # Convert and resize the frame efficiently
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-        # Resize the image to fit in the widget          
         img = img.resize((self.max_width, self.max_height), Image.Resampling.LANCZOS)
+        
+        # Update the image label
         imgtk = ImageTk.PhotoImage(img)
         self.image_label_obj = imgtk  # Keep a reference to avoid garbage collection
         self.canvas.itemconfig(self.image_label, image=self.image_label_obj)
+
+        # Calculate and display FPS
+        current_time = time.time()
+        if self.last_frame_time is not None and Debug.displayCameraFPS:
+            fps = 1 / (current_time - self.last_frame_time)
+            self.canvas.itemconfig(self.fps_text, text=f"FPS: {fps:.2f}") # type: ignore
+        self.last_frame_time = current_time
 
     # Override the recreate_widget method to recreate the string widget
     def recreate_widget(self):
