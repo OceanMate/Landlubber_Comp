@@ -25,8 +25,8 @@ class CameraWidget(Widget):
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
         # Default dimensions of the widget in pixels
-        px_height = 300
-        px_width = 350
+        px_height = 240 + self.widget_label_height
+        px_width = 320
         
         # Convert the default dimensions to grid dimensions
         grid_width = px_width // GraphicConstants().grid_dim
@@ -93,7 +93,7 @@ class CameraWidget(Widget):
         
         # If the image is not found, display the error message
         if frame is None:
-            if time.time() - self.time_since_update > 3:  # Simplify time comparison
+            if abs(time.time() - self.time_since_update) > 3:  # Simplify time comparison
                 self.canvas.itemconfig(self.error_text, state='normal')
             return
         

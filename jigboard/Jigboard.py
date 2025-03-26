@@ -189,9 +189,11 @@ class Jigboard:
         
         if self.network_data.enabled:
             self.network_data.draw_network_data()
-        
+            
         for camera_widget in self.camera_widgets:
-            camera_widget.update_image()
+            # Check if the widget is visible using its tag
+            if self.window.nametowidget(camera_widget.canvas).itemcget(camera_widget.tag, "state") != "hidden":
+                camera_widget.update_image()
         
         # Update the window, use this instead of mainloop to allow for other functions to be called (non-blocking)
         self.window.update()

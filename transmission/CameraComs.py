@@ -83,7 +83,7 @@ class CameraComs:
             self.server_sockets.append(socket.socket())
             self.server_sockets[self.num_cameras].bind((self.host, self.port + self.num_cameras))
             self.server_sockets[self.num_cameras].listen(5)
-            print(f"Camera Stream listening on {self.host}:{self.port} for Camera {self.num_cameras}")
+            print(f"Camera Stream listening on {self.host}:{self.port + self.num_cameras} for Camera {self.num_cameras}")
             
             connection, _ = self.server_sockets[self.num_cameras].accept()
             connection = connection.makefile('rb')

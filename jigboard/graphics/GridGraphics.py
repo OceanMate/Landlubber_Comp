@@ -275,7 +275,7 @@ class GridGraphics:
                 self.grid_canvas.itemconfig("overlap_rect", outline=GraphicConstants().green)
             
             # bring the widget to the front of the canvas
-            widget.show()
+            self.grid_canvas.tag_raise(widget.tag)
         
         if self.is_resizing:
             widget = self.tabs[current_tab][self.widget_pressed]
@@ -340,7 +340,8 @@ class GridGraphics:
                 self.grid_canvas.itemconfig("overlap_rect", fill=GraphicConstants().light_green)
                 self.grid_canvas.itemconfig("overlap_rect", outline=GraphicConstants().green)
             
-            widget.show()
+            # bring the widget to the front of the canvas
+            self.grid_canvas.tag_raise(widget.tag)
             
     # Check if a rectangle of rect_width x rect_height can be placed at x, y
     def can_place_rectangle(self, x, y, rect_width, rect_height, widget_tab):
