@@ -16,7 +16,7 @@ class TabBar:
         self.tags_to_tabs = {}
         
         # stores the x position of the next tab, 20 for the first tab
-        self.next_tab_x = 20
+        self.next_tab_x = 20 + GraphicConstants().tab_bar_height
     
     # Generate the tab bar at the top of the window 
     def generate_tab_bar(self):
@@ -32,14 +32,30 @@ class TabBar:
         self.tab_bar_canvas.place(x=0, y=0, anchor="nw")
         
         # Network Data Tab
-        self.add_tab("Network Data")
+        self.tab_bar_canvas.create_rectangle(
+            2, 2, GraphicConstants().tab_bar_height - 1, GraphicConstants().tab_bar_height - 1,  # Coordinates for the rectangle
+            fill=GraphicConstants().white,
+            outline=GraphicConstants().blue,
+            tags="network"
+        )
+        # Add a symbol (e.g., a "+" sign) inside the rectangle
+        self.tab_bar_canvas.create_text(
+            GraphicConstants().tab_bar_height / 2,
+            GraphicConstants().tab_bar_height / 2,
+            text=">>",
+            font=tkfont.Font(family=GraphicConstants().font, size=16),
+            fill=GraphicConstants().blue,
+            tags="network_symbol"
+        )
+        
         self.network_data_active = False
+        
         # Add the default tab and set it as the current tab
         self.add_tab(GraphicConstants().default_tab)
         self.set_current_tab(GraphicConstants().default_tab)
         
         # Make the tab bar switch tabs when clicked
-        self.tab_bar_canvas.bind("<Button-1>", self._on_tab_click)
+        self.tab_bar_canvas.bind("<Button-1>", self._on_click)
     
     # Add a tab to the tab bar
     def add_tab(self, tab_name):
@@ -68,25 +84,6 @@ class TabBar:
     
     # Set the current tab to the given tab name
     def set_current_tab(self, tab_name):
-        
-        if(tab_name == "Network Data"):
-            self.network_data_active = not self.network_data_active
-            if( self.network_data_active):
-                
-                # Add an underline to the current tab
-                tag_name = self.get_tag_name(tab_name)
-                self.tab_bar_canvas.itemconfig(tag_name, font=(GraphicConstants().font, 16, 'underline'))
-                NetworkData().generate_grid()
-                
-            else:
-                
-                # Remove the underline from the tab
-                tag_name = self.get_tag_name(tab_name)
-                self.tab_bar_canvas.itemconfig(tag_name, font=(GraphicConstants().font, 16))
-                GridGraphics().grid_canvas.itemconfig("network_data", state="hidden")
-                NetworkData().destroy_grid()
-                
-            return
                 
         # Hide all widgets in the previous tab
         for widget in self.tabs[GraphicConstants().current_tab].values():
@@ -113,32 +110,57 @@ class TabBar:
                 new_x, new_y = GridGraphics().find_next_available_space(widget.grid_width, widget.grid_height, tab_name)
                 widget.move_widget(new_x, new_y)
             
-                
-    
     # Get the tag name of a tab name
     def get_tag_name(self, tab_name):
         # Remove special characters from the tab name for use as tags
         return ''.join(char for char in tab_name if char.isalnum())
-        
+    
+    def network_data_clicked(self):
+        self.network_data_active = not self.network_data_active
+        if self.network_data_active:
+            NetworkData().generate_grid()
+            # Change the network symbol to point down
+            self.tab_bar_canvas.itemconfig("network_symbol", text="<<")
+        else:
+            GridGraphics().grid_canvas.itemconfig("network", state="hidden")
+            NetworkData().destroy_grid()
+            # Change the network symbol to point right
+            self.tab_bar_canvas.itemconfig("network_symbol", text=">>")
     
     # Resize the tab bar to fit the window
     def resize_tab_bar(self):
         self.tab_bar_canvas.config(width=GraphicConstants().window_width)
     
     # Function to call when a tab is clicked. Switches the current tab to the clicked tab
-    def _on_tab_click(self, event):
+    def _on_click(self, event):
         clicked_tab = self.get_tab_at_position(event.x, event.y)
         
         # Checks if there is a value in clicked_tab, then sets the current tab to the clicked tab
         if clicked_tab:
             self.set_current_tab(clicked_tab)
+            return
+        
+        # Checks if the network tab is clicked, then sets the current tab to the network tab
+        if self.is_network_clicked(event.x, event.y):
+            self.network_data_clicked()
 
     # Get the tab at the given position
     def get_tab_at_position(self, x, y):
         # Finds each item that overlaps the given position
         items = self.tab_bar_canvas.find_overlapping(x, y, x, y)
+
         if items:
             # Get the tag name of the first item that overlaps the given position
-            tag_name = self.tab_bar_canvas.gettags(items[0])[0]
-            return self.tags_to_tabs[tag_name]
+            try:
+                tag_name = self.tab_bar_canvas.gettags(items[0])[0]
+                return self.tags_to_tabs[tag_name]
+            except KeyError:
+                return None
         return None
+    
+    def is_network_clicked(self, x, y):
+        items = self.tab_bar_canvas.find_overlapping(x, y, x, y)
+        if items:
+            tag_name = self.tab_bar_canvas.gettags(items[0])[0]
+            return tag_name == "network"
+        return False

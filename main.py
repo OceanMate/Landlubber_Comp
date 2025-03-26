@@ -15,9 +15,12 @@ def main():
     robot_state = RobotState()
     
     naut_coms = ComsThread()
-    naut_coms.begin_thread()
+    if not Debug.disableComs:
+        naut_coms.begin_thread()
     
     cam_coms = CameraComs()
+    if not Debug.disableComs:
+        cam_coms.begin_thread()
 
     run_robot.robot_init()
     
@@ -31,7 +34,7 @@ def main():
         KeyboardListener().update()      
         run_robot.robot_periodic()
         
-        if not ComsThread().connected and not Debug.ignoreComs:
+        if not ComsThread().connected and not Debug.ignoreComsToEnable:
             robot_state.disable_robot()
             # Update the enable button text and color to reflect the new state
             Jigboard().bottom_bar.update_enable_button(is_enabling=False)

@@ -35,7 +35,7 @@ class RobotState:
     
     def enable_teleop(self):
         # prevent enabling teleop if not connected to pi, disable if debugging
-        if not Debug.ignoreComs and not ComsThread().connected:
+        if not Debug.ignoreComsToEnable and not ComsThread().connected:
             print("Cannot enable teleop, not connected to pi")
             return False
         

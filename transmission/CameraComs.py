@@ -27,7 +27,6 @@ class CameraComs:
         self.locks = {}  # Create a lock for each camera thread
         self.num_cameras = 0
         self.frame_displayed = {}  # Track if a frame has been displayed for each camera
-        self.start()
 
     def handle_client(self, connection, client_id):
         try:
@@ -71,7 +70,7 @@ class CameraComs:
                     del self.frame_displayed[client_id]  # Clean up on client disconnect
             print(f"Camera {client_id} disconnected")
 
-    def start(self):
+    def begin_thread(self):
         thread = threading.Thread(target=self._start)
         thread.daemon = True
         thread.start()
