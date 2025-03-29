@@ -31,9 +31,7 @@ class CommandRunner:
         
         # The default input loop for inputs to schedule commands
         self.default_input_loop = EventLoop()
-        
-        self.possible_requirements = []
-            
+                    
     def run_commands(self):
         if self.canceled_commands and not self.enabled:
             return

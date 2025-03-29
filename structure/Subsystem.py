@@ -4,7 +4,6 @@ class Subsystem():
     # Initializes the Subsystem and adds it to the CommandRunner's possible requirements
     # Child classes should call this in their constructors
     def __init__(self):
-        CommandRunner().possible_requirements.append(self.get_subsystem_name())
         CommandRunner().subsystem_periodics.append(self.periodic)
 
     # Creates a default command for the subsystem 

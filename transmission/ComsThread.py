@@ -21,7 +21,11 @@ class ComsThread:
     def _start(self):
         self.sel = selectors.DefaultSelector()
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
-        self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), "vertical_motors": (0.0, 0.0), "enabled": False}
+        self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
+                            "vertical_motors": (0.0, 0.0), 
+                            "claw_clamp": 0.0,
+                            "claw_roll": 0.0,
+                            "enabled": False}
         
         self.host = '192.168.1.2'  # Dynamically retrieve Ethernet IP
         print(f"Host IP: {self.host}")
@@ -33,6 +37,12 @@ class ComsThread:
     
     def set_vertical_motors(self, front : float, back : float):
         self.robot_state["vertical_motors"] = (front, back)
+    
+    def set_claw_clamp(self, clamp : float):
+        self.robot_state["claw_clamp"] = clamp
+    
+    def set_claw_roll(self, roll : float):
+        self.robot_state["claw_roll"] = roll
     
     def set_enabled(self, enabled : bool):
         self.robot_state["enabled"] = enabled
