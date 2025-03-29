@@ -5,8 +5,6 @@ class Command:
     def __init__(self):
         # Initializes the requirements dictionary. A dictionary of boolean values
         self.requirements = {}
-        self.requirements.fromkeys(CommandRunner().possible_requirements, False)
-        
     
     # Called when the command is first run
     # should be overridden by the child class
@@ -36,13 +34,13 @@ class Command:
     # adds another commands requirmets to this command
     def add_cmd_requirements(self, cmd):
         for key in cmd.requirements.keys():
-            if cmd.requirements[key]:
-                self.requirements[key] = cmd.requirements[key]
+            self.requirements[key] = True
 
     def is_confliting(self, command):
         # Check if the command has conflicting requirements
         for key in self.requirements.keys():
-            if self.requirements[key] == command.requirements[key]:
+            # If the command has a requirement that this command also requires, then they conflict
+            if key in command.requirements.keys():
                 return True
         return False
     

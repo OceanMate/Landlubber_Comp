@@ -20,12 +20,12 @@ class RobotContainer:
             self.linear_motors, 
             lambda: self.controller.get_axis(0),
             lambda: self.controller.get_axis(1),
-            lambda: self.controller.get_axis(2),
-            lambda: self.controller.get_axis(5),
+            lambda: self.controller.get_axis(3),
             ))
         self.vertical_motors.defaultCommand(DefaultVerticalMotorCmd(
             self.vertical_motors,
-            lambda: self.controller.get_axis(4)
+            lambda: self.controller.get_axis(2),
+            lambda: self.controller.get_axis(5)
             ))
                                     
         self.configure_button_bindings()
