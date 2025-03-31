@@ -5,3 +5,5 @@ class Debug:
     ignoreComsToEnable = False
     # Setting this to True will display the FPS of the camera feed on the camera widget
     displayCameraFPS = False
+    # Setting this to True will display the active commands on jigboard
+    displayActiveCommands = False
