@@ -5,13 +5,14 @@ from transmission.ComsThread import ComsThread
 import tkinter.font as tkfont
 
 class NetworkDataEntry:
-    def __init__(self, x, y, width, height, name, dictionary):
-        self.dictionary = dictionary
+    def __init__(self, x, y, width, height, name, value, is_camera=False):
+        self.value = value
         self.name = name
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.is_camera = is_camera  # Indicates if this entry is for a camera stream
         
     def is_point_inside(self, x, y):
         return (x >= self.x and x <= self.x + self.width and
@@ -90,8 +91,16 @@ class NetworkData:
         )
         
         # Draw the robot state data
-        self.dictionary_list(self.robot_state, y+self.data_spacing)
+        y = self.dictionary_list(self.robot_state, y+self.data_spacing) + self.data_spacing
         
+        # Create the header text for the robot state
+        self.network_data_canvas.create_text(
+            10, y, 
+            anchor="nw", 
+            text="Camera Streams", 
+            fill="black",
+            font=self.font,
+        )
 
     # Create function to display the dictionary data on the canvas
     def dictionary_list(self, dictionary, initial_y : int):
@@ -106,11 +115,30 @@ class NetworkData:
                 fill="black",
                 font=self.font,
             )
-            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, key, dictionary))
+            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, key, value))
             y_position += self.data_spacing
         return y_position
             
+    def display_cameras(self, num_of_cameras, initial_y : int):
+        # This function will display the camera streams on the canvas
+        y_position = initial_y
         
+        # Iterate through the number of cameras and create text for each camera
+        for i in range(num_of_cameras):
+            camera_name = f"Camera {i}"
+            self.network_data_canvas.create_text(
+                20, y_position, 
+                anchor="nw", 
+                text=f"{camera_name}: Active", 
+                fill="black",
+                font=self.font,
+            )
+            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, camera_name, i, is_camera=True))
+            y_position += self.data_spacing
+            
+        return y_position
+        
+    
     def resize_canvas(self):
         # Resize the canvas to fit the new window di5mensions
         self.network_data_canvas.config(width=GraphicConstants().network_data_width)
@@ -130,5 +158,7 @@ class NetworkData:
         for entry in self.data_entries:
             if (entry.is_point_inside(event.x, event.y)):
                 # print(f"Clicked on {entry.name}")
-                self.jigboard.put_data(entry.name, entry.dictionary[entry.name], tab=GraphicConstants().current_tab)
-                
+                if (entry.is_camera):
+                    self.jigboard.put_camera(entry.name, entry.value, tab=GraphicConstants().current_tab)
+                else:
+                    self.jigboard.put_data(entry.name, entry.value, tab=GraphicConstants().current_tab)
