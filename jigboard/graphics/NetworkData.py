@@ -1,6 +1,7 @@
 from tkinter import Canvas, OptionMenu
 from jigboard.GraphicConstants import GraphicConstants
 from jigboard.graphics.GridGraphics import GridGraphics
+from transmission.CameraComs import CameraComs
 from transmission.ComsThread import ComsThread
 import tkinter.font as tkfont
 
@@ -101,6 +102,8 @@ class NetworkData:
             fill="black",
             font=self.font,
         )
+        
+        y = self.display_cameras(CameraComs().num_cameras, y+self.data_spacing) + self.data_spacing
 
     # Create function to display the dictionary data on the canvas
     def dictionary_list(self, dictionary, initial_y : int):
