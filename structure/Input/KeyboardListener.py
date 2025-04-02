@@ -69,7 +69,7 @@ class KeyboardListener:
                 
     # Check if a key is currently pressed down
     def is_key_down(self, key: str):
+        if key not in self.is_keys_down.keys():
+            self.add_key(key)
+        
         return self.is_keys_down.get(key, False)
-
-
-

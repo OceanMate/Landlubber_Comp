@@ -1,5 +1,6 @@
 from jigboard.Jigboard import Jigboard
 from structure.Input.EventLoop import EventLoop
+from Debug import Debug
 
 class CommandRunner:
     _instance = None
@@ -52,14 +53,18 @@ class CommandRunner:
                 self.commands.remove(command)
                 continue
                     
-            Jigboard().put_string("Command", command.__class__.__name__)
             command.execute()
 
             # If the command is finished, end and remove it
             if command.is_finished():
                 command.end(False)
                 self.commands.remove(command)
-                
+        
+        # Display a list of commands currently in the loop
+        if (Debug.displayActiveCommands):
+            command_names = [command.__class__.__name__ for command in self.commands]
+            Jigboard().put_string("Commands", ", ".join(command_names))
+
         self.in_run_loop = False
         
         # Prevents the scheduling of commands if the robot is disabled (needs to be here so it can end the commands)
