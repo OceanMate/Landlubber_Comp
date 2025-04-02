@@ -25,7 +25,7 @@ class SaveImageCmd(Command):
             self.get_image = True
         
         if self.get_image:
-            frame = self.camera_coms.get_camera_frame(self.current_camera)
+            frame = self.camera_coms.get_camera_frame(self.current_camera, is_displaying=False)
 
             if frame is not None:
                 # Save the frame as a PNG in the 'images' folder within the current repo
