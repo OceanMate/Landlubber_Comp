@@ -137,6 +137,7 @@ class InputScheduler:
             def run(m_self): # type: ignore
                 pressed = self.scheduleBool()
                 if not m_self.pressed_last and pressed:
+                    m_self.pressed_last = pressed
                     return True
                 m_self.pressed_last = pressed
                 return False
@@ -152,6 +153,7 @@ class InputScheduler:
             def run(m_self): # type: ignore
                 pressed = self.scheduleBool()
                 if m_self.pressed_last and not pressed:
+                    m_self.pressed_last = pressed
                     return True
                 m_self.pressed_last = pressed
                 return False

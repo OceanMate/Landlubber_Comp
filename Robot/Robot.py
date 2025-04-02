@@ -12,11 +12,11 @@ class Robot:
     
     def robot_periodic(self):
         self.command_runner.run_commands()
-        Jigboard().put_boolean("enabled", self.command_runner.enabled)
         Jigboard().put_all_camera_widgets()
     
     def teleop_init(self):
         self.command_runner.turn_on()
+        self.robot_container.teleop_init_commands()
             
     def teleop_periodic(self):
             

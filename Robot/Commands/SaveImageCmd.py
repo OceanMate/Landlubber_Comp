@@ -38,7 +38,8 @@ class SaveImageCmd(Command):
                 self.get_image = False
         
         if self.switch_camera_button():
-            self.current_camera = (self.current_camera + 1) % self.camera_coms.num_cameras
+            if self.camera_coms.num_cameras > 0:
+                self.current_camera = (self.current_camera + 1) % self.camera_coms.num_cameras
             print(f"Switched to camera {self.current_camera}")
     
     def end(self, interrupted):

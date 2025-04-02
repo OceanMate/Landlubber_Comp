@@ -43,12 +43,16 @@ class RobotContainer:
         self.configure_button_bindings()
 
     def configure_button_bindings(self):
+        pass
+    
+    def teleop_init_commands(self):
         # start a save image command when the c button is pressed
         # and switch cameras when the v button is pressed
         SaveImageCmd(
             KeyboardInput("c").get_on_true(), 
             KeyboardInput("v").get_on_true(),
         ).schedule()
+
     
     def stop_subsystems(self):
         self.linear_motors.stop_motors()
