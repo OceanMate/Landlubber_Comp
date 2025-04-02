@@ -73,6 +73,3 @@ class KeyboardListener:
             self.add_key(key)
         
         return self.is_keys_down.get(key, False)
-
-
-

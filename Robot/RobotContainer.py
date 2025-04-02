@@ -36,21 +36,19 @@ class RobotContainer:
         ))
         self.claw.defaultCommand(DefaultClawCmd(
             self.claw,
-            lambda: self.controller.get_button(4),
-            lambda: self.controller.get_button(5),
+            ControllerButton(4).get_on_true(),
+            ControllerButton(5).get_on_true(),
         ))
-        
-        # start a 
-        self.image_cmd = SaveImageCmd(
-            lambda: KeyboardListener().is_key_down("c"), 
-            lambda: KeyboardListener().is_key_down("v"),
-        )
-        self.image_cmd.schedule()
                                     
         self.configure_button_bindings()
 
     def configure_button_bindings(self):
-        return
+        # start a save image command when the c button is pressed
+        # and switch cameras when the v button is pressed
+        SaveImageCmd(
+            KeyboardInput("c").get_on_true(), 
+            KeyboardInput("v").get_on_true(),
+        ).schedule()
     
     def stop_subsystems(self):
         self.linear_motors.stop_motors()
