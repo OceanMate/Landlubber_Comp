@@ -1,9 +1,14 @@
+from Robot.Commands.SaveImageCmd import SaveImageCmd
+from Robot.Subsystems.Claw import Claw
 from Robot.Subsystems.VerticalMotors import VerticalMotors
 from Robot.Subsystems.LinearMotors import LinearMotors
 from Robot.Commands.DefaultLinearMotorCmd import DefaultLinearMotorCmd
 from Robot.Commands.DefaultVerticalMotorCmd import DefaultVerticalMotorCmd
+from Robot.Commands.DefaultClawCmd import DefaultClawCmd
+
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.Input.ControllerButton import ControllerButton
+from structure.Input.KeyboardListener import KeyboardListener
 from structure.commands.InstantCommand import InstantCommand
 from structure.commands.SequentialCommandGroup import SequentialCommandGroup
 from structure.Input.ControllerListener import ControllerListener
@@ -12,6 +17,8 @@ class RobotContainer:
     def __init__(self):
         self.linear_motors = LinearMotors()
         self.vertical_motors = VerticalMotors()
+        self.claw = Claw()
+        
         self.controller = ControllerListener()
         self.controller.deadband = .1
                 
@@ -21,12 +28,24 @@ class RobotContainer:
             lambda: self.controller.get_axis(0),
             lambda: self.controller.get_axis(1),
             lambda: self.controller.get_axis(3),
-            ))
+        ))
         self.vertical_motors.defaultCommand(DefaultVerticalMotorCmd(
             self.vertical_motors,
             lambda: self.controller.get_axis(2),
             lambda: self.controller.get_axis(5)
-            ))
+        ))
+        self.claw.defaultCommand(DefaultClawCmd(
+            self.claw,
+            lambda: self.controller.get_button(4),
+            lambda: self.controller.get_button(5),
+        ))
+        
+        # start a 
+        self.image_cmd = SaveImageCmd(
+            lambda: KeyboardListener().is_key_down("c"), 
+            lambda: KeyboardListener().is_key_down("v"),
+        )
+        self.image_cmd.schedule()
                                     
         self.configure_button_bindings()
 

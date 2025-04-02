@@ -95,11 +95,11 @@ class CameraComs:
             thread.daemon = True
             thread.start()
     
-    def get_camera_frame(self, camera_id) -> Union[numpy.ndarray, None]:
+    def get_camera_frame(self, camera_id, is_displaying = True) -> Union[numpy.ndarray, None]:
         if self.locks[camera_id].acquire(blocking=False):  # Try to acquire the lock without blocking
             try:
                 frame = self.frames.get(camera_id, None)
-                if frame is not None:
+                if is_displaying and frame is not None:
                     self.frame_displayed[camera_id] = True  # Mark frame as displayed
                 return frame
             finally:
