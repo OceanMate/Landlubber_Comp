@@ -1,4 +1,3 @@
-
 from jigboard.Jigboard import Jigboard
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
@@ -9,7 +8,7 @@ class Claw(Subsystem):
         super().__init__()
         
         self.clamp_motor = 1
-        self.roll_motor = 0
+        self.roll_angle = 0
         
     def open_claw(self):
         self._set_clamp(1) 
@@ -38,12 +37,16 @@ class Claw(Subsystem):
     
     def _set_roll_angle(self, roll_angle):
         # Set the roll motor speed based on the roll angle
-        self.roll_motor = (roll_angle / 90) * 2 - 1
+        self.roll_angle = roll_angle
+        sent_angle = self._map(self.roll_angle, 0, 90, -1, 1)  # Use the imported map function
         
         # Send the command to the ComsThread to set the roll motor
-        ComsThread().set_claw_roll(self.roll_motor)
+        ComsThread().set_claw_roll(sent_angle)
 
+    def _map(self, value, in_min, in_max, out_min, out_max) -> float:
+        # Custom implementation of the map function
+        return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
     
     def periodic(self):
         Jigboard().put_string("Claw Motor Angle", 
-                             "Clamp: {:.2f} Roll: {:.2f}".format(self.clamp_motor, self.roll_motor))
+                             "Clamp: {:.2f} Roll: {:.2f}".format(self.clamp_motor, self.roll_angle))

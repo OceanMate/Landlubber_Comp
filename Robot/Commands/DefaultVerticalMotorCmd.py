@@ -8,13 +8,24 @@ class DefaultVerticalMotorCmd(Command):
         
         self.left_trigger = left_trigger  # function to get left trigger value (from 0 to 1)
         self.right_trigger = right_trigger # function to get right trigger value (from 0 to 1)
+        self.deadband = 0.3  # threshold to ignore small trigger inputs
         
     
     def initalize(self):
         return
     
     def execute(self):
-        speed = self.right_trigger() - self.left_trigger()
+        right_speed = 0
+        left_speed = 0
+        if self.right_trigger() > self.deadband:
+            right_speed = self.right_trigger()
+        
+        if self.left_trigger() > self.deadband:
+            left_speed = self.left_trigger()
+            
+        print("Left Trigger: ", left_speed, "Right Trigger: ", right_speed)
+            
+        speed = right_speed - left_speed
         
         # speed is from -1 to 1
         self.vertical_motors.run_motors(speed)

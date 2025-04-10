@@ -15,7 +15,7 @@ class DefaultClawCmd(Command):
     
     def execute(self):
         if self.left_bumper():
-            if self.claw.roll_motor == 0:
+            if self.claw.roll_motor <= 0.05: # if the roll motor close to 0, set it to 90
                 self.claw.set_roll_angle(90)
             else:
                 self.claw.set_roll_angle(0)

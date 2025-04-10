@@ -61,7 +61,7 @@ class CommandRunner:
                 self.commands.remove(command)
         
         # Display a list of commands currently in the loop
-        if (Debug.displayActiveCommands):
+        if Debug.displayActiveCommands:
             command_names = [command.__class__.__name__ for command in self.commands]
             Jigboard().put_string("Commands", ", ".join(command_names))
 
