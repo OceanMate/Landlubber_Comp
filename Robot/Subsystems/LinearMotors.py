@@ -42,17 +42,17 @@ class LinearMotors(Subsystem):
         # motor matrix output
         fl_speed = reducedX + reducedY + reducedZ
         fr_speed = reducedX - reducedY - reducedZ
-        bl_speed = reducedY - reducedX - reducedZ
-        br_speed = reducedZ - reducedX - reducedY
+        br_speed = -reducedX - reducedY + reducedZ
+        bl_speed = -reducedX + reducedY - reducedZ
         
         self._set_motor_speeds(fl_speed, fr_speed, bl_speed, br_speed)
         
     
-    def _set_motor_speeds(self, fl_speed, fr_speed, bl_speed, br_speed):
+    def _set_motor_speeds(self, fl_speed, fr_speed, br_speed, bl_speed):
         self.FL = fl_speed
         self.FR = fr_speed
-        self.BL = bl_speed
         self.BR = br_speed
+        self.BL = bl_speed
         
         ComsThread().set_horizontal_motors(fl_speed, fr_speed, br_speed, bl_speed)
         

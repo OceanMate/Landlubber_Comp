@@ -95,7 +95,10 @@ class CameraComs:
             thread.daemon = True
             thread.start()
     
-    def get_camera_frame(self, camera_id, is_displaying = True) -> Union[numpy.ndarray, None]:
+    def get_camera_frame(self, camera_id, is_displaying = True) -> Union[numpy.ndarray, None]: 
+        if camera_id not in self.locks.keys():
+            return None
+        
         if self.locks[camera_id].acquire(blocking=False):  # Try to acquire the lock without blocking
             try:
                 frame = self.frames.get(camera_id, None)
@@ -109,5 +112,13 @@ class CameraComs:
             return None
 
     def is_frame_displayed(self, camera_id):
-        with self.locks[camera_id]:
-            return self.frame_displayed.get(camera_id, True)  # Default to True if not found
+        if camera_id not in self.locks.keys():
+            return True
+        
+        if self.locks[camera_id].acquire(blocking=False):
+            try:
+                return self.frame_displayed.get(camera_id, True)  # Default to True if not found
+            finally:
+                self.locks[camera_id].release()  # Make sure to release the lock
+        else:
+            return True

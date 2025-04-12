@@ -22,9 +22,7 @@ class DefaultVerticalMotorCmd(Command):
         
         if self.left_trigger() > self.deadband:
             left_speed = self.left_trigger()
-            
-        print("Left Trigger: ", left_speed, "Right Trigger: ", right_speed)
-            
+        
         speed = right_speed - left_speed
         
         # speed is from -1 to 1

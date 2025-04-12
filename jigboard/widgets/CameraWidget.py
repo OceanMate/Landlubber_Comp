@@ -5,6 +5,7 @@ from jigboard.GraphicConstants import GraphicConstants
 from PIL import Image, ImageTk
 from transmission.CameraComs import CameraComs
 from Debug import Debug
+from tkinter import Button  # Add import for Button
 
 
 # creates a widget that displays a given string
@@ -21,6 +22,7 @@ class CameraWidget(Widget):
         self.camera_coms = CameraComs()  # Reuse the CameraComs instance
         self.last_frame_time = None  # Initialize for FPS calculation
         self.fps_text = None  # Initialize FPS text object
+        self._invert_camera = False  # Add invert_camera boolean
     
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
@@ -84,6 +86,27 @@ class CameraWidget(Widget):
         if not Debug.displayCameraFPS:
             self.canvas.itemconfig(self.fps_text, state='hidden')
         
+        # Create a rectangle with "Invert" text inside it
+        invert_rect_x1 = self.x + self.widget_offset
+        invert_rect_y1 = self.y + self.widget_offset
+        invert_rect_x2 = invert_rect_x1 + self.font.measure("inv") + 10
+        invert_rect_y2 = invert_rect_y1 + self.widget_label_height
+
+        self.invert_rect = self.canvas.create_rectangle(
+            invert_rect_x1, invert_rect_y1, invert_rect_x2, invert_rect_y2,
+            fill=GraphicConstants().white, outline=GraphicConstants().blue, tags=self.tag
+        )
+        self.invert_text = self.canvas.create_text(
+            (invert_rect_x1 + invert_rect_x2) / 2, (invert_rect_y1 + invert_rect_y2) / 2,
+            text="inv", fill=GraphicConstants().blue, font=self.font, tags=self.tag
+        )
+        # Bind a click event to toggle the invert camera functionality
+        self.canvas.tag_bind(self.invert_rect, "<Button-1>", lambda event: self.toggle_invert_camera())
+        self.canvas.tag_bind(self.invert_text, "<Button-1>", lambda event: self.toggle_invert_camera())
+        
+    def toggle_invert_camera(self):
+        self._invert_camera = not self._invert_camera
+        
     def update_image(self):
         if self.camera_coms.is_frame_displayed(self.camera_id):
             # If the frame is already displayed, skip updating
@@ -103,6 +126,8 @@ class CameraWidget(Widget):
         
         # Convert and resize the frame efficiently
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        if self._invert_camera:  # Check if inversion is enabled
+            img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         img = img.resize((self.max_width, self.max_height), Image.Resampling.LANCZOS)
         
         # Update the image label

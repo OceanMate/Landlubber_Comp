@@ -25,14 +25,14 @@ class RobotContainer:
         # default command should schedule if no other command requiring is running
         self.linear_motors.defaultCommand(DefaultLinearMotorCmd(
             self.linear_motors, 
-            lambda: self.controller.get_axis(0),
-            lambda: self.controller.get_axis(1),
-            lambda: self.controller.get_axis(2),
+            lambda: self.controller.get_axis(1), # left stick y axis
+            lambda: self.controller.get_axis(0), # left stick x axis
+            lambda: -self.controller.get_axis(2), # right stick x axis
         ))
         self.vertical_motors.defaultCommand(DefaultVerticalMotorCmd(
             self.vertical_motors,
-            lambda: self.controller.get_axis(4),
-            lambda: self.controller.get_axis(5)
+            lambda: self.controller.get_axis(4), # left trigger
+            lambda: self.controller.get_axis(5) # right trigger
         ))
         self.claw.defaultCommand(DefaultClawCmd(
             self.claw,
