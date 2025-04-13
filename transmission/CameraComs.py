@@ -1,6 +1,7 @@
 import io
 import socket
 import struct
+import time
 from PIL import Image
 import cv2
 import numpy
@@ -59,6 +60,9 @@ class CameraComs:
                 with self.locks[client_id]:
                     self.frames[client_id] = frame
                     self.frame_displayed[client_id] = False  # Mark frame as not displayed
+                
+                # Add a small delay to prevent excessive CPU usage
+                time.sleep(0.1)
         except Exception as e:
             print(f"Error with client {client_id}: {e}")
         finally:

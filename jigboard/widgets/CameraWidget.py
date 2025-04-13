@@ -90,7 +90,7 @@ class CameraWidget(Widget):
         invert_rect_x1 = self.x + self.widget_offset
         invert_rect_y1 = self.y + self.widget_offset
         invert_rect_x2 = invert_rect_x1 + self.font.measure("inv") + 10
-        invert_rect_y2 = invert_rect_y1 + self.widget_label_height
+        invert_rect_y2 = invert_rect_y1 + self.widget_label_height - 1
 
         self.invert_rect = self.canvas.create_rectangle(
             invert_rect_x1, invert_rect_y1, invert_rect_x2, invert_rect_y2,
@@ -127,7 +127,9 @@ class CameraWidget(Widget):
         # Convert and resize the frame efficiently
         img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         if self._invert_camera:  # Check if inversion is enabled
+            img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
             img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+
         img = img.resize((self.max_width, self.max_height), Image.Resampling.LANCZOS)
         
         # Update the image label
