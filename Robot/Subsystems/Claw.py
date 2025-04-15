@@ -38,7 +38,7 @@ class Claw(Subsystem):
     def _set_roll_angle(self, roll_angle):
         # Set the roll motor speed based on the roll angle
         self.roll_angle = roll_angle
-        sent_angle = self._map(self.roll_angle, 0, 90, -1, 1)  # Use the imported map function
+        sent_angle = self._map(self.roll_angle, 0, 180, -1, 1)  # Use the imported map function
         
         # Send the command to the ComsThread to set the roll motor
         ComsThread().set_claw_roll(sent_angle)

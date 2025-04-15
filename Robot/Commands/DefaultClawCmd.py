@@ -1,22 +1,22 @@
 from structure.commands.Command import Command
 
 class DefaultClawCmd(Command):
-    def __init__(self, claw, right_bumper, left_bumper):
+    def __init__(self, claw, right_bumper, a_button):
         super().__init__()
         self.claw = claw
         super().add_requirement(self.claw)
         
         self.right_bumper = right_bumper
-        self.left_bumper = left_bumper
+        self.a_button = a_button
         
     
     def initalize(self):
         return
     
     def execute(self):
-        if self.left_bumper():
-            if self.claw.roll_motor <= 0.05: # if the roll motor close to 0, set it to 90
-                self.claw.set_roll_angle(90)
+        if self.a_button():
+            if self.claw.roll_angle <= 0.05: # if the roll motor close to 0, set it to 90
+                self.claw.set_roll_angle(180)
             else:
                 self.claw.set_roll_angle(0)
         
