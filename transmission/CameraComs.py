@@ -1,6 +1,5 @@
 import io
 import socket
-import struct
 import time
 from PIL import Image
 import cv2
@@ -21,52 +20,38 @@ class CameraComs:
             cls._instance._init()
         return cls._instance
     
-    def _init(self, host='192.168.1.1', port=46389):
+    def _init(self, host='localhost', port=46389):
         self.host = host
         self.port = port
         self.frames = {}
         self.locks = {}  # Create a lock for each camera thread
         self.num_cameras = 0
+        self.camera_limit = 2
         self.frame_displayed = {}  # Track if a frame has been displayed for each camera
 
     def handle_client(self, connection, client_id):
         try:
             while True:
-                # Read the length of the image data
-                data = connection.read(struct.calcsize('<L'))
+                # Read the image data
+                data, _ = connection.recvfrom(65536)  # Adjust buffer size as needed
                 if not data:
                     break
-                image_len = struct.unpack('<L', data)[0]
-                if not image_len:
-                    break
 
-                # Use a buffer to read the image data
-                image_data = b''
-                while len(image_data) < image_len:
-                    packet = connection.read(image_len - len(image_data))
-                    if not packet:
-                        break
-                    image_data += packet
+                try:
+                    # Process the image data
+                    image_stream = io.BytesIO(data)
+                    frame = Image.open(image_stream)
+                    frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
 
-                if len(image_data) != image_len:
-                    break
-
-                # Process the image data
-                image_stream = io.BytesIO(image_data)
-                frame = Image.open(image_stream)
-                frame = cv2.cvtColor(numpy.array(frame), cv2.COLOR_RGB2BGR)
-
-                # Store the frame in a thread-safe manner
-                with self.locks[client_id]:
-                    self.frames[client_id] = frame
-                    self.frame_displayed[client_id] = False  # Mark frame as not displayed
-                
-                # Add a small delay to prevent excessive CPU usage
-                time.sleep(0.1)
+                    # Store the frame in a thread-safe manner
+                    with self.locks[client_id]:
+                        self.frames[client_id] = frame
+                        self.frame_displayed[client_id] = False  # Mark frame as not displayed
+                except Exception as e:
+                    print(f"Failed to decode image for client {client_id}: {e}")
         except Exception as e:
             print(f"Error with client {client_id}: {e}")
         finally:
-            connection.close()
             with self.locks[client_id]:
                 if client_id in self.frames:
                     del self.frames[client_id]  # Remove stored frame
@@ -82,20 +67,19 @@ class CameraComs:
     def _start(self):
         self.server_sockets = []
         
-        while True:
-            self.server_sockets.append(socket.socket())
-            self.server_sockets[self.num_cameras].bind((self.host, self.port + self.num_cameras))
-            self.server_sockets[self.num_cameras].listen(5)
+        while self.num_cameras < self.camera_limit:
+            print(f"Waiting for Camera {self.num_cameras} to connect...")
+            server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            server_socket.bind((self.host, self.port + self.num_cameras))
+            self.server_sockets.append(server_socket)
             print(f"Camera Stream listening on {self.host}:{self.port + self.num_cameras} for Camera {self.num_cameras}")
             
-            connection, _ = self.server_sockets[self.num_cameras].accept()
-            connection = connection.makefile('rb')
             client_id = self.num_cameras
             self.num_cameras += 1
             self.locks[client_id] = threading.Lock()  # Create a lock for the new client
-            
-            # Create a new thread for each client connection
-            thread = threading.Thread(target=self.handle_client, args=(connection, client_id))
+                        
+            # Create a new thread for each client 
+            thread = threading.Thread(target=self.handle_client, args=(server_socket, client_id))
             thread.daemon = True
             thread.start()
     
