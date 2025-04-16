@@ -20,7 +20,7 @@ class CameraComs:
             cls._instance._init()
         return cls._instance
     
-    def _init(self, host='localhost', port=46389):
+    def _init(self, host='192.168.1.1', port=46389):
         self.host = host
         self.port = port
         self.frames = {}
