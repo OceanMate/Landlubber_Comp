@@ -14,15 +14,13 @@ class DefaultClawCmd(Command):
         return
     
     def execute(self):
-        print(f"Claw roll angle: {self.claw.roll_angle}")
-        self.claw.set_roll_angle((self.a_button() + 1) * 180) 
-        '''
+        
         if self.a_button():
-            if self.claw.roll_angle <= 0.05: # if the roll motor close to 0, set it to 90
-                self.claw.set_roll_angle(180)
+            if self.claw.is_claw_horiz(): # if the roll motor close to 0, set it to 90
+                self.claw.roll_claw_vert()
             else:
-                self.claw.set_roll_angle(0)
-        '''
+                self.claw.roll_claw_horiz()
+        
         if self.right_bumper():
             if self.claw.is_claw_open():
                 self.claw.close_claw()
