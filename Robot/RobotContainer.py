@@ -39,7 +39,7 @@ class RobotContainer:
         self.claw.defaultCommand(DefaultClawCmd(
             self.claw,
             ControllerButton(5).get_on_true(),
-            lambda: -self.controller.get_axis(2),
+            ControllerButton(0).get_on_true(),
         ))
                                     
         self.configure_button_bindings()

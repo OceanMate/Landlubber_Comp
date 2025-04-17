@@ -1,5 +1,6 @@
 import os
 import cv2
+import random  # Import random module
 from jigboard.Jigboard import Jigboard
 from structure.commands.Command import Command
 from transmission.CameraComs import CameraComs
@@ -28,10 +29,13 @@ class SaveImageCmd(Command):
             frame = self.camera_coms.get_camera_frame(self.current_camera, is_displaying=False)
 
             if frame is not None:
+                # Generate a random 6-digit integer
+                random_number = random.randint(100000, 999999)
+                
                 # Save the frame as a PNG in the 'images' folder within the current repo
                 images_folder = os.path.join(os.path.dirname(__file__), "..", "..", "images")
                 os.makedirs(images_folder, exist_ok=True)
-                file_path = os.path.join(images_folder, f"camera_{self.current_camera}_image_{self.image_counter}.png")
+                file_path = os.path.join(images_folder, f"camera_{self.current_camera}_image_{self.image_counter}_{random_number}.png")
                 cv2.imwrite(file_path, frame)
                 print(f"Saved frame to {file_path}")
                 self.image_counter += 1  # Increment the image counter
