@@ -16,9 +16,11 @@ class DefaultClawCmd(Command):
     def execute(self):
         
         if self.a_button():
-            if self.claw.is_claw_horiz(): # if the roll motor close to 0, set it to 90
+            if self.claw.is_claw_horiz():
+                print("rolling claw vert")
                 self.claw.roll_claw_vert()
             else:
+                print("rolling claw horiz")
                 self.claw.roll_claw_horiz()
         
         if self.right_bumper():
