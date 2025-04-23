@@ -2,6 +2,9 @@ from jigboard.Jigboard import Jigboard
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
 
+
+# Max Forward speed for motors is .9 kg of thrust 
+# Max Backward speed for motors is .8 kg of thrust
 class LinearMotors(Subsystem):
     def __init__(self):
         super().__init__()
@@ -42,24 +45,25 @@ class LinearMotors(Subsystem):
         # motor matrix output
         fl_speed = reducedX + reducedY + reducedZ
         fr_speed = reducedX - reducedY - reducedZ
-        br_speed = -reducedX - reducedY + reducedZ
         bl_speed = -reducedX + reducedY - reducedZ
+        br_speed = -reducedX - reducedY + reducedZ
         
-        self._set_motor_speeds(fl_speed, fr_speed, bl_speed, br_speed)
+        self._set_motor_speeds(fl_speed, fr_speed, br_speed, bl_speed)
         
     
     def _set_motor_speeds(self, fl_speed, fr_speed, br_speed, bl_speed):
-        self.FL = fl_speed
-        self.FR = fr_speed
-        self.BR = br_speed
-        self.BL = bl_speed
+                
+        self.FL = fl_speed * 0.888 if fl_speed > 0 else fl_speed
+        self.FR = fr_speed * 0.888 if fr_speed > 0 else fr_speed
+        self.BR = br_speed * 0.888 if br_speed > 0 else br_speed
+        self.BL = bl_speed * 0.888 if bl_speed > 0 else bl_speed
         
-        ComsThread().set_horizontal_motors(fl_speed, fr_speed, br_speed, bl_speed)
+        ComsThread().set_horizontal_motors(self.FL, self.FR, self.BR, self.BL)
         
     
     def stop_motors(self):
         self._set_motor_speeds(0, 0, 0, 0)
     
     def periodic(self):
-        Jigboard().put_string("Linear Motor Speeds", "FL: {:.2f} FR: {:.2f} BR: {:.2f} BL: {:.2f}".format(self.FL, self.FR, self.BR, self.BL))
+        Jigboard().put_string("Linear Motor Speeds", "FL: {:.2f} FR: {:.2f} BL: {:.2f} BR: {:.2f}".format(self.FL, self.FR, self.BL, self.BR))
 

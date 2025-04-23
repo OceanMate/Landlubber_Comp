@@ -1,3 +1,4 @@
+from Robot.Commands import FindClawValuesCmd
 from Robot.Commands.SaveImageCmd import SaveImageCmd
 from Robot.Subsystems.Claw import Claw
 from Robot.Subsystems.VerticalMotors import VerticalMotors
@@ -5,6 +6,7 @@ from Robot.Subsystems.LinearMotors import LinearMotors
 from Robot.Commands.DefaultLinearMotorCmd import DefaultLinearMotorCmd
 from Robot.Commands.DefaultVerticalMotorCmd import DefaultVerticalMotorCmd
 from Robot.Commands.DefaultClawCmd import DefaultClawCmd
+from Robot.Commands.FindClawValuesCmd import FindClawValuesCmd
 
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.Input.ControllerButton import ControllerButton
@@ -36,11 +38,17 @@ class RobotContainer:
             lambda: self.controller.get_axis(5), # right trigger
             ControllerButton(4).get_while_true(), # left trigger
         ))
-        self.claw.defaultCommand(DefaultClawCmd(
-            self.claw,
-            ControllerButton(5).get_on_true(),
-            ControllerButton(0).get_on_true(),
-        ))
+        # self.claw.defaultCommand(DefaultClawCmd(
+        #     self.claw,
+        #     ControllerButton(5).get_on_true(),
+        #     ControllerButton(0).get_on_true(),
+        # ))
+        
+        # self.claw.defaultCommand(FindClawValuesCmd(
+        #     self.claw,
+        #     lambda: self.controller.get_axis(0), # left stick x axis
+        #     lambda: self.controller.get_axis(2), # right stick x axis
+        # ))
                                     
         self.configure_button_bindings()
 
