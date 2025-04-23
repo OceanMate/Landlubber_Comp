@@ -1,4 +1,5 @@
 from jigboard.Jigboard import Jigboard
+from jigboard.JigboardTab import JigboardTab
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
 
@@ -13,6 +14,9 @@ class LinearMotors(Subsystem):
         self.FR = 0
         self.BL = 0
         self.BR = 0
+        
+        self.programmer_tab = JigboardTab("Programmer Board")
+
     
     # Runs the motors given the x, y, and z speeds (each from -1 to 1)
     def run_motors(self, xSpeed, ySpeed, zRotation):
@@ -65,5 +69,5 @@ class LinearMotors(Subsystem):
         self._set_motor_speeds(0, 0, 0, 0)
     
     def periodic(self):
-        Jigboard().put_string("Linear Motor Speeds", "FL: {:.2f} FR: {:.2f} BL: {:.2f} BR: {:.2f}".format(self.FL, self.FR, self.BL, self.BR))
+        self.programmer_tab.put_string("Linear Motor Speeds", "FL: {:.2f} FR: {:.2f} BL: {:.2f} BR: {:.2f}".format(self.FL, self.FR, self.BL, self.BR))
 

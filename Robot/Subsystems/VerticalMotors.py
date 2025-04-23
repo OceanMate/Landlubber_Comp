@@ -1,5 +1,6 @@
 
 from jigboard.Jigboard import Jigboard
+from jigboard.JigboardTab import JigboardTab
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
 
@@ -10,6 +11,9 @@ class VerticalMotors(Subsystem):
         
         self.front_motor = 0
         self.back_motor = 0
+        
+        self.programmer_tab = JigboardTab("Programmer Board")
+
         
     def run_motors(self, speed):
         self._set_motor_speed(speed, speed)
@@ -24,4 +28,4 @@ class VerticalMotors(Subsystem):
         self._set_motor_speed(0, 0)
     
     def periodic(self):
-        Jigboard().put_string("Vertical Motor Speeds", "Front: {:.2f} Back: {:.2f}".format(self.front_motor, self.back_motor))
+        self.programmer_tab.put_string("Vertical Motor Speeds", "Front: {:.2f} Back: {:.2f}".format(self.front_motor, self.back_motor))

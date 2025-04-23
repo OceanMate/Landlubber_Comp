@@ -1,4 +1,4 @@
-from jigboard.Jigboard import Jigboard
+from jigboard.JigboardTab import JigboardTab
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
 
@@ -9,6 +9,8 @@ class Claw(Subsystem):
         
         self.clamp_motor = 1
         self.roll_angle = -0.5
+        
+        self.programmer_tab = JigboardTab("Programmer Board")
         
     def open_claw(self):
         self._set_clamp(1) 
@@ -45,5 +47,5 @@ class Claw(Subsystem):
         ComsThread().set_claw_roll(roll_angle)
     
     def periodic(self):
-        Jigboard().put_string("Claw Motor Angle", 
+        self.programmer_tab.put_string("Claw Motor Angle", 
                              "Clamp: {:.2f} Roll: {:.2f}".format(self.clamp_motor, self.roll_angle))

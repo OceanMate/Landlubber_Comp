@@ -1,5 +1,6 @@
 from Robot.Commands import FindClawValuesCmd
 from Robot.Commands.SaveImageCmd import SaveImageCmd
+from Robot.Subsystems.Cameras import Cameras
 from Robot.Subsystems.Claw import Claw
 from Robot.Subsystems.VerticalMotors import VerticalMotors
 from Robot.Subsystems.LinearMotors import LinearMotors
@@ -20,6 +21,7 @@ class RobotContainer:
         self.linear_motors = LinearMotors()
         self.vertical_motors = VerticalMotors()
         self.claw = Claw()
+        self.cameras = Cameras()
         
         self.controller = ControllerListener()
         self.controller.deadband = .1
@@ -36,13 +38,18 @@ class RobotContainer:
             self.vertical_motors,
             lambda: self.controller.get_axis(4), # left trigger
             lambda: self.controller.get_axis(5), # right trigger
-            ControllerButton(4).get_while_true(), # left trigger
+            ControllerButton(4).get_while_true(), # left bumper
         ))
         # self.claw.defaultCommand(DefaultClawCmd(
         #     self.claw,
-        #     ControllerButton(5).get_on_true(),
-        #     ControllerButton(0).get_on_true(),
+        #     ControllerButton(5).get_on_true(), # right bumper
+        #     ControllerButton(0).get_on_true(), # A button
         # ))
+        self.cameras.defaultCommand(SaveImageCmd(
+            self.cameras,
+            ControllerButton(2).get_on_true(), # save image button (X)
+            ControllerButton(3).get_on_true(), # switch camera button (Y)
+        ))
         
         # self.claw.defaultCommand(FindClawValuesCmd(
         #     self.claw,
@@ -54,15 +61,6 @@ class RobotContainer:
 
     def configure_button_bindings(self):
         pass
-    
-    def teleop_init_commands(self):
-        # start a save image command when the c button is pressed
-        # and switch cameras when the v button is pressed
-        SaveImageCmd(
-            KeyboardInput("c").get_on_true(), 
-            KeyboardInput("v").get_on_true(),
-        ).schedule()
 
-    
     def stop_subsystems(self):
         self.linear_motors.stop_motors()
