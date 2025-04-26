@@ -27,8 +27,8 @@ class CameraWidget(Widget):
     # Get the default dimensions of the widget, approximately the same size no matter the grid dimensions
     def get_default_dimensions(self):
         # Default dimensions of the widget in pixels
-        px_height = 240 + self.widget_label_height
-        px_width = 320
+        px_height = 480 + self.widget_label_height
+        px_width = 640
         
         # Convert the default dimensions to grid dimensions
         grid_width = px_width // GraphicConstants().grid_dim
