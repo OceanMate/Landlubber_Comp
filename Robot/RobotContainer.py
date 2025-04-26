@@ -30,7 +30,7 @@ class RobotContainer:
         self.linear_motors.defaultCommand(DefaultLinearMotorCmd(
             self.linear_motors, 
             lambda: self.controller.get_axis(1), # left stick y axis
-            lambda: self.controller.get_axis(0), # left stick x axis
+            lambda: -self.controller.get_axis(0), # left stick x axis
             lambda: -self.controller.get_axis(2), # right stick x axis
             ControllerButton(4).get_while_true(), # left trigger
         ))

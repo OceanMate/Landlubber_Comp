@@ -17,10 +17,8 @@ class DefaultClawCmd(Command):
         
         if self.a_button():
             if self.claw.is_claw_horiz():
-                print("rolling claw vert")
                 self.claw.roll_claw_vert()
             else:
-                print("rolling claw horiz")
                 self.claw.roll_claw_horiz()
         
         if self.right_bumper():
