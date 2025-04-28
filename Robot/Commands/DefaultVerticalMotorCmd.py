@@ -34,7 +34,7 @@ class DefaultVerticalMotorCmd(Command):
             left_speed = 0.5
 
         
-        speed = (right_speed - left_speed) * slow_speed
+        speed = (left_speed - right_speed) * slow_speed
         
         # speed is from -1 to 1
         self.vertical_motors.run_motors(speed)
