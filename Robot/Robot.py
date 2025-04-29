@@ -19,6 +19,12 @@ class Robot:
     def teleop_periodic(self):
             
         return
+
+    def test_init(self):
+        pass
+    
+    def test_perodic(self):
+        pass
     
     def disabled_init(self):
         self.command_runner.turn_off()

@@ -40,22 +40,22 @@ class RobotContainer:
             lambda: self.controller.get_axis(5), # right trigger
             ControllerButton(4).get_while_true(), # left bumper
         ))
-        self.claw.defaultCommand(DefaultClawCmd(
-            self.claw,
-            ControllerButton(5).get_on_true(), # right bumper
-            ControllerButton(0).get_on_true(), # A button
-        ))
+        # self.claw.defaultCommand(DefaultClawCmd(
+        #     self.claw,
+        #     ControllerButton(5).get_on_true(), # right bumper
+        #     ControllerButton(0).get_on_true(), # A button
+        # ))
         self.cameras.defaultCommand(SaveImageCmd(
             self.cameras,
             ControllerButton(2).get_on_true(), # save image button (X)
             ControllerButton(3).get_on_true(), # switch camera button (Y)
         ))
         
-        # self.claw.defaultCommand(FindClawValuesCmd(
-        #     self.claw,
-        #     lambda: self.controller.get_axis(0), # left stick x axis
-        #     lambda: self.controller.get_axis(2), # right stick x axis
-        # ))
+        self.claw.defaultCommand(FindClawValuesCmd(
+            self.claw,
+            lambda: self.controller.get_axis(0), # left stick x axis
+            lambda: self.controller.get_axis(2), # right stick x axis
+        ))
                                     
         self.configure_button_bindings()
 

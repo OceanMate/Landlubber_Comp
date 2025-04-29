@@ -7,20 +7,20 @@ class Claw(Subsystem):
     def __init__(self):
         super().__init__()
         
-        self.close_claw()
+        self.open_claw()
         self.roll_claw_horiz()
         
         self.programmer_tab = JigboardTab("Programmer Board")
         
     def open_claw(self):
-        self._set_clamp(.45) 
+        self._set_clamp(.27) 
     
     def close_claw(self):
-        self._set_clamp(-0.05)
+        self._set_clamp(-0.34)
     
     def is_claw_open(self):
         # Check if the claw is open by checking the clamp motor position
-        return self.clamp_motor == .45
+        return self.clamp_motor == .27
 
     def roll_claw_horiz(self):
         # Roll the claw to the horizontal position

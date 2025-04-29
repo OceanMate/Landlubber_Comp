@@ -25,6 +25,7 @@ class GridGraphics:
         # Initialize variables for moving and resizing widgets
         self.is_moving = False
         self.is_resizing = False
+        self.widget_pressed = ""
         
     # Generate the grid on the canvas which the widgets will be placed on
     def generate_grid(self):

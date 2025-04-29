@@ -23,7 +23,7 @@ class ComsThread:
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
                             "vertical_motors": (0.0, 0.0), 
-                            "claw_clamp": 1.0,
+                            "claw_clamp": 0.27,
                             "claw_roll": 0.0,
                             "enabled": False}
         
