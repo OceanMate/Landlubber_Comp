@@ -16,16 +16,16 @@ class VerticalMotors(Subsystem):
 
         
     def run_motors(self, speed):
-        self._set_motor_speed(speed, speed)
+        self._set_motor_speeds(speed, speed)
     
-    def _set_motor_speed(self, front_speed, back_speed):
+    def _set_motor_speeds(self, front_speed, back_speed):
         self.front_motor = front_speed
         self.back_motor = back_speed
         
         ComsThread().set_vertical_motors(self.front_motor, self.back_motor)
 
     def stop_motors(self):
-        self._set_motor_speed(0, 0)
+        self._set_motor_speeds(0, 0)
     
     def periodic(self):
         self.programmer_tab.put_string("Vertical Motor Speeds", "Front: {:.2f} Back: {:.2f}".format(self.front_motor, self.back_motor))

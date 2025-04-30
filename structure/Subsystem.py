@@ -8,7 +8,7 @@ class Subsystem():
 
     # Creates a default command for the subsystem 
     # scheduled if no other command that requires the subsystem is running
-    def defaultCommand(self, command):
+    def default_command(self, command):
         class_name = self.get_subsystem_name()
 
         # Adds the subsystem to the command's requirements if not already there

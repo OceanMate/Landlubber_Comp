@@ -70,6 +70,11 @@ class CommandRunner:
         # Prevents the scheduling of commands if the robot is disabled (needs to be here so it can end the commands)
         if not self.enabled:
             self.canceled_commands = True
+            self.default_input_loop.clear()
+            self.commands = []
+            self.default_commands = []
+            self.commands_to_schedule = []
+            self.commands_to_cancel = []
             return
         
         # Schedules and cancels commands that were added during the run loop
@@ -117,13 +122,24 @@ class CommandRunner:
     
     # adds a default command to the list of default commands
     def add_default_command(self, command):
-        for cmd in self.default_commands:
-            if command.is_confliting(cmd):
-                print("Error: Default command conflicts with another default command")
-                return
-                    
+        # # debug prints for the removed commands
+        # removed_commands = [
+        #     cmd for cmd in self.default_commands if command.is_confliting(cmd)
+        # ]
+        # removed_command_names = [cmd.__class__.__name__ for cmd in removed_commands]
+        # if removed_command_names:
+        #     print(f"Removed conflicting default commands: {', '.join(removed_command_names)}")
+        
+        # Remove any conflicting default commands
+        self.default_commands = [
+            cmd for cmd in self.default_commands if not command.is_confliting(cmd)
+        ]
+        
+        # Add the new default command
         self.default_commands.append(command)
     
+
+        
     # Cancels the given command if loop isn't running
     # Otherwise, adds it to the list of commands to cancel
     def cancel_command(self, command):

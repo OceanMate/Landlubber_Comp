@@ -87,7 +87,7 @@ class Jigboard:
         
         # Hotkey to disable the robot
         def on_enter():
-            if RobotState().is_teleop_enabled():
+            if RobotState().is_enabled():
                 RobotState().disable_robot()
                 self.bottom_bar.update_enable_button(is_enabling=False)
         
