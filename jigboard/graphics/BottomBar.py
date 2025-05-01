@@ -56,13 +56,11 @@ class BottomBar():
             if not robot_state.is_enabled():
                 match self.robot_mode:
                     case "Teleop":
-                        print("Teleop mode")
                         if not robot_state.enable_teleop():
                             # Flash the connection status text if not connected to the nautical computer
                             self.flash_comms = True
                             return
                     case "Test":
-                        print("Test mode")
                         if not robot_state.enable_test():
                             self.flash_comms = True
                             return

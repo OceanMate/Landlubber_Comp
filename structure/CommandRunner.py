@@ -70,7 +70,7 @@ class CommandRunner:
         # Prevents the scheduling of commands if the robot is disabled (needs to be here so it can end the commands)
         if not self.enabled:
             self.canceled_commands = True
-            self.default_input_loop.clear()
+            #self.default_input_loop.clear()
             self.commands = []
             self.default_commands = []
             self.commands_to_schedule = []
