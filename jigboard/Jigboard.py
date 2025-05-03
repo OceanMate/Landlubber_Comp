@@ -79,6 +79,9 @@ class Jigboard:
         
         # Enable the dashboard
         self.enable = True
+        
+        # Network data Event Loop for udpdating added widgets
+        self.network_data_event_loop = EventLoop()
                 
     # Setup hotkeys for the dashboard 
     def _setup_hotkeys(self):
@@ -203,6 +206,9 @@ class Jigboard:
         
         # Check hotkeys
         self.hotkeys_loop.poll()
+        
+        # Check network data event loop
+        self.network_data_event_loop.poll()
         
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:

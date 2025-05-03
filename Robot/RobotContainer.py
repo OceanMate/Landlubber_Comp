@@ -35,13 +35,13 @@ class RobotContainer:
             lambda: self.controller.get_axis(1), # left stick y axis
             lambda: -self.controller.get_axis(0), # left stick x axis
             lambda: -self.controller.get_axis(2), # right stick x axis
-            ControllerButton(4).get_while_true(), # left trigger
         ))
         self.vertical_motors.default_command(DefaultVerticalMotorCmd(
             self.vertical_motors,
             lambda: self.controller.get_axis(4), # left trigger
             lambda: self.controller.get_axis(5), # right trigger
-            ControllerButton(4).get_while_true(), # left bumper
+            lambda: self.controller.get_axis(3), # right stick y axis
+            
         ))
         self.claw.default_command(DefaultClawCmd(
             self.claw,

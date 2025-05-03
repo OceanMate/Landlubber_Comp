@@ -142,6 +142,7 @@ class CameraWidget(Widget):
         if self.last_frame_time is not None and Debug.displayCameraFPS:
             fps = 1 / (current_time - self.last_frame_time)
             self.canvas.itemconfig(self.fps_text, text=f"FPS: {fps:.2f}") # type: ignore
+
         self.last_frame_time = current_time
 
     # Override the recreate_widget method to recreate the string widget

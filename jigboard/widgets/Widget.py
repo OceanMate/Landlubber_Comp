@@ -80,6 +80,9 @@ class Widget():
         
     # Resize the text to fit in the widget
     def resize_text(self, text):
+        # Ensure text is a string
+        text = str(text)
+        
         # Calculate the width of the text
         text_width = self.font.measure(text)
         

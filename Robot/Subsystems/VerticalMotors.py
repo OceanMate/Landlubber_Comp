@@ -15,8 +15,9 @@ class VerticalMotors(Subsystem):
         self.programmer_tab = JigboardTab("Programmer Board")
 
         
-    def run_motors(self, speed):
-        self._set_motor_speeds(speed, speed)
+    def run_motors(self, front_speed, back_speed):
+        # flip the sign of the speed to match the motor direction
+        self._set_motor_speeds(-front_speed, -back_speed)
     
     def _set_motor_speeds(self, front_speed, back_speed):
         self.front_motor = front_speed

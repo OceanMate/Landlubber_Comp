@@ -6,7 +6,7 @@ from transmission.ComsThread import ComsThread
 import tkinter.font as tkfont
 
 class NetworkDataEntry:
-    def __init__(self, x, y, width, height, name, value, is_camera=False):
+    def __init__(self, x, y, width, height, name, value, is_camera=False, is_robot_state=True):
         self.value = value
         self.name = name
         self.x = x
@@ -14,6 +14,7 @@ class NetworkDataEntry:
         self.width = width
         self.height = height
         self.is_camera = is_camera  # Indicates if this entry is for a camera stream
+        self.is_robot_state = is_robot_state
         
     def is_point_inside(self, x, y):
         return (x >= self.x and x <= self.x + self.width and
@@ -43,8 +44,6 @@ class NetworkData:
         self.data_entries = []
         self.data_spacing = 20
         self.enabled = False
-        
-        
                 
     def generate_grid(self):
         
@@ -80,7 +79,7 @@ class NetworkData:
         )
         
         # Draw the sensor data
-        y = self.dictionary_list(self.sensor_data, y+self.data_spacing) + self.data_spacing
+        y = self.dictionary_list(self.sensor_data, y+self.data_spacing, is_robot_state=False) + self.data_spacing
         
         # Create the header text for the robot state
         self.network_data_canvas.create_text(
@@ -106,7 +105,7 @@ class NetworkData:
         y = self.display_cameras(CameraComs().num_cameras, y+self.data_spacing) + self.data_spacing
 
     # Create function to display the dictionary data on the canvas
-    def dictionary_list(self, dictionary, initial_y : int):
+    def dictionary_list(self, dictionary, initial_y : int, is_robot_state=True):
         y_position = initial_y
         
         # Iterate through the dictionary and create text for each key-value pair
@@ -118,7 +117,7 @@ class NetworkData:
                 fill="black",
                 font=self.font,
             )
-            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, key, value))
+            self.data_entries.append(NetworkDataEntry(20, y_position, 180, self.data_spacing, key, value, is_robot_state=is_robot_state))
             y_position += self.data_spacing
         return y_position
             
@@ -164,4 +163,20 @@ class NetworkData:
                 if (entry.is_camera):
                     self.jigboard.put_camera(entry.name, entry.value, tab=GraphicConstants().current_tab)
                 else:
-                    self.jigboard.put_data(entry.name, entry.value, tab=GraphicConstants().current_tab)
+                    tab = GraphicConstants().current_tab
+                    self.jigboard.put_data(entry.name, entry.value, tab=tab)
+                    
+                    class network_data_entry():
+                        def __init__(m_self):
+                            m_self.name = entry.name
+                            m_self.is_robot_state = entry.is_robot_state
+        
+                        def run(m_self):
+                            if m_self.is_robot_state:
+                                self.jigboard.put_data(m_self.name, ComsThread().robot_state[m_self.name], tab=tab)
+                            else:
+                                self.jigboard.put_data(m_self.name, ComsThread().sensor_data[m_self.name], tab=tab)
+                        
+                    self.jigboard.network_data_event_loop.bind(network_data_entry())
+                    
+                    
