@@ -77,7 +77,7 @@ class CameraComs:
             client_id = self.num_cameras
             self.num_cameras += 1
             self.locks[client_id] = threading.Lock()  # Create a lock for the new client
-            
+             
             # Create a new thread for each client 
             thread = threading.Thread(target=self.handle_client, args=(server_socket, client_id))
             thread.daemon = True

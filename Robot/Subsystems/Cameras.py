@@ -12,8 +12,9 @@ class Cameras(Subsystem):
         self.camera_coms = CameraComs()
         self.num_cameras = self.camera_coms.camera_limit
         
-        for i in range(self.num_cameras):
-            Jigboard().put_camera("Camera {}".format(i), i)
+        Jigboard().put_camera("Camera {}".format(0), 0)
+        # for i in range(self.num_cameras):
+        #     Jigboard().put_camera("Camera {}".format(i), i)
         
         self.image_counter = 0  # Add an image counter
 

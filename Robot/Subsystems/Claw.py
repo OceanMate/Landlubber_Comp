@@ -16,7 +16,7 @@ class Claw(Subsystem):
         self._set_clamp(0.45) 
     
     def close_claw(self):
-        self._set_clamp(-0.55)
+        self._set_clamp(-0.6)
     
     def is_claw_open(self):
         # Check if the claw is open by checking the clamp motor position
