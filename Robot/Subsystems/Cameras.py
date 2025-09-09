@@ -12,7 +12,7 @@ class Cameras(Subsystem):
         self.camera_coms = CameraComs()
         self.num_cameras = self.camera_coms.camera_limit
         
-        Jigboard().put_camera("Camera {}".format(0), 0)
+        Jigboard().put_camera(name="Camera {}".format(0), camera_id=0)
         # for i in range(self.num_cameras):
         #     Jigboard().put_camera("Camera {}".format(i), i)
         
