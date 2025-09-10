@@ -14,4 +14,6 @@ class JigboardTab:
     
     def put_button(self, label, command):
         Jigboard().put_button(label, command, self.tab_name)
-
+    
+    def put_camera(self, label, camera):
+        Jigboard().put_camera(label, camera, self.tab_name)

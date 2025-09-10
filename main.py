@@ -11,7 +11,7 @@ import time
 
 def main():
     
-    run_robot = Robot()
+    robot = Robot()
     robot_state = RobotState()
     
     naut_coms = ComsThread()
@@ -22,7 +22,7 @@ def main():
     if not Debug.disableComs:
         cam_coms.begin_thread()
 
-    run_robot.robot_init()
+    robot.robot_init()
     
 
     while True:
@@ -32,21 +32,32 @@ def main():
         # Run periodic functions
         ControllerListener().update()
         KeyboardListener().update()      
-        run_robot.robot_periodic()
+        robot.robot_periodic()
         
         if not ComsThread().connected and not Debug.ignoreComsToEnable:
             robot_state.disable_robot()
             # Update the enable button text and color to reflect the new state
             Jigboard().bottom_bar.update_enable_button(is_enabling=False)
         
+        # Teleop (human operated) mode
         if robot_state.should_init_teleop():
-            run_robot.teleop_init()
+            print("Teleop mode enabled")
+            robot.teleop_init()
         
         if robot_state.is_teleop_enabled():
-            run_robot.teleop_periodic()
-            
+            robot.teleop_periodic()
+        
+        # Test mode
+        if robot_state.should_init_test():
+            print("Test mode enabled")
+            robot.test_init()
+        
+        if robot_state.is_test_enabled():
+            robot.test_periodic()
+        
+        # Disabled check
         if robot_state.should_init_disable():
-            run_robot.disabled_init()
+            robot.disabled_init()
         
         # Add a small delay to prevent high CPU usage
         time.sleep(0.01)

@@ -79,6 +79,9 @@ class Jigboard:
         
         # Enable the dashboard
         self.enable = True
+        
+        # Network data Event Loop for udpdating added widgets
+        self.network_data_event_loop = EventLoop()
                 
     # Setup hotkeys for the dashboard 
     def _setup_hotkeys(self):
@@ -87,16 +90,17 @@ class Jigboard:
         
         # Hotkey to disable the robot
         def on_enter():
-            if RobotState().is_teleop_enabled():
+            if RobotState().is_enabled():
                 RobotState().disable_robot()
                 self.bottom_bar.update_enable_button(is_enabling=False)
         
         # Create the hotkey for the enter key
         enter_hotkey = KeyboardInput("enter")
-        # Set the function to run when the hotkey is pressed
-        enter_hotkey.non_cmd_on_true(func=on_enter)
         # Set the loop for the hotkey to be the dashboard loop
         enter_hotkey.set_loop(loop=self.hotkeys_loop)     
+        # Set the function to run when the hotkey is pressed
+        enter_hotkey.non_cmd_on_true(func=on_enter)
+  
     
     def _create_or_update_widget(self, name, widget_class, create_func, update_func, *args, tab):
         if self.grid_graphics is None:
@@ -201,6 +205,9 @@ class Jigboard:
         
         # Check hotkeys
         self.hotkeys_loop.poll()
+        
+        # Check network data event loop
+        self.network_data_event_loop.poll()
         
         # Check if the dashboard has been disabled, and close the window if it has
         if not self.enable:
