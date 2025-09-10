@@ -14,8 +14,15 @@ class DefaultLinearMotorCmd(Command):
         return 
     
     def execute(self):
+        yaw_speed = 0
+        # add a big deadband since another rotation control is on on the other axis
+        if abs(self.zRotation()) > 0.25:
+            yaw_speed = self.zRotation()
+        
         # xSpeed, ySpeed, and zRotation are all from -1 to 1
-        self.linear_motors.run_motors(self.xSpeed(), self.ySpeed(), self.zRotation())
+        self.linear_motors.run_motors(self.xSpeed() * 0.5, 
+                                      self.ySpeed() * 0.5, 
+                                      yaw_speed * 0.33 )
     
     def end(self, interrupted):
         self.linear_motors.stop_motors()

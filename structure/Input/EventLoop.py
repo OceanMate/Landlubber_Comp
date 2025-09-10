@@ -12,7 +12,6 @@ class EventLoop:
             # Assuming action has a run method
             action.run()
 
-
     def clear(self):
         self.m_bindings.clear()
   

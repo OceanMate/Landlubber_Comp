@@ -1,4 +1,4 @@
-from tkinter import Button, Canvas
+from tkinter import Button, Canvas, Menu
 
 from jigboard.GraphicConstants import GraphicConstants
 from structure.RobotState import RobotState
@@ -53,20 +53,74 @@ class BottomBar():
         # Function to enable or disable the robot and update the button text
         def enable_robot():
             robot_state = RobotState()
-            if not robot_state.is_teleop_enabled():
-                if not robot_state.enable_teleop():
-                    # Flash the connection status text if not connected to the nautical computer
-                    self.flash_comms = True
-                    return
-                
+            if not robot_state.is_enabled():
+                match self.robot_mode:
+                    case "Teleop":
+                        if not robot_state.enable_teleop():
+                            # Flash the connection status text if not connected to the nautical computer
+                            self.flash_comms = True
+                            return
+                    case "Test":
+                        if not robot_state.enable_test():
+                            self.flash_comms = True
+                            return
+                    case _:
+                        # Handle unexpected modes
+                        print("Unknown mode")
+                        
                 # switch the color and text of the enable button to reflect the new state
                 self.update_enable_button(is_enabling=True)
             
-            elif robot_state.is_teleop_enabled():
+            else:
                 # the switching of the button text and color is handled in the disable_robot function
                 robot_state.disable_robot()
                 self.update_enable_button(is_enabling=False)
-        
+
+        # Function to handle mode selection
+        def select_mode(mode):
+            robot_state = RobotState()
+            if robot_state.is_enabled():
+                robot_state.disable_robot()
+                self.update_enable_button(is_enabling=False)
+            if mode == "Teleop":
+                
+                self.mode_menu_button.config(text="Teleop")
+            elif mode == "Test":
+                self.mode_menu_button.config(text="Test")
+            
+            self.robot_mode = mode
+
+        # Create the menu button for mode selection
+        self.mode_menu_button = Button(
+            self.bottom_bar_canvas,
+            text="Teleop",
+            bg=GraphicConstants().mild_grey,
+            fg=GraphicConstants().black,
+            font=(GraphicConstants().bottom_bar_font, 14),  # Slightly smaller font for better fit
+            relief="groove",  # Add a subtle border for better appearance
+            bd=5  # Border width
+        )
+
+        # Create the dropdown menu for the mode button
+        self.mode_menu = Menu(self.mode_menu_button, tearoff=0)
+        self.mode_menu.add_command(label="Teleop", command=lambda: select_mode("Teleop"))
+        self.mode_menu.add_command(label="Test", command=lambda: select_mode("Test"))
+        self.robot_mode = "Teleop"  # Initial mode
+
+        # Bind the menu to the button
+        self.mode_menu_button.config(command=lambda: self.mode_menu.post(
+            self.mode_menu_button.winfo_rootx(),
+            self.mode_menu_button.winfo_rooty() + self.mode_menu_button.winfo_height()
+        ))
+
+        # Place the mode menu button to the left of the enable button
+        self.mode_menu_button.place(
+            x=GraphicConstants().window_width - 2 * self.enable_button_width - self.button_x_offset - 10,
+            y=self.button_y_offset + 2,  # Slightly adjust vertical position for alignment
+            height=GraphicConstants().bottom_bar_height - 2 * self.button_y_offset - 4,  # Reduce height for a thinner look
+            width=self.enable_button_width - 20  # Reduce width for a sleeker appearance
+        )
+
         # Create the enable button
         self.enable_button = Button(
             self.bottom_bar_canvas,
@@ -144,6 +198,12 @@ class BottomBar():
         self.bottom_bar_canvas.config(width=GraphicConstants().window_width)
         self.bottom_bar_canvas.place(x=0, y=GraphicConstants().window_height - GraphicConstants().bottom_bar_height, anchor="nw")
         
+        self.mode_menu_button.place(
+            x=GraphicConstants().window_width - 2 * self.enable_button_width - self.button_x_offset - 10,
+            y=self.button_y_offset + 2,  # Slightly adjust vertical position for alignment
+            height=GraphicConstants().bottom_bar_height - 2 * self.button_y_offset - 4,  # Reduce height for a thinner look
+            width=self.enable_button_width - 20  # Reduce width for a sleeker appearance
+        )
         
         self.enable_button.place(
             x=GraphicConstants().window_width - self.enable_button_width - self.button_x_offset,

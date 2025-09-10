@@ -8,12 +8,18 @@ Network setup
 connect an ethernet cable, then go to settings and switch it to manual ethernet setup
 set ipv4 to '192.168.1.1' and subnet mask to '255.255.255.0'
 
-Required Python Libraries:
-    pynput (keyboard)
-    pygame-ce (controllers, not pygame (pygame cause a wierd exception))
-    tkinter (display, should come with python)
-    pillow (camera with tkinter)
-    opencv-python (camera)
-    numpy (camera)
+Using PuTTY to connect to nautical comp
+   connect to 192.168.1.2 
+   login as: materov      
+   password: 1234      
+
+run the commands:  
+    cd Documents/GitHub/Nautical_Comp
+    source .venv/bin/activate
+    python main.py
+
+Update repo from main
+    git pull origin main
 
 I stole Command base from FIRST robotics. Also the gui was based on shuffleboard frc. Yar Har
+

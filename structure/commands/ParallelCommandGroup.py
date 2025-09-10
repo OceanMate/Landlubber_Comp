@@ -26,6 +26,7 @@ class ParallelCommandGroup(Command):
             
             if command.is_finished():
                 command.end(False);
+                self.commands.remove(command)
 
     
     
