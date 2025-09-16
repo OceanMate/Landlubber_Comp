@@ -26,7 +26,7 @@ class CameraComs:
         self.frames = {}
         self.locks = {}  # Create a lock for each camera thread
         self.num_cameras = 0
-        self.camera_limit = 2
+        self.camera_limit = 1
         self.frame_displayed = {}  # Track if a frame has been displayed for each camera
 
     def handle_client(self, connection, client_id):

@@ -155,7 +155,7 @@ class NetworkData:
         GridGraphics().move_grid(0,GraphicConstants().tab_bar_height)
         self.network_data_canvas.destroy()
         
-    def _on_mouse_click(self,event):
+    def _on_mouse_click(self, event):
         # Check if the click is within the bounds of a data entry
         for entry in self.data_entries:
             if (entry.is_point_inside(event.x, event.y)):
