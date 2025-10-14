@@ -55,7 +55,6 @@ class RobotContainer:
         ))
     
     def test_init(self):
-       
         self.linear_motors.default_command(TestLinearMotorCmd(
             self.linear_motors,
             ControllerButton(0).get_while_true(), # A button
