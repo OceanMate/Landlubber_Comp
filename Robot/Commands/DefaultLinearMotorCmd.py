@@ -1,7 +1,8 @@
 from structure.commands.Command import Command
+from Robot.Subsystems.LinearMotors import LinearMotors
 
 class DefaultLinearMotorCmd(Command):
-    def __init__(self, linear_motors, xSpeed, ySpeed, zRotation):
+    def __init__(self, linear_motors : LinearMotors, xSpeed, ySpeed, zRotation):
         super().__init__()
         self.linear_motors = linear_motors
         super().add_requirement(self.linear_motors)

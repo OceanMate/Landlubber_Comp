@@ -2,7 +2,7 @@ from structure.commands.Command import Command
 from Robot.Subsystems.VerticalMotors import VerticalMotors
 
 class DefaultVerticalMotorCmd(Command):
-    def __init__(self, vertical_motors : VerticalMotors, left_trigger, right_trigger, right_stick_y, left_bumper, right_bumper):
+    def __init__(self, vertical_motors : VerticalMotors, left_trigger, right_trigger, right_stick_y, right_bumper, left_bumper):
         super().__init__()
         self.vertical_motors = vertical_motors
         super().add_requirement(self.vertical_motors)
@@ -10,8 +10,8 @@ class DefaultVerticalMotorCmd(Command):
         self.left_trigger = left_trigger  # function to get left trigger value (from 0 to 1)
         self.right_trigger = right_trigger # function to get right trigger value (from 0 to 1)
         self.right_stick_y = right_stick_y # function to get right stick y value (from -1 to 1)
-        self.left_bumper = left_bumper # function to get left bumper state (True/False)
         self.right_bumper = right_bumper # function to get right bumper state (True/False)
+        self.left_bumper = left_bumper # function to get left bumper state (True/False)
     
     def initalize(self):
         return

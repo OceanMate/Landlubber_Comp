@@ -41,11 +41,13 @@ class RobotContainer:
             lambda: self.controller.get_axis(4), # left trigger
             lambda: self.controller.get_axis(5), # right trigger
             lambda: self.controller.get_axis(3), # right stick y axis
+            lambda: self.controller.get_button(5), # right bumper
+            lambda: self.controller.get_button(4), # left bumper
             
         ))
         self.claw.default_command(DefaultClawCmd(
             self.claw,
-            ControllerButton(5).get_on_true(), # right bumper
+            ControllerButton(1).get_on_true(), # B button
             ControllerButton(0).get_on_true(), # A button
         ))
         self.cameras.default_command(SaveImageCmd(
@@ -53,6 +55,7 @@ class RobotContainer:
             ControllerButton(2).get_on_true(), # save image button (X)
             ControllerButton(3).get_on_true(), # switch camera button (Y)
         ))
+        
     
     def test_init(self):
         self.linear_motors.default_command(TestLinearMotorCmd(

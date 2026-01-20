@@ -1,12 +1,13 @@
 from structure.commands.Command import Command
+from Robot.Subsystems.Claw import Claw
 
 class DefaultClawCmd(Command):
-    def __init__(self, claw, right_bumper, a_button):
+    def __init__(self, claw : Claw, b_button, a_button):
         super().__init__()
         self.claw = claw
         super().add_requirement(self.claw)
         
-        self.right_bumper = right_bumper
+        self.b_button = b_button 
         self.a_button = a_button
         
     
@@ -21,7 +22,7 @@ class DefaultClawCmd(Command):
             else:
                 self.claw.roll_claw_horiz()
         
-        if self.right_bumper():
+        if self.b_button():
             if self.claw.is_claw_open():
                 self.claw.close_claw()
             else:

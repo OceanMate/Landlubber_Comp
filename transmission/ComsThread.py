@@ -22,7 +22,7 @@ class ComsThread:
         self.sel = selectors.DefaultSelector()
         self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
-                            "vertical_motors": (0.0, 0.0), 
+                            "vertical_motors": (0.0, 0.0, 0.0), 
                             "claw_clamp": 0,
                             "claw_roll": -0.27,
                             "enabled": False}
@@ -35,8 +35,8 @@ class ComsThread:
     def set_horizontal_motors(self, fl : float, fr : float, br : float, bl : float):
         self.robot_state["horizontal_motors"] = (fl, fr, br, bl)
     
-    def set_vertical_motors(self, front : float, back : float):
-        self.robot_state["vertical_motors"] = (front, back)
+    def set_vertical_motors(self, front_left : float, front_right : float, back : float):
+        self.robot_state["vertical_motors"] = (front_left, front_right, back)
     
     def set_claw_clamp(self, clamp : float):
         self.robot_state["claw_clamp"] = clamp

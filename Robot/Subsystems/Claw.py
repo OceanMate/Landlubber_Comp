@@ -1,6 +1,7 @@
 from jigboard.JigboardTab import JigboardTab
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
+from Robot.Constants import Constants
 
 
 class Claw(Subsystem):
@@ -13,26 +14,26 @@ class Claw(Subsystem):
         self.programmer_tab = JigboardTab("Programmer Board")
         
     def open_claw(self):
-        self._set_clamp(0) 
+        self._set_clamp(Constants.claw_open) 
     
     def close_claw(self):
-        self._set_clamp(-0.5)
+        self._set_clamp(Constants.claw_closed)
     
     def is_claw_open(self):
         # Check if the claw is open by checking the clamp motor position
-        return self.clamp_motor == 0
+        return self.clamp_motor == Constants.claw_open
 
     def roll_claw_horiz(self):
         # Roll the claw to the horizontal position
-        self._set_roll_angle(-0.27)
+        self._set_roll_angle(Constants.claw_roll_0)
     
     def roll_claw_vert(self):
         # Roll the claw to the vertical position
-        self._set_roll_angle(0.6)
+        self._set_roll_angle(Constants.claw_roll_90)
     
     def is_claw_horiz(self) -> bool:
         # Check if the claw is in the horizontal position by checking the roll angle
-        return self.roll_angle == -0.27
+        return self.roll_angle == Constants.claw_roll_0
     
     def _set_clamp(self, clamp_angle):
         self.clamp_motor = clamp_angle

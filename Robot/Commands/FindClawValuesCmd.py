@@ -1,7 +1,8 @@
 from structure.commands.Command import Command
+from Robot.Subsystems.Claw import Claw
 
 class FindClawValuesCmd(Command):
-    def __init__(self, claw, left_x_axis, right_x_axis ):
+    def __init__(self, claw : Claw, left_x_axis, right_x_axis ):
         super().__init__()
         self.claw = claw
         super().add_requirement(self.claw)

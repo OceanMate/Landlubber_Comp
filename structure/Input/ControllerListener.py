@@ -118,6 +118,11 @@ class ControllerListener:
         if (self.axis_state[axis] < self.deadband and self.axis_state[axis] > -self.deadband):
             return 0.0
         return self.axis_state[axis]
+    
+    def get_dpad(self):
+        if (pygame.joystick.get_count() == 0):
+            return (0, 0)
+        return self.dpad_state[0]
 
     def print_button(self, key):
         if key in self.is_button_down:
