@@ -4,6 +4,7 @@ import threading
 import traceback
 
 import transmission.libclient as libclient
+from Robot.Constants import Constants
 
 
 class ComsThread:
@@ -20,11 +21,11 @@ class ComsThread:
     
     def _start(self):
         self.sel = selectors.DefaultSelector()
-        self.sensor_data = {"IMU": (0.0, 0.0, 0.0)}
+        self.sensor_data = {"IMU": (0.0, 0.0, 0.0, 0.0)}
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
                             "vertical_motors": (0.0, 0.0, 0.0), 
-                            "claw_clamp": 0,
-                            "claw_roll": -0.27,
+                            "claw_clamp": Constants.claw_open,
+                            "claw_roll": Constants.claw_roll_0,
                             "enabled": False}
         
         self.host = '192.168.1.2'  # Dynamically retrieve Ethernet IP
@@ -48,6 +49,11 @@ class ComsThread:
         self.robot_state["enabled"] = enabled
     
     def get_imu_data(self):
+        """Get the current IMU sensor data.
+
+        Returns:
+            tuple: A tuple containing the IMU data (x, y, z, w).
+        """
         return self.sensor_data["IMU"]
     
     def begin_thread(self):

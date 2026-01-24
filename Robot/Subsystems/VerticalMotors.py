@@ -3,6 +3,8 @@ from jigboard.Jigboard import Jigboard
 from jigboard.JigboardTab import JigboardTab
 from structure.Subsystem import Subsystem
 from transmission.ComsThread import ComsThread
+from simple_pid import PID
+from Robot.Math import Math
 
 
 class VerticalMotors(Subsystem):
@@ -13,7 +15,36 @@ class VerticalMotors(Subsystem):
         self.front_right_motor = 0
         self.back_motor = 0
         
+        # Pitch PID controller
+        self.pitch_pid = PID(0.05, 0.01, 0.0, setpoint=0)
+        self.pitch_pid.output_limits = (-1, 1)  # Limit output to motor
+        # Roll PID controller
+        self.roll_pid = PID(0.05, 0.0, 0.0, setpoint=0)
+        self.roll_pid.output_limits = (-1, 1)  # Limit output to motor
+        
         self.programmer_tab = JigboardTab("Programmer Board")
+    
+    def get_pitch_pid(self, target_angle : float):
+        self.pitch_pid.setpoint = target_angle
+        
+        pitch = Math.pitch_from_quat(ComsThread().get_imu_data())
+        motor_speed = self.pitch_pid(pitch) # current pitch angle
+        
+        if motor_speed == None:
+            print("ERROR: Pitch PID returned None")
+            motor_speed = 0
+        return motor_speed
+
+    def get_roll_pid(self, target_angle : float):
+        self.roll_pid.setpoint = target_angle
+        
+        roll = Math.roll_from_quat(ComsThread().get_imu_data())
+        motor_speed = self.roll_pid(roll) # current roll angle
+        
+        if motor_speed == None:
+            print("ERROR: Roll PID returned None")
+            motor_speed = 0
+        return motor_speed
 
         
     def run_motors(self, zSpeed, pitchSpeed, rollSpeed):

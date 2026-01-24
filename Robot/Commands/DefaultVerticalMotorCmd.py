@@ -54,7 +54,7 @@ class DefaultVerticalMotorCmd(Command):
         self.vertical_motors.run_motors(climb_speed, pitch_speed * 0.5, roll_speed * 0.5)
     
     def end(self, interrupted):
-        self.vertical_motors.stop_motors()
-    
+        return
+        
     def is_finished(self):
         return False

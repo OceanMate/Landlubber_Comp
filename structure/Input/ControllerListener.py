@@ -1,5 +1,6 @@
 # Docutmentation: https://www.pygame.org/docs/ref/joystick.html
 import pygame
+from enum import Enum
 
 from jigboard.Jigboard import Jigboard
 
@@ -35,6 +36,17 @@ Hat/D-pad:
 Down -> Up      - Y Axis
 Left -> Right   - X Axis
 '''
+
+class DpadDirection(Enum):
+    CENTER = 0
+    RIGHT = 1
+    UP_RIGHT = 2
+    UP = 3
+    UP_LEFT = 4
+    LEFT = 5
+    DOWN_LEFT = 6
+    DOWN = 7
+    DOWN_RIGHT = 8
 
 class ControllerListener:
     _instance = None
@@ -119,10 +131,24 @@ class ControllerListener:
             return 0.0
         return self.axis_state[axis]
     
-    def get_dpad(self):
+    def get_dpad(self) -> DpadDirection:
         if (pygame.joystick.get_count() == 0):
-            return (0, 0)
-        return self.dpad_state[0]
+            return DpadDirection.CENTER
+        
+        x, y = self.dpad_state[0]
+        # Map the (x, y) tuple to the corresponding DpadDirection
+        dpad_mapping = {
+            (0, 0): DpadDirection.CENTER,
+            (1, 0): DpadDirection.RIGHT,
+            (1, 1): DpadDirection.UP_RIGHT,
+            (0, 1): DpadDirection.UP,
+            (-1, 1): DpadDirection.UP_LEFT,
+            (-1, 0): DpadDirection.LEFT,
+            (-1, -1): DpadDirection.DOWN_LEFT,
+            (0, -1): DpadDirection.DOWN,
+            (1, -1): DpadDirection.DOWN_RIGHT
+        }
+        return dpad_mapping.get((x, y), DpadDirection.CENTER)
 
     def print_button(self, key):
         if key in self.is_button_down:

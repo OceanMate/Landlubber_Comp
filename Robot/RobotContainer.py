@@ -10,13 +10,15 @@ from Robot.Commands.DefaultLinearMotorCmd import DefaultLinearMotorCmd
 from Robot.Commands.DefaultVerticalMotorCmd import DefaultVerticalMotorCmd
 from Robot.Commands.DefaultClawCmd import DefaultClawCmd
 from Robot.Commands.FindClawValuesCmd import FindClawValuesCmd
+from Robot.Commands.BalanceVerticalCmd import BalanceVerticalCmd
 
 from structure.Input.KeyboardInput import KeyboardInput
 from structure.Input.ControllerButton import ControllerButton
 from structure.Input.KeyboardListener import KeyboardListener
 from structure.commands.InstantCommand import InstantCommand
 from structure.commands.SequentialCommandGroup import SequentialCommandGroup
-from structure.Input.ControllerListener import ControllerListener
+from structure.Input.ControllerListener import *
+from structure.Input.ControllerDpad import ControllerDpad
 
 class RobotContainer:
     def __init__(self):
@@ -55,6 +57,16 @@ class RobotContainer:
             ControllerButton(2).get_on_true(), # save image button (X)
             ControllerButton(3).get_on_true(), # switch camera button (Y)
         ))
+        
+        ControllerDpad( DpadDirection.UP).on_true(BalanceVerticalCmd(
+            self.vertical_motors,
+            lambda: self.controller.get_axis(4), # left trigger
+            lambda: self.controller.get_axis(5), # right trigger
+            lambda: self.controller.get_axis(3), # right stick y axis
+            lambda: self.controller.get_button(5), # right bumper
+            lambda: self.controller.get_button(4), # left bumper
+            lambda: self.controller.get_dpad() == DpadDirection.DOWN
+            ))
         
     
     def test_init(self):
