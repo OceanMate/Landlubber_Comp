@@ -1,4 +1,5 @@
 from structure.CommandRunner import CommandRunner
+from structure.Subsystem import Subsystem
 
 class Command:
     # Child Classes should call this in their constructors
@@ -28,7 +29,12 @@ class Command:
         return True
     
     # Adds a requireded subsystem to the command
-    def add_requirement(self, subsystem):
+    def add_requirement(self, subsystem: Subsystem):
+        """Adds a subsystem as a requirement for this command, preventing other commands that require the same subsystem from running at the same time
+
+        Args:
+            subsystem (Subsystem): The subsystem to be added as a requirement
+        """
         self.requirements[subsystem.get_subsystem_name()] = True
     
     # adds another commands requirmets to this command
@@ -46,8 +52,12 @@ class Command:
     
     # Schedules the command in the command runner
     def schedule(self):
+        """Schedules the command immediately to be run by the CommandRunner
+        """
         CommandRunner().schedule_command(self)
     
     # Cancels the command in the command runner
     def cancel(self):
+        """Cancels any instance of a command in the CommandRunner
+        """
         CommandRunner().cancel_command(self)

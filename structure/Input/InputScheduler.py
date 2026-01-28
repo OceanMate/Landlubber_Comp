@@ -1,4 +1,5 @@
 from typing import Callable
+from structure.commands.Command import Command
 
 # This class is responsible for scheduling commands based on input states
 class InputScheduler:
@@ -14,7 +15,12 @@ class InputScheduler:
         self.loop = loop
     
     # Binds a command to be scheduled when the function boolean is true
-    def on_true(self, cmd):
+    def on_true(self, cmd : Command):
+        """Binds a command to be scheduled once when the function boolean first turns true
+
+        Args:
+            cmd (Command): The command to be scheduled
+        """
         # Inner class to handle the scheduling of the command, needs to have a run method
         class m_runnable():
             def __init__(m_self): # type: ignore
@@ -29,8 +35,13 @@ class InputScheduler:
         # adds the runnable to the event loop
         self.loop.bind(m_runnable())
     
-    # Binds a command to be scheduled when the function boolean is false
-    def on_false(self, cmd):
+    # Binds a command to be scheduled once when the function boolean first turns false
+    def on_false(self, cmd : Command):
+        """Binds a command to be scheduled once when the function boolean first turns false
+        
+        Args:
+            cmd (Command): The command to be scheduled
+        """
         # Inner class to handle the scheduling of the command, needs to have a run method
         class m_runnable():            
             def __init__(m_self): # type: ignore
@@ -46,7 +57,12 @@ class InputScheduler:
         self.loop.bind(m_runnable())
     
     # Binds a command to be scheduled while the function boolean is true
-    def while_true(self, cmd):
+    def while_true(self, cmd : Command):
+        """Binds a command to be scheduled while the function boolean is true
+        
+        Args:
+            cmd (Command): The command to be scheduled
+        """
         # Inner class to handle the scheduling of the command, needs to have a run method
         class m_runnable():            
             def __init__(m_self): # type: ignore
@@ -66,7 +82,11 @@ class InputScheduler:
         self.loop.bind(m_runnable())
     
     # Binds a command to be scheduled while the function boolean is false
-    def while_false(self, cmd):
+    def while_false(self, cmd : Command):
+        """Binds a command to be scheduled while the function boolean is false
+        Args:
+            cmd (Command): The command to be scheduled
+        """
         # Inner class to handle the scheduling of the command, needs to have a run method
         class m_runnable():            
             def __init__(m_self): # type: ignore
@@ -85,7 +105,12 @@ class InputScheduler:
         # adds the runnable to the event loop
         self.loop.bind(m_runnable())
     
-    def non_cmd_on_true(self, func):
+    def non_cmd_on_true(self, func : Callable):
+        """ Binds a non-command function to be called once when the function boolean first turns true
+        
+        Args:
+            func (Callable): The function to be called
+        """
         # Inner class to handle the scheduling of the command, needs to have a run method
         class m_runnable():
             def __init__(m_self): # type: ignore
@@ -99,7 +124,12 @@ class InputScheduler:
         
         self.loop.bind(m_runnable())
 
-    def non_cmd_on_false(self, func):
+    def non_cmd_on_false(self, func : Callable):
+        """ Binds a non-command function to be called once when the function boolean first turns false
+        
+        Args:
+            func (Callable): The function to be called
+        """
         class m_runnable():
             def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
@@ -112,7 +142,12 @@ class InputScheduler:
         
         self.loop.bind(m_runnable())
 
-    def non_cmd_while_true(self, func):
+    def non_cmd_while_true(self, func : Callable):
+        """ Binds a non-command function to be called while the function boolean is true
+
+        Args:
+            func (Callable): The function to be called
+        """
         class m_runnable():
             def run(m_self): # type: ignore
                 if self.scheduleBool():
@@ -120,7 +155,12 @@ class InputScheduler:
         
         self.loop.bind(m_runnable())
 
-    def non_cmd_while_false(self, func):
+    def non_cmd_while_false(self, func : Callable):
+        """ Binds a non-command function to be called while the function boolean is false
+        
+        Args:
+            func (Callable): The function to be called
+        """
         class m_runnable():        
             def run(m_self): # type: ignore
                 if not self.scheduleBool():
@@ -130,6 +170,12 @@ class InputScheduler:
 
     # a goofy way of getting a boolean that is true when the button is pressed
     def get_on_true(self) -> Callable:
+        """Binds a callable that returns true once when the function boolean first turns true
+
+        Returns:
+            Callable: A callable that returns true once when the function boolean first turns true
+        """
+        
         class m_runnable():
             def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
@@ -146,6 +192,11 @@ class InputScheduler:
         return runnable.run
 
     def get_on_false(self) -> Callable:
+        """Binds a callable that returns true once when the function boolean first turns false
+
+        Returns:
+            Callable: A callable that returns true once when the function boolean first turns false
+        """
         class m_runnable():
             def __init__(m_self): # type: ignore
                 m_self.pressed_last = self.scheduleBool()
@@ -162,7 +213,9 @@ class InputScheduler:
         return runnable.run
 
     def get_while_true(self) -> Callable:
+        """Binds a callable that returns true while the function boolean is true"""
         return self.scheduleBool
 
     def get_while_false(self) -> Callable:
+        """Binds a callable that returns true while the function boolean is false"""
         return lambda: not self.scheduleBool()

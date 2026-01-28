@@ -45,7 +45,6 @@ class RobotContainer:
             lambda: self.controller.get_axis(3), # right stick y axis
             lambda: self.controller.get_button(5), # right bumper
             lambda: self.controller.get_button(4), # left bumper
-            
         ))
         self.claw.default_command(DefaultClawCmd(
             self.claw,
