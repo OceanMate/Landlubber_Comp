@@ -14,12 +14,10 @@ Using PuTTY to connect to nautical comp
    password: 1234      
 
 run the commands:  
-    cd Documents/GitHub/Nautical_Comp
-    source .venv/bin/activate
-    python main.py
+    ./startup.sh
 
 Update repo from main
-    git pull origin main
+    ./gitpull.sh
 
 I stole Command base from FIRST robotics. Also the gui was based on shuffleboard frc. Yar Har
 
