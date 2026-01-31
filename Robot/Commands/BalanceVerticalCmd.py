@@ -53,7 +53,6 @@ class BalanceVerticalCmd(Command):
         
         if pitch_speed == 0:
             pitch_speed = self.vertical_motors.get_pitch_pid(0)
-            print(f"Pitch PID output: {pitch_speed}")
         if roll_speed == 0:
             roll_speed = self.vertical_motors.get_roll_pid(0)
                 

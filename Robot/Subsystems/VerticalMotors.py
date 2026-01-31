@@ -16,10 +16,10 @@ class VerticalMotors(Subsystem):
         self.back_motor = 0
         
         # Pitch PID controller
-        self.pitch_pid = PID(0.05, 0.01, 0.0, setpoint=0)
+        self.pitch_pid = PID(0.5, 0.0, 0.0, setpoint=0)
         self.pitch_pid.output_limits = (-1, 1)  # Limit output to motor
         # Roll PID controller
-        self.roll_pid = PID(0.05, 0.0, 0.0, setpoint=0)
+        self.roll_pid = PID(0.5, 0.0, 0.0, setpoint=0)
         self.roll_pid.output_limits = (-1, 1)  # Limit output to motor
         
         self.programmer_tab = JigboardTab("Programmer Board")
