@@ -94,3 +94,6 @@ class VerticalMotors(Subsystem):
     
     def periodic(self):
         self.programmer_tab.put_string("Vertical Motor Speeds", "Front Left: {:.2f} Front Right: {:.2f} Back: {:.2f}".format(self.front_left_motor, self.front_right_motor, self.back_motor))
+        euler = Math.euler_from_quat(ComsThread().get_imu_data())
+        for angle, name in zip(euler, ["Yaw", "Pitch", "Roll"]):
+            self.programmer_tab.put_string(name, "{:.2f} degrees".format(Math.degrees_from_radians(angle)))

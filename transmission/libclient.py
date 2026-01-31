@@ -188,7 +188,7 @@ class Message:
             encoding = self.jsonheader["content-encoding"] # type: ignore
             self.response = self._json_decode(data, encoding)
             
-            self.sensor_data = dict(self.response)
+            self.sensor_data = {key: tuple(value) if isinstance(value, list) else value for key, value in self.response.items()}
         else:
             raise ValueError(f"Bad content type header.")
         

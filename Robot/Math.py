@@ -8,17 +8,42 @@ class Math:
     @staticmethod
     def pitch_from_quat(quanternion: tuple[float, float, float, float]) -> float:
         x, y, z, w = quanternion
-        # Pitch (x-axis rotation)
-        sinp = 2 * (w * x + y * z)
-        cosp = 1 - 2 * (x * x + y * y)
-        pitch = math.atan2(sinp, cosp)
-        return math.degrees(pitch)
+        # Pitch (y-axis rotation)
+        sinp = 2 * (w * y - z * x)
+        sinp = Math.clamp(sinp, -1, 1)  # Clamp to avoid invalid input to asin
+        pitch = math.asin(sinp)
+        return pitch
     
     @staticmethod
     def roll_from_quat(quanternion: tuple[float, float, float, float]) -> float:
         x, y, z, w = quanternion
-        # Roll (y-axis rotation)
-        sinr = 2 * (w * y - z * x)
-        sinr = Math.clamp(sinr, -1, 1)  # Clamp to avoid invalid input to asin
-        roll = math.asin(sinr)
-        return math.degrees(roll)
+        # Roll (x-axis rotation)
+        sinr = 2 * (w * x + y * z)
+        cosr = 1 - 2 * (x * x + y * y)
+        roll = math.atan2(sinr, cosr)
+        return roll
+    
+    @staticmethod
+    def euler_from_quat(quanternion: tuple[float, float, float, float]) -> tuple[float, float, float]:
+        x, y, z, w = quanternion
+        
+        # Yaw (z-axis rotation)
+        siny_cosp = 2 * (w * z + x * y)
+        cosy_cosp = 1 - 2 * (y * y + z * z)
+        yaw = math.atan2(siny_cosp, cosy_cosp)
+        
+        # Pitch (y-axis rotation)
+        sinp = 2 * (w * y - z * x)
+        sinp = Math.clamp(sinp, -1, 1)  # Clamp to avoid invalid input to asin
+        pitch = math.asin(sinp)
+        
+        # Roll (x-axis rotation)
+        sinr = 2 * (w * x + y * z)
+        cosr = 1 - 2 * (x * x + y * y)
+        roll = math.atan2(sinr, cosr)
+        
+        return (yaw, pitch, roll)
+    
+    @staticmethod
+    def degrees_from_radians(radians: float) -> float:
+        return radians * (180.0 / math.pi)

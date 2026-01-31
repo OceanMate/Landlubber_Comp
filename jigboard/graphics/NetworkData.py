@@ -68,6 +68,9 @@ class NetworkData:
         # Clear the canvas
         self.network_data_canvas.delete("all")
         
+        self.sensor_data = ComsThread().sensor_data
+        self.robot_state = ComsThread().robot_state
+        
         # Create the header text
         y = 10
         self.network_data_canvas.create_text(

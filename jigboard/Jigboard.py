@@ -136,7 +136,7 @@ class Jigboard:
             return self.put_boolean(label, data, tab)
         if type(data) == str or type(data) == tuple or type(data) == int or type(data) == float:
             return self.put_string(label, data, tab) # type: ignore
-        if type(data) == Callable:
+        if callable(data):
             return self.put_button(label, data, tab)
         
         print("Data type not supported, please use a boolean, string, callable or int")

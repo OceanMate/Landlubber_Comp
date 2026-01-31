@@ -1,4 +1,3 @@
-from jigboard.Jigboard import Jigboard
 from structure.Input.EventLoop import EventLoop
 from Debug import Debug
 
@@ -62,6 +61,7 @@ class CommandRunner:
         
         # Display a list of commands currently in the loop
         if Debug.displayActiveCommands:
+            from jigboard.Jigboard import Jigboard
             command_names = [command.__class__.__name__ for command in self.commands]
             Jigboard().put_string("Commands", ", ".join(command_names))
 
