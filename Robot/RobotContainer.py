@@ -80,6 +80,7 @@ class RobotContainer:
             self.vertical_motors,
             ControllerButton(4).get_while_true(), # left bumper
             ControllerButton(5).get_while_true(), # right bumper
+            lambda: self.controller.get_axis(5) #  right trigger axis
         ))
         self.claw.default_command(FindClawValuesCmd(
             self.claw,
