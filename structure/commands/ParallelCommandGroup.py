@@ -10,10 +10,10 @@ class ParallelCommandGroup(Command):
             self.commands.append(command)
             super().add_cmd_requirements(command)
     
-    def initalize(self):        
-        # initalize the all commands
+    def initialize(self):        
+        # initialize all commands
         for command in self.commands:
-            command.initalize()
+            command.initialize()
         
     
     def execute(self):

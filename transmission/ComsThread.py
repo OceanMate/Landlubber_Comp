@@ -25,7 +25,7 @@ class ComsThread:
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
                             "vertical_motors": (0.0, 0.0, 0.0), 
                             "claw_clamp": Constants.claw_open,
-                            "claw_roll": Constants.claw_roll_0,
+                            "claw_roll": 0.0,
                             "enabled": False}
         
         self.host = '192.168.1.2'  # Dynamically retrieve Ethernet IP

@@ -91,12 +91,12 @@ class CommandRunner:
         for default_command in self.default_commands:
             not_conflicting = True
             for command in self.commands:
-                if default_command.is_confliting(command):
+                if default_command.is_conflicting(command):
                     not_conflicting = False
                     break
             
             if not_conflicting:
-                default_command.initalize()
+                default_command.initialize()
                 self.commands.append(default_command)
 
             
@@ -113,18 +113,18 @@ class CommandRunner:
         
         # Interrupts any already scheduled commands that require the same subsystem
         for cmd in self.commands:
-            if command.is_confliting(cmd):
+            if command.is_conflicting(cmd):
                 command.end(True)
                 self.commands.remove(cmd)
         
-        command.initalize()
+        command.initialize()
         self.commands.append(command)
     
     # adds a default command to the list of default commands
     def add_default_command(self, command):
         # # debug prints for the removed commands
         # removed_commands = [
-        #     cmd for cmd in self.default_commands if command.is_confliting(cmd)
+        #     cmd for cmd in self.default_commands if command.is_conflicting(cmd)
         # ]
         # removed_command_names = [cmd.__class__.__name__ for cmd in removed_commands]
         # if removed_command_names:
@@ -132,7 +132,7 @@ class CommandRunner:
         
         # Remove any conflicting default commands
         self.default_commands = [
-            cmd for cmd in self.default_commands if not command.is_confliting(cmd)
+            cmd for cmd in self.default_commands if not command.is_conflicting(cmd)
         ]
         
         # Add the new default command

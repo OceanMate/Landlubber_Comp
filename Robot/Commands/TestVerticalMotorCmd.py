@@ -10,7 +10,8 @@ class TestVerticalMotorCmd(Command):
         self.left_bumper = left_bumper
         self.right_bumper = right_bumper
         self.trigger = trigger
-    def initalize(self):
+
+    def initialize(self):
         return 
     
     def execute(self):
@@ -23,7 +24,6 @@ class TestVerticalMotorCmd(Command):
         else:
             self.vertical_motors.stop_motors()
 
-    
     def end(self, interrupted):
         self.vertical_motors.stop_motors()
     

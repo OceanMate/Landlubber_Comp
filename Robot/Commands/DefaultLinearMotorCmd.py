@@ -11,7 +11,7 @@ class DefaultLinearMotorCmd(Command):
         self.ySpeed = ySpeed
         self.zRotation = zRotation
     
-    def initalize(self):
+    def initialize(self):
         return 
     
     def execute(self):

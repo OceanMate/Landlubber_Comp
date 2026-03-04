@@ -11,12 +11,12 @@ class SequentialCommandGroup(Command):
             self.commands.append(command)
             super().add_cmd_requirements(command)
     
-    def initalize(self):
+    def initialize(self):
         self.current_command = 0
         
-        # initalize the first command
+        # initialize the first command
         if len(self.commands) > 0:
-            self.commands[self.current_command].initalize()
+            self.commands[self.current_command].initialize()
         
     
     def execute(self):
@@ -33,7 +33,7 @@ class SequentialCommandGroup(Command):
             currentCommand.end(False);
             self.current_command += 1
             if self.current_command < len(self.commands):
-                self.commands[self.current_command].initalize()
+                self.commands[self.current_command].initialize()
             
         
     

@@ -13,7 +13,7 @@ class DefaultVerticalMotorCmd(Command):
         self.left_bumper = left_bumper # function to get left bumper state (True/False)
         self.right_bumper = right_bumper # function to get right bumper state (True/False)
     
-    def initalize(self):
+    def initialize(self):
         return
     
     def execute(self):

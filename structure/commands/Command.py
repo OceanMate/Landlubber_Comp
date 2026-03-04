@@ -9,7 +9,7 @@ class Command:
     
     # Called when the command is first run
     # should be overridden by the child class
-    def initalize(self):
+    def initialize(self):
         pass
     
     # Called every time while the command isn't finished
@@ -42,7 +42,7 @@ class Command:
         for key in cmd.requirements.keys():
             self.requirements[key] = True
 
-    def is_confliting(self, command):
+    def is_conflicting(self, command):
         # Check if the command has conflicting requirements
         for key in self.requirements.keys():
             # If the command has a requirement that this command also requires, then they conflict

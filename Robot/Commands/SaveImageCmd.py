@@ -12,7 +12,7 @@ class SaveImageCmd(Command):
         self.current_camera = 0
         self.get_image = False
         
-    def initalize(self):
+    def initialize(self):
         pass
     
     def execute(self):

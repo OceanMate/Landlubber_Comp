@@ -4,7 +4,7 @@ class TemplateCommand(Command):
     def __init__(self):
         super().__init__()
         
-    def initalize(self):
+    def initialize(self):
         pass
     
     def execute(self):

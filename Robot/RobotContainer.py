@@ -50,6 +50,8 @@ class RobotContainer:
             self.claw,
             ControllerButton(1).get_on_true(), # B button
             ControllerButton(0).get_on_true(), # A button
+            lambda: self.controller.get_dpad() == DpadDirection.LEFT, # D-pad left
+            lambda: self.controller.get_dpad() == DpadDirection.RIGHT, # D-pad right
         ))
         self.cameras.default_command(SaveImageCmd(
             self.cameras,
@@ -92,4 +94,4 @@ class RobotContainer:
         self.linear_motors.stop_motors()
         self.vertical_motors.stop_motors()
         self.claw.open_claw()
-        self.claw.roll_claw_horiz()
+        self.claw._set_roll_power(0)

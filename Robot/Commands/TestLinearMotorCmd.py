@@ -12,7 +12,7 @@ class TestLinearMotorCmd(Command):
         self.x_button = x_button
         self.y_button = y_button
     
-    def initalize(self):
+    def initialize(self):
         return 
     
     def execute(self):        
