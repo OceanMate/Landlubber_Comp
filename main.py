@@ -34,7 +34,13 @@ def main():
         KeyboardListener().update()      
         robot.robot_periodic()
         
-        if not ComsThread().connected and not Debug.ignoreComsToEnable:
+        if not naut_coms.connected and not Debug.ignoreComsToEnable:
+            robot_state.disable_robot()
+            # Update the enable button text and color to reflect the new state
+            Jigboard().bottom_bar.update_enable_button(is_enabling=False)
+            
+        if naut_coms.get_water_sensor_data is True:
+            print("Water detected! Disabling robot.")
             robot_state.disable_robot()
             # Update the enable button text and color to reflect the new state
             Jigboard().bottom_bar.update_enable_button(is_enabling=False)

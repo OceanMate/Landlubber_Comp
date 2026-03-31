@@ -21,7 +21,9 @@ class ComsThread:
     
     def _start(self):
         self.sel = selectors.DefaultSelector()
-        self.sensor_data = {"IMU": (0.0, 0.0, 0.0, 0.0)}
+        self.sensor_data = {"IMU": (0.0, 0.0, 0.0, 0.0),
+                            "water_sensor": False,
+                            }
         self.robot_state = {"horizontal_motors": (0.0, 0.0, 0.0, 0.0), 
                             "vertical_motors": (0.0, 0.0, 0.0), 
                             "claw_clamp": Constants.claw_open,
@@ -48,13 +50,21 @@ class ComsThread:
     def set_enabled(self, enabled : bool):
         self.robot_state["enabled"] = enabled
     
-    def get_imu_data(self):
+    def get_imu_data(self) -> tuple:
         """Get the current IMU sensor data.
 
         Returns:
             tuple: A tuple containing the IMU data (x, y, z, w).
         """
         return self.sensor_data["IMU"]
+
+    def get_water_sensor_data(self) -> bool:
+        """Get the current water sensor data.
+
+        Returns:
+            bool: The current state of the water sensor (True if water is detected, False otherwise).
+        """
+        return self.sensor_data["water_sensor"]
     
     def begin_thread(self):
         thread = threading.Thread(target=self._run_client_socket)

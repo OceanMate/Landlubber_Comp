@@ -201,7 +201,8 @@ class Jigboard:
         self.window.update()
         
         # Update the connection status in the bottom bar
-        self.bottom_bar.update_comms_text(ComsThread().connected)
+        coms_thread = ComsThread()
+        self.bottom_bar.update_comms_text(coms_thread.connected, coms_thread.get_water_sensor_data())
         
         # Check hotkeys
         self.hotkeys_loop.poll()

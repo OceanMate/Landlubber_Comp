@@ -4,8 +4,13 @@ from jigboard.GraphicConstants import GraphicConstants
 from structure.RobotState import RobotState
 
 import tkinter.font as tkfont
+import os
+import threading
 
 import time
+
+import winsound
+
 
 
 class BottomBar():
@@ -18,11 +23,13 @@ class BottomBar():
         # Text for the controller and connection status
         self.controller_label = "Controller: "
         self.connection_label = "Comp-Comms: "
+        self.water_sensor_label = "Water Sens: "
         
         # Measure the pixel length of the controller text
         self.enable_button_width = self.bottom_bar_font.measure("Disable") + 10
         self.controller_label_width = self.bottom_bar_font.measure(self.controller_label)
         self.connection_label_width = self.bottom_bar_font.measure(self.connection_label)
+        self.water_sensor_label_width = self.bottom_bar_font.measure(self.water_sensor_label)
         
         # Some constants for the enable button
         self.button_y_offset = 5
@@ -35,6 +42,14 @@ class BottomBar():
         # Initialize the flash comms variable
         self.flash_comms = False
         self.start_flash_clk = False
+
+        # Track sensor transitions so the siren only plays on rising edge.
+        self._previous_water_sensor = False
+        self._siren_thread = None
+        self._siren_stop_event = threading.Event()
+        self._alarm_sound_path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "..", "assets", "emergency_alarm.wav")
+        )
     
     def create_bottom_bar(self):
         # Create the canvas for the bottom bar
@@ -140,7 +155,7 @@ class BottomBar():
             width=self.enable_button_width
         )
         
-        largest_text = max(self.controller_label_width, self.connection_label_width)
+        largest_text = max(self.controller_label_width, self.connection_label_width, self.water_sensor_label_width)
 
         largest_variable_text = self.bottom_bar_font.measure("Disconnected")
 
@@ -157,7 +172,7 @@ class BottomBar():
         # Create the text for the controller label
         self.bottom_bar_canvas.create_text(
             self.connections_x_offset + 5 + largest_text - self.controller_label_width,
-            GraphicConstants().bottom_bar_height * (1/3),
+            GraphicConstants().bottom_bar_height * (1/4),
             text=self.controller_label,
             fill=GraphicConstants().black,
             anchor="w",
@@ -167,7 +182,7 @@ class BottomBar():
         # Create the text for the controller
         self.controller_text = self.bottom_bar_canvas.create_text(
             largest_text + self.connections_x_offset,
-            GraphicConstants().bottom_bar_height * (1/3),  # Adjust the y position as needed
+            GraphicConstants().bottom_bar_height * (1/4),  # Adjust the y position as needed
             text="None",
             fill=GraphicConstants().red,
             anchor="w",
@@ -177,7 +192,7 @@ class BottomBar():
         # Create the text for the Nautical Computer label
         self.bottom_bar_canvas.create_text(
             self.connections_x_offset + 5 + largest_text - self.connection_label_width,
-            GraphicConstants().bottom_bar_height * (2/3), 
+            GraphicConstants().bottom_bar_height * (2/4), 
             text=self.connection_label,
             fill=GraphicConstants().black,
             anchor="w",
@@ -187,11 +202,42 @@ class BottomBar():
         # Create the text for the Nautical Computer connection status
         self.comms_text = self.bottom_bar_canvas.create_text(
             self.connections_x_offset + largest_text,
-            GraphicConstants().bottom_bar_height * (2/3),  # Adjust the y position as needed
+            GraphicConstants().bottom_bar_height * (2/4),  # Adjust the y position as needed
             text="Disconnected",
             fill=GraphicConstants().red,
             anchor="w",
             font=self.bottom_bar_font
+        )
+
+        # Create the text for the water sensor label
+        self.bottom_bar_canvas.create_text(
+            self.connections_x_offset + 5 + largest_text - self.water_sensor_label_width,
+            GraphicConstants().bottom_bar_height * (3/4),
+            text=self.water_sensor_label,
+            fill=GraphicConstants().black,
+            anchor="w",
+            font=self.bottom_bar_font
+        )
+
+        # Create the text for the water sensor state
+        self.water_sensor_text = self.bottom_bar_canvas.create_text(
+            self.connections_x_offset + largest_text,
+            GraphicConstants().bottom_bar_height * (3/4),
+            text="False",
+            fill=GraphicConstants().dark_green,
+            anchor="w",
+            font=self.bottom_bar_font
+        )
+
+        # Centered flooding alert text; shown only when the water sensor is active.
+        self.flood_alert_text = self.bottom_bar_canvas.create_text(
+            GraphicConstants().window_width / 2,
+            GraphicConstants().bottom_bar_height / 2,
+            text="⚠ Flooding Alert ⚠",
+            fill=GraphicConstants().red,
+            anchor="center",
+            font=(GraphicConstants().bottom_bar_font, 18, "bold"),
+            state="hidden"
         )
     
     def resize_bottom_bar(self):
@@ -211,6 +257,12 @@ class BottomBar():
             height=GraphicConstants().bottom_bar_height - 2 * self.button_y_offset,
             width=self.enable_button_width
         )
+
+        self.bottom_bar_canvas.coords(
+            self.flood_alert_text,
+            GraphicConstants().window_width / 2,
+            GraphicConstants().bottom_bar_height / 2
+        )
     
     # Update the controller text to the given controller name
     def update_controller_text(self, controller_name):
@@ -221,7 +273,7 @@ class BottomBar():
         self.bottom_bar_canvas.itemconfig(self.controller_text, text= controller_name)
 
     # Update the Nautical Computer connection status text
-    def update_comms_text(self, is_connected : bool):
+    def update_comms_text(self, is_connected : bool, water_sensor : bool = False):
         # Record the inital time for flashing the connection status text
         if self.flash_comms:
             self.start_flash_clk = True
@@ -249,6 +301,58 @@ class BottomBar():
                     self.bottom_bar_canvas.itemconfig(self.comms_text, fill=GraphicConstants().red)
             else:
                 self.bottom_bar_canvas.itemconfig(self.comms_text, fill=GraphicConstants().orange)
+
+        # Update the water sensor text with the latest boolean state.
+        self.bottom_bar_canvas.itemconfig(self.water_sensor_text, text=str(water_sensor))
+        if water_sensor:
+            self.bottom_bar_canvas.itemconfig(self.water_sensor_text, fill=GraphicConstants().red)
+        else:
+            self.bottom_bar_canvas.itemconfig(self.water_sensor_text, fill=GraphicConstants().dark_green)
+
+        # Flash the flooding alert text while water is detected.
+        if water_sensor:
+            self.bottom_bar_canvas.itemconfig(self.flood_alert_text, state="normal")
+            if time.time() % 0.4 < 0.2:
+                self.bottom_bar_canvas.itemconfig(self.flood_alert_text, fill=GraphicConstants().red)
+            else:
+                self.bottom_bar_canvas.itemconfig(self.flood_alert_text, fill=GraphicConstants().orange)
+        else:
+            self.bottom_bar_canvas.itemconfig(self.flood_alert_text, state="hidden")
+
+        # Start or stop siren playback on water sensor transitions.
+        if water_sensor and not self._previous_water_sensor:
+            self._start_water_siren()
+        elif (not water_sensor) and self._previous_water_sensor:
+            self._stop_water_siren()
+
+        self._previous_water_sensor = water_sensor
+
+    def _start_water_siren(self):
+        if self._siren_thread is not None and self._siren_thread.is_alive():
+            return
+
+        audio_module = winsound
+        alarm_sound_path = self._alarm_sound_path
+        self._siren_stop_event.clear()
+
+        def _siren_loop():
+            audio_module.PlaySound(
+                alarm_sound_path,
+                audio_module.SND_FILENAME | audio_module.SND_ASYNC | audio_module.SND_LOOP,
+            )
+            self._siren_stop_event.wait()
+            audio_module.PlaySound(None, audio_module.SND_PURGE)
+
+        self._siren_thread = threading.Thread(target=_siren_loop, daemon=True)
+        self._siren_thread.start()
+
+    def _stop_water_siren(self):
+        if self._siren_thread is None:
+            return
+
+        self._siren_stop_event.set()
+        winsound.PlaySound(None, winsound.SND_PURGE)
+        self._siren_thread = None
     
     def update_enable_button(self, is_enabling):
         if is_enabling:
