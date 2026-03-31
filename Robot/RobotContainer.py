@@ -6,6 +6,7 @@ from Robot.Subsystems.Cameras import Cameras
 from Robot.Subsystems.Claw import Claw
 from Robot.Subsystems.VerticalMotors import VerticalMotors
 from Robot.Subsystems.LinearMotors import LinearMotors
+from Robot.Subsystems.BananaMan import BananaMan
 from Robot.Commands.DefaultLinearMotorCmd import DefaultLinearMotorCmd
 from Robot.Commands.DefaultVerticalMotorCmd import DefaultVerticalMotorCmd
 from Robot.Commands.DefaultClawCmd import DefaultClawCmd
@@ -20,12 +21,17 @@ from structure.commands.SequentialCommandGroup import SequentialCommandGroup
 from structure.Input.ControllerListener import *
 from structure.Input.ControllerDpad import ControllerDpad
 
+
+from jigboard.Jigboard import Jigboard
+
 class RobotContainer:
     def __init__(self):
         self.linear_motors = LinearMotors()
         self.vertical_motors = VerticalMotors()
         self.claw = Claw()
         self.cameras = Cameras()
+        self.banana_man = BananaMan()
+        Jigboard().put_button("Banana Time", lambda: self.banana_man.toggle())
         
         self.controller = ControllerListener()
         self.controller.deadband = .1
@@ -69,7 +75,6 @@ class RobotContainer:
             lambda: self.controller.get_dpad() == DpadDirection.DOWN
             ))
         
-    
     def test_init(self):
         self.linear_motors.default_command(TestLinearMotorCmd(
             self.linear_motors,
