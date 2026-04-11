@@ -3,11 +3,12 @@ from structure.commands.Command import Command
 from Robot.Subsystems.Cameras import Cameras
 
 class SaveImageCmd(Command):
-    def __init__(self, cameras : Cameras, save_button, switch_camera_button):
+    def __init__(self, cameras : Cameras, save_button, switch_camera_button, crab_button):
         super().__init__()
         self.save_button = save_button
         self.switch_camera_button = switch_camera_button
-        
+        self.crab_button = crab_button
+
         self.cameras = cameras
         self.add_requirement(cameras)
         self.current_camera = 0

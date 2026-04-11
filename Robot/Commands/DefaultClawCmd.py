@@ -2,13 +2,12 @@ from structure.commands.Command import Command
 from Robot.Subsystems.Claw import Claw
 
 class DefaultClawCmd(Command):
-    def __init__(self, claw : Claw, b_button, a_button, dpad_left, dpad_right):
+    def __init__(self, claw : Claw, b_button, dpad_left, dpad_right):
         super().__init__()
         self.claw = claw
         super().add_requirement(self.claw)
         
         self.b_button = b_button 
-        self.a_button = a_button
         self.dpad_left = dpad_left
         self.dpad_right = dpad_right
         

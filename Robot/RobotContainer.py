@@ -55,14 +55,14 @@ class RobotContainer:
         self.claw.default_command(DefaultClawCmd(
             self.claw,
             ControllerButton(1).get_on_true(), # B button
-            ControllerButton(0).get_on_true(), # A button
             lambda: self.controller.get_dpad() == DpadDirection.LEFT, # D-pad left
             lambda: self.controller.get_dpad() == DpadDirection.RIGHT, # D-pad right
         ))
         self.cameras.default_command(SaveImageCmd(
             self.cameras,
-            ControllerButton(2).get_on_true(), # save image button (X)
-            ControllerButton(3).get_on_true(), # switch camera button (Y)
+            ControllerButton(0).get_on_true(), # save image button (A)
+            ControllerButton(2).get_on_true(), # switch camera button (X)
+            ControllerButton(3).get_on_true(), # Find crabs in image button (Y)
         ))
         
         ControllerDpad( DpadDirection.UP).on_true(BalanceVerticalCmd(
