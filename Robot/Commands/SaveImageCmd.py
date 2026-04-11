@@ -23,6 +23,9 @@ class SaveImageCmd(Command):
         if self.save_button():
             self.get_image = True
         
+        if self.crab_button():
+            self.cameras.find_crabs_in_image(self.current_camera)
+        
         if self.get_image:
             self.get_image = not self.cameras.save_image(self.current_camera)
         
