@@ -14,15 +14,16 @@ class Robot:
         self.command_runner.run_commands()
     
     def teleop_init(self):
-        self.robot_container.teleop_init()
         self.command_runner.turn_on()
+        self.robot_container.teleop_init()
+
             
     def teleop_periodic(self):
         pass
 
     def test_init(self):
-        self.robot_container.test_init()
         self.command_runner.turn_on()
+        self.robot_container.test_init()
     
     def test_periodic(self):
         pass

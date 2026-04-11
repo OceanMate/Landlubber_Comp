@@ -9,6 +9,7 @@ class SaveImageCmd(Command):
         self.switch_camera_button = switch_camera_button
         
         self.cameras = cameras
+        self.add_requirement(cameras)
         self.current_camera = 0
         self.get_image = False
         
