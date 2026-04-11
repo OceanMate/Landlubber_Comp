@@ -14,7 +14,7 @@ class SaveImageCmd(Command):
         self.get_image = False
         
     def initialize(self):
-        pass
+        print("SaveImageCmd initialized")
     
     def execute(self):
         Jigboard().put_string("Current Cam", f"Cam: {self.current_camera}")
