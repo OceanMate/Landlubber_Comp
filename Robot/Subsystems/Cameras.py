@@ -36,5 +36,9 @@ class Cameras(Subsystem):
         self.image_counter += 1  # Increment the image counter
         return True
     
+    def find_crabs_in_image(self, camera_index):
+        frame = self.camera_coms.get_camera_frame(camera_index, is_displaying=False)
+
+    
     def periodic(self):
         pass
