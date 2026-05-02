@@ -114,7 +114,7 @@ class CommandRunner:
         # Interrupts any already scheduled commands that require the same subsystem
         for cmd in self.commands:
             if command.is_conflicting(cmd):
-                command.end(True)
+                cmd.end(True)
                 self.commands.remove(cmd)
         
         command.initialize()

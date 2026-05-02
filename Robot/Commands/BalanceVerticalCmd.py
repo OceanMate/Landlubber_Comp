@@ -15,7 +15,7 @@ class BalanceVerticalCmd(Command):
         self.left_bumper = left_bumper # function to get left bumper state (True/False)
         self.cancel_button = down_dpad # function to get down dpad state (True/False)
     
-    def initalize(self):
+    def initialize(self):
         Jigboard().put_boolean("Auto Balance Enabled", True)
     
     def execute(self):
