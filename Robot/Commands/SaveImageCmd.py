@@ -23,7 +23,7 @@ class SaveImageCmd(Command):
     def execute(self):
         Jigboard().put_string("Current Cam", f"Cam: {self.current_camera}")
         # Show "image saved!" message on the camera widget when save is successful
-        if self.save_time - time.time() < self.wait_time and self.current_camera < len(Jigboard().camera_widgets):
+        if time.time() - self.save_time < self.wait_time:
             Jigboard().put_string("Current Cam", f"Image Saved!")
         
         if self.save_button():

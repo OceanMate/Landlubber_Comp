@@ -80,6 +80,9 @@ class VerticalMotors(Subsystem):
         front_right_speed = -reducedZ + reducedPitch + reducedRoll
         back_speed = -reducedZ - reducedPitch
         
+        # invert back motor since it's mounted in the opposite direction
+        back_speed = -back_speed * 0.75
+        
         self._set_motor_speeds(front_left_speed, front_right_speed, back_speed)
     
     def _set_motor_speeds(self, front_left_speed, front_right_speed, back_speed):
